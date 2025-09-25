@@ -15,3 +15,15 @@ It is built for:
 - **SDG 3:** Good Health & Well-being -> promotes healthier lifestyles.
 - **SDG 2:** Zero Hunger -> helps with food/nutrition access & awareness.
 - **SDG 12:** Responsible Consumption -> guides in sustainable eating habits.
+
+## Requirements
+1. Clone the repository
+```bash
+git clone https://github.com/your-username/Smart-Nutrition-with-Dart.git
+
+cd Smart-Nutrition-with-Dart
+```
+2. Open your code editor and install dependencies
+```bash
+npm install 
+```
