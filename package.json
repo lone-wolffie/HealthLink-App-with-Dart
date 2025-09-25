@@ -1,0 +1,20 @@
+{
+  "name": "smart-nutrition-with-dart",
+  "version": "1.0.0",
+  "description": "The Smart Nutrition App is an AI powered nutrition recommendation app that recommends recipes/meal plans based on the age, gender, weight and health goals a user inputs.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
+  }
+}
