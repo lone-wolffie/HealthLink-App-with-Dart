@@ -1,11 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import pg from "pg";
+import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
+const saltRounds = 10;
 
 //postgres database
 const db = new pg.Client({
@@ -20,6 +23,19 @@ db.connect();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+// Hashing password function
+async function hashPasswords(originalPassword) { 
+    try {
+        const hash = await bcrypt.hash(originalPassword, saltRounds);
+        console.log(hash);
+        return hash;
+
+    } catch (err){
+        console.log(err);
+    }
+};
+hashPasswords("");
 
 //get route
 //post routes
