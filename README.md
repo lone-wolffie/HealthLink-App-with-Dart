@@ -1,27 +1,31 @@
-# 🍛Smart Nutrition App
+# 🏥HealthLink App
 
 ## Project Scope
-The Smart Nutrition App is an AI powered nutrition recommendation app that recommends recipes/meal plans based on the age, gender, weight and health goals a user inputs.
-
-The app is designed to help people adopt great health eating patterns.
-
-## Users
-It is built for:
-- Individuals trying to improve their eating habits.
-- Individuals with certain/specific health goals.
-- Individuals looking for quick healthy meals.
+The HealthLink App is an app designed to empower users to:
+  - Track their symptoms and wellness habits.
+  - Access verified health information.
+  - Connect with local clinics, support groups or volunteers.
+  - Receive alerts and tips based on location or health status.
 
 ## SDG Alignment
-- **SDG 3:** Good Health & Well-being -> promotes healthier lifestyles.
-- **SDG 2:** Zero Hunger -> helps with food/nutrition access & awareness.
-- **SDG 12:** Responsible Consumption -> guides in sustainable eating habits.
+- **SDG 3:** Good Health & Well-being -> 
+Promotes:
+   - Early symptom tracking
+   - Access to verified health tips
+   - Connection to nearby clinics and support centers
+   - Community awareness through alerts and updates
+
+- **SDG 10:** Reduced Inequalities -> Reaches people in the rural areas.
+
+- **SDG 11:** Sustainable Cities and Communities -> helps users locate clinics and report health trends.
+
 
 ## Requirements
 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/Smart-Nutrition-with-Dart.git
+git clone https://github.com/lone-wolffie/HealthLink-with-Dart.git
 
-cd Smart-Nutrition-with-Dart
+cd HealthLink-with-Dart
 ```
 2. Open your code editor and install dependencies
 ```bash
