@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const saltRounds = 10;
 
 //postgres database
@@ -18,7 +18,9 @@ const db = new pg.Client({
     password: process.env.PG_PASSWORD,
     port: process.env.PG_PORT_NUMBER,
 });
-db.connect();
+db.connect()
+    .then(() => console.log("Database connected successfully,"))
+    .catch((error) => console.error("Database connection error:", error));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
