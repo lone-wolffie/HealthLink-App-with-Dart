@@ -29,7 +29,7 @@ CREATE TABLE clinics (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     address TEXT NOT NULL,
-    phone VARCHAR(20),
+    phonenumber VARCHAR(20),
     email VARCHAR(255),
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
@@ -71,11 +71,24 @@ CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
 CREATE INDEX idx_alerts_active ON health_alerts(is_active);
 
 -- Insert Sample Clinics
-INSERT INTO clinics (name, address, phone, latitude, longitude, services) VALUES
-('Kenyatta National Hospital', 'Hospital Rd, Upper Hill, Nairobi', '+254 20 2726300', -1.3018, 36.8073, ARRAY['Emergency', 'Surgery', 'Pediatrics']),
-('Aga Khan University Hospital', '3rd Parklands Ave, Nairobi', '+254 20 3662000', -1.2684, 36.8148, ARRAY['Emergency', 'Cardiology', 'Oncology']),
-('Nairobi Hospital', 'Argwings Kodhek Rd, Nairobi', '+254 20 2845000', -1.2907, 36.7907, ARRAY['Emergency', 'Maternity', 'Surgery']),
-('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 2722817', -1.2490, 36.8284, ARRAY['Pediatrics', 'Emergency', 'Vaccination']);
+INSERT INTO clinics (name, address, phonenumber, latitude, longitude, services, operating_hours)
+VALUES
+('Kenyatta National Hospital', 'Hospital Rd, Upper Hill, Nairobi', '+254 20 2726300', -1.3018, 36.8073,
+ ARRAY['Emergency', 'Surgery', 'Pediatrics'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Aga Khan University Hospital', '3rd Parklands Ave, Nairobi', '+254 20 3662000', -1.2684, 36.8148,
+ ARRAY['Emergency', 'Cardiology', 'Oncology'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-15:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Nairobi Hospital', 'Argwings Kodhek Rd, Nairobi', '+254 20 2845000', -1.2907, 36.7907,
+ ARRAY['Emergency', 'Maternity', 'Surgery'],
+ '{"monday":"08:00-18:00","tuesday":"08:00-18:00","wednesday":"08:00-18:00","thursday":"08:00-18:00","friday":"08:00-18:00","saturday":"09:00-14:00","sunday":"Closed"}'),
+
+('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 2722817', -1.2490, 36.8284,
+ ARRAY['Pediatrics', 'Emergency', 'Vaccination'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}');
+
 
 -- Insert Sample Health Alerts
 INSERT INTO health_alerts (title, message, severity, location, alert_type, icon) VALUES
