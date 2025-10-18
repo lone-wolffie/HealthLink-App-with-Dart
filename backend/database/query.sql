@@ -71,21 +71,21 @@ CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
 CREATE INDEX idx_alerts_active ON health_alerts(is_active);
 
 -- Insert Sample Clinics
-INSERT INTO clinics (name, address, phonenumber, latitude, longitude, services, operating_hours)
+INSERT INTO clinics (name, address, phonenumber, email, latitude, longitude, services, operating_hours)
 VALUES
-('Kenyatta National Hospital', 'Hospital Rd, Upper Hill, Nairobi', '+254 20 2726300', -1.3018, 36.8073,
+('Kenyatta National Hospital', 'Hospital Rd, Upper Hill, Nairobi', '+254 20 2726300', 'knhadmin@knh.or.ke', -1.3018, 36.8073,
  ARRAY['Emergency', 'Surgery', 'Pediatrics'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
 
-('Aga Khan University Hospital', '3rd Parklands Ave, Nairobi', '+254 20 3662000', -1.2684, 36.8148,
+('Aga Khan University Hospital', '3rd Parklands Ave, Nairobi', '+254 20 3662000', 'akuh.nairobi@aku.edu', -1.2684, 36.8148,
  ARRAY['Emergency', 'Cardiology', 'Oncology'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-15:00","saturday":"09:00-13:00","sunday":"Closed"}'),
 
-('Nairobi Hospital', 'Argwings Kodhek Rd, Nairobi', '+254 20 2845000', -1.2907, 36.7907,
+('Nairobi Hospital', 'Argwings Kodhek Rd, Nairobi', '+254 20 2845000', 'hosp@nbihosp.org', -1.2907, 36.7907,
  ARRAY['Emergency', 'Maternity', 'Surgery'],
  '{"monday":"08:00-18:00","tuesday":"08:00-18:00","wednesday":"08:00-18:00","thursday":"08:00-18:00","friday":"08:00-18:00","saturday":"09:00-14:00","sunday":"Closed"}'),
 
-('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 2722817', -1.2490, 36.8284,
+('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 7206000', 'info@gerties.org', -1.2490, 36.8284,
  ARRAY['Pediatrics', 'Emergency', 'Vaccination'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}');
 
