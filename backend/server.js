@@ -9,7 +9,6 @@ import clinicRoutes from "./routes/clinics.js";
 
 dotenv.config();
 
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -23,7 +22,7 @@ app.use("/api/auth", clinicRoutes);
 
 //get route
 app.get("/", (req, res) => {
-    res.send("HealthLink App running");
+    res.send("HealthLink App backend running successfully.");
 });
 
 app.listen(port, () => {
