@@ -28,73 +28,6 @@ CREATE TABLE clinics (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Health Tips
-CREATE TABLE health_tips (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
-
-
-
-
-
-
-
-
-
--- Symptoms Table
-CREATE TABLE symptoms (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    description TEXT NOT NULL,
-    severity VARCHAR(20) CHECK (severity IN ('Mild', 'Moderate', 'Severe')),
-    date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
--- Health Alerts Table
-CREATE TABLE health_alerts (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
-    location VARCHAR(255),
-    alert_type VARCHAR(50),
-    icon VARCHAR(50),
-    is_active BOOLEAN DEFAULT true,
-    published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Wellness Habits Table
--- CREATE TABLE wellness_habits (
---     id SERIAL PRIMARY KEY,
---     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
---     habit_type VARCHAR(100) NOT NULL,
---     description TEXT,
---     frequency VARCHAR(50),
---     date_logged DATE DEFAULT CURRENT_DATE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
-
-
-
--- Create Indexes
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_symptoms_user_id ON symptoms(user_id);
-CREATE INDEX idx_symptoms_date ON symptoms(date_recorded);
-CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
-CREATE INDEX idx_alerts_active ON health_alerts(is_active);
-
 -- Insert Sample Clinics
 INSERT INTO clinics (name, address, phonenumber, email, latitude, longitude, services, operating_hours)
 VALUES
@@ -113,6 +46,69 @@ VALUES
 ('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 7206000', 'info@gerties.org', -1.2490, 36.8284,
  ARRAY['Pediatrics', 'Emergency', 'Vaccination'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}');
+
+-- Health Tips
+CREATE TABLE health_tips (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Symptoms Table
+CREATE TABLE symptoms_checker (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  symptom VARCHAR(255) NOT NULL,
+  severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Health Alerts/ Warnings
+CREATE TABLE health_alerts (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
+  location VARCHAR(255),
+  alert_type VARCHAR(50),
+  icon VARCHAR(50),
+  is_active BOOLEAN DEFAULT true,
+  published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+-- Health Alerts Table
+CREATE TABLE health_alerts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
+    location VARCHAR(255),
+    alert_type VARCHAR(50),
+    icon VARCHAR(50),
+    is_active BOOLEAN DEFAULT true,
+    published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+-- Create Indexes
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_symptoms_user_id ON symptoms(user_id);
+CREATE INDEX idx_symptoms_date ON symptoms(date_recorded);
+CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
+CREATE INDEX idx_alerts_active ON health_alerts(is_active);
+
+
 
 
 -- Insert Sample Health Alerts
@@ -137,8 +133,26 @@ INSERT INTO health_alerts (title, message, severity, location, alert_type, icon)
 
 
 
+-- Wellness Habits Table
+-- CREATE TABLE wellness_habits (
+--     id SERIAL PRIMARY KEY,
+--     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+--     habit_type VARCHAR(100) NOT NULL,
+--     description TEXT,
+--     frequency VARCHAR(50),
+--     date_logged DATE DEFAULT CURRENT_DATE,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
 
-
+-- CREATE TABLE symptoms (
+--     id SERIAL PRIMARY KEY,
+--     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+--     description TEXT NOT NULL,
+--     severity VARCHAR(20) CHECK (severity IN ('Mild', 'Moderate', 'Severe')),
+--     date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     notes TEXT,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
 
 
 

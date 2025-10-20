@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import signupLoginRoutes from "./routes/signup-login.js";
 import clinicRoutes from "./routes/clinics.js";
 import healthTipsRoutes from "./routes/health-tips.js";
+import symptomsRoutes from "./routes/symptoms.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use("/api/auth", signupLoginRoutes);
 app.use("/api/clinics", clinicRoutes);
 app.use("/api/tips", healthTipsRoutes);
+app.use("/api/symptoms", symptomsRoutes);
 
 //get route
 app.get("/", (req, res) => {
