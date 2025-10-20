@@ -1,7 +1,8 @@
 CREATE DATABASE HealthCareLinkApp;
+-- connect to the database
 \c HealthCareLinkApp;
 
--- Users Table
+-- Users Table for signup
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     fullname VARCHAR(255) NOT NULL,
@@ -11,17 +12,6 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     
-);
-
--- Symptoms Table
-CREATE TABLE symptoms (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    description TEXT NOT NULL,
-    severity VARCHAR(20) CHECK (severity IN ('Mild', 'Moderate', 'Severe')),
-    date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Clinics Table
@@ -38,6 +28,38 @@ CREATE TABLE clinics (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Health Tips
+CREATE TABLE health_tips (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+
+
+
+
+
+
+
+-- Symptoms Table
+CREATE TABLE symptoms (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    severity VARCHAR(20) CHECK (severity IN ('Mild', 'Moderate', 'Severe')),
+    date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 -- Health Alerts Table
 CREATE TABLE health_alerts (
     id SERIAL PRIMARY KEY,
@@ -53,15 +75,18 @@ CREATE TABLE health_alerts (
 );
 
 -- Wellness Habits Table
-CREATE TABLE wellness_habits (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    habit_type VARCHAR(100) NOT NULL,
-    description TEXT,
-    frequency VARCHAR(50),
-    date_logged DATE DEFAULT CURRENT_DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- CREATE TABLE wellness_habits (
+--     id SERIAL PRIMARY KEY,
+--     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+--     habit_type VARCHAR(100) NOT NULL,
+--     description TEXT,
+--     frequency VARCHAR(50),
+--     date_logged DATE DEFAULT CURRENT_DATE,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+
+
 
 -- Create Indexes
 CREATE INDEX idx_users_email ON users(email);
