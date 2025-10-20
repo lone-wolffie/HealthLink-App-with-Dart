@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 // import necessary routes
 import signupLoginRoutes from "./routes/signup-login.js";
 import clinicRoutes from "./routes/clinics.js";
+import healthTipsRoutes from "./routes/health-tips.js";
 
 dotenv.config();
 
@@ -18,7 +19,8 @@ app.use(cors());
 
 // Routes usage
 app.use("/api/auth", signupLoginRoutes);
-app.use("/api/auth", clinicRoutes);
+app.use("/api/clinics", clinicRoutes);
+app.use("/api/tips", healthTipsRoutes);
 
 //get route
 app.get("/", (req, res) => {
