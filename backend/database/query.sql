@@ -92,11 +92,28 @@ INSERT INTO health_alerts (title, message, severity, location, alert_type, icon)
 ('Child Immunization Reminder', 'Ensure your child receives scheduled immunizations at your nearest health center.', 'medium', 'Nationwide', 'public_health', 'baby');
 
 -- Create Indexes
+-- Indexes for users table
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_symptoms_user_id ON symptoms(user_id);
-CREATE INDEX idx_symptoms_date ON symptoms(date_recorded);
-CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
-CREATE INDEX idx_alerts_active ON health_alerts(is_active);
+CREATE INDEX idx_users_username ON users(username);
+
+-- Indexes for clinics table
+CREATE INDEX idx_clinics_name ON clinics(name);
+CREATE INDEX idx_clinics_location ON clinics(latitude, longitude); 
+CREATE INDEX idx_clinics_services ON clinics USING GIN (services);  
+CREATE INDEX idx_clinics_operating_hours ON clinics USING GIN (operating_hours); 
+
+-- Index for health_tips table
+CREATE INDEX idx_health_tips_title ON health_tips(title);
+
+-- Indexes for symptoms_checker table
+CREATE INDEX idx_symptoms_user_id ON symptoms_checker(user_id);
+CREATE INDEX idx_symptoms_severity ON symptoms_checker(severity);
+
+-- Indexes for health_alerts table
+CREATE INDEX idx_alerts_severity ON health_alerts(severity);
+CREATE INDEX idx_alerts_location ON health_alerts(location);
+CREATE INDEX idx_alerts_type ON health_alerts(alert_type);
+CREATE INDEX idx_alerts_is_active ON health_alerts(is_active);
 
 
 
@@ -114,68 +131,7 @@ CREATE INDEX idx_alerts_active ON health_alerts(is_active);
 
 
 
--- Wellness Habits Table
--- CREATE TABLE wellness_habits (
---     id SERIAL PRIMARY KEY,
---     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
---     habit_type VARCHAR(100) NOT NULL,
---     description TEXT,
---     frequency VARCHAR(50),
---     date_logged DATE DEFAULT CURRENT_DATE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- CREATE TABLE symptoms (
---     id SERIAL PRIMARY KEY,
---     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
---     description TEXT NOT NULL,
---     severity VARCHAR(20) CHECK (severity IN ('Mild', 'Moderate', 'Severe')),
---     date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     notes TEXT,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
 
 
-
--- CREATE TABLE signup (
---     id SERIAL PRIMARY KEY,
---     full_name VARCHAR(255) NOT NULL,
---     email_address VARCHAR(255) NOT NULL UNIQUE,
---     phone_number VARCHAR(20) NOT NULL UNIQUE,
---     username VARCHAR(50) NOT NULL UNIQUE,
---     password VARCHAR(255) NOT NULL 
--- );
-
--- CREATE TABLE users (
---   id SERIAL PRIMARY KEY,
---   full_name VARCHAR(100) NOT NULL,
---   email_address VARCHAR(150) UNIQUE NOT NULL,
---   password VARCHAR(255) NOT NULL,
---   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- CREATE TABLE symptoms (
---   id SERIAL PRIMARY KEY,
---   user_id INT REFERENCES users(id) ON DELETE CASCADE,
---   symptom TEXT NOT NULL,
---   severity VARCHAR(50),
---   notes TEXT,
---   date_recorded TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- CREATE TABLE health_tips (
---   id SERIAL PRIMARY KEY,
---   title TEXT NOT NULL,
---   description TEXT NOT NULL
--- );
-
--- CREATE TABLE clinics (
---   id SERIAL PRIMARY KEY,
---   name TEXT NOT NULL,
---   address TEXT,
---   lat TEXT,
---   lng TEXT,
---   contact TEXT
--- );
 
 
