@@ -47,7 +47,7 @@ VALUES
  ARRAY['Pediatrics', 'Emergency', 'Vaccination'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}');
 
--- Health Tips
+-- Health Tips Table
 CREATE TABLE health_tips (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE health_tips (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Symptoms Table
+-- Symptoms checker Table
 CREATE TABLE symptoms_checker (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -65,7 +65,7 @@ CREATE TABLE symptoms_checker (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Health Alerts/ Warnings
+-- Health Alerts/ Warnings Table
 CREATE TABLE health_alerts (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -75,31 +75,21 @@ CREATE TABLE health_alerts (
   alert_type VARCHAR(50),
   icon VARCHAR(50),
   is_active BOOLEAN DEFAULT true,
-  published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
-
-
--- Health Alerts Table
-CREATE TABLE health_alerts (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
-    location VARCHAR(255),
-    alert_type VARCHAR(50),
-    icon VARCHAR(50),
-    is_active BOOLEAN DEFAULT true,
-    published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
-
+-- Insert Sample Health Alerts
+INSERT INTO health_alerts (title, message, severity, location, alert_type, icon) VALUES
+('Flu Season Alert', 'Flu cases are rising in Nairobi. Get your flu shot and practice good hygiene.', 'high', 'Nairobi', 'disease_outbreak', 'virus'),
+('Free Health Screening', 'Kenyatta National Hospital is offering free diabetes screening this weekend.', 'medium', 'Nairobi', 'health_service', 'hospital'),
+('Water Quality Warning', 'Boil water before drinking in Kibera area due to contamination concerns.', 'high', 'Kibera, Nairobi', 'safety_alert', 'water'),
+('Mental Health Webinar', 'Join us for a free webinar on stress management and mental wellness.', 'low', 'Online', 'health_education', 'brain'),
+('Heatwave Alert', 'High temperatures expected in Mombasa this week. Stay hydrated and avoid outdoor activities during peak hours.', 'medium', 'Mombasa', 'weather_alert', 'sun'),
+('COVID-19 Vaccination Drive', 'Free COVID-19 vaccination drive this weekend at City Hall grounds.', 'high', 'Nairobi', 'vaccination_campaign', 'syringe'),
+('Malaria Prevention Tips', 'Use mosquito nets and repellents as malaria cases increase in Kisumu region.', 'medium', 'Kisumu', 'health_advisory', 'mosquito'),
+('Blood Donation Drive', 'Help save lives — donate blood at Aga Khan Hospital on Friday.', 'low', 'Nairobi', 'community_event', 'blood'),
+('Air Pollution Warning', 'Air quality is poor in Industrial Area, Nairobi. Limit outdoor activities.', 'high', 'Industrial Area, Nairobi', 'environment_alert', 'smog'),
+('Child Immunization Reminder', 'Ensure your child receives scheduled immunizations at your nearest health center.', 'medium', 'Nationwide', 'public_health', 'baby');
 
 -- Create Indexes
 CREATE INDEX idx_users_email ON users(email);
@@ -108,15 +98,6 @@ CREATE INDEX idx_symptoms_date ON symptoms(date_recorded);
 CREATE INDEX idx_clinics_location ON clinics(latitude, longitude);
 CREATE INDEX idx_alerts_active ON health_alerts(is_active);
 
-
-
-
--- Insert Sample Health Alerts
-INSERT INTO health_alerts (title, message, severity, location, alert_type, icon) VALUES
-('Flu Season Alert', 'Flu cases are rising in Nairobi. Get your flu shot and practice good hygiene.', 'high', 'Nairobi', 'disease_outbreak', 'virus'),
-('Free Health Screening', 'Kenyatta National Hospital is offering free diabetes screening this weekend.', 'medium', 'Nairobi', 'health_service', 'hospital'),
-('Water Quality Warning', 'Boil water before drinking in Kibera area due to contamination concerns.', 'high', 'Kibera, Nairobi', 'safety_alert', 'water'),
-('Mental Health Webinar', 'Join us for a free webinar on stress management and mental wellness.', 'low', 'Online', 'health_education', 'brain');
 
 
 
