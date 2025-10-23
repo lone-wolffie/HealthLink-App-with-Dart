@@ -1,0 +1,42 @@
+name: healthlink_app
+description: "A Flutter frontend for HealthLink App."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # 🌐 For backend API calls (GET, POST, etc.)
+  http: ^1.2.0
+
+  # 🎨 For using modern fonts
+  google_fonts: ^6.1.0
+
+  # 🧭 For simple state management
+  provider: ^6.1.1
+
+  # 💾 For local storage (user login tokens, preferences, etc.)
+  shared_preferences: ^2.2.0
+
+  # 🖼️ For vector icons and SVGs
+  flutter_svg: ^2.0.7
+  font_awesome_flutter: ^10.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
