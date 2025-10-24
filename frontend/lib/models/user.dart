@@ -24,7 +24,7 @@ class User {
       email: json['email'],
       phonenumber: json['phonenumber'],
       username: json['username'],
-      password: json['password']
+      password: json['password'],
     );
   }
 
