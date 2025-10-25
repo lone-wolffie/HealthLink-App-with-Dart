@@ -2,7 +2,7 @@ class HealthTips {
   final int id;
   final String title;
   final String content;
-  final String dateRecorded;
+  final DateTime dateRecorded;
 
   // constructor - required fields
   HealthTips({
@@ -12,23 +12,23 @@ class HealthTips {
     required this.dateRecorded,
   });
 
-  // create clinics object from JSON data
+  // create health tips object from JSON data
   factory HealthTips.fromJson(Map<String, dynamic> json) {
     return HealthTips(
       id: json['id'], 
       title: json['title'], 
       content: json['content'],
-      dateRecorded: json['created_at'] ?? '',
+      dateRecorded: DateTime.parse(json['created_at']),
     );
   }
 
-  // convert clinics object to json
+  // convert health tips object to json
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'title': title,
       'content': content,
-      'created_at': dateRecorded,
+      'created_at': dateRecorded.toIso8601String(),
     };
   }
 }

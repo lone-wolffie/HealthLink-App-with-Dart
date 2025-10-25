@@ -5,7 +5,7 @@ class User {
   final String phoneNumber;
   final String username;
   final String password;
-  final String dateRecorded;
+  final DateTime dateRecorded;
 
   // constructor - required fields
   User({
@@ -27,7 +27,7 @@ class User {
       phoneNumber: json['phonenumber'],
       username: json['username'],
       password: json['password'],
-      dateRecorded: json['created_at'] ?? '',
+      dateRecorded: DateTime.parse(json['created_at']),
     );
   }
 
@@ -40,7 +40,7 @@ class User {
       'phonenumber': phoneNumber,
       'username': username,
       'password': password,
-      'created_at': dateRecorded,
+      'created_at': dateRecorded.toIso8601String(),
     };
   }
 }

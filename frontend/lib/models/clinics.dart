@@ -8,7 +8,7 @@ class Clinics {
   final double longitude;
   final String services;
   final Map<String, dynamic> operatingHours; 
-  final String dateRecorded;
+  final DateTime dateRecorded;
 
   // constructor - required fields
   Clinics({
@@ -36,7 +36,7 @@ class Clinics {
       longitude: (json['longitude'] as num).toDouble(),
       services: json['services'],
       operatingHours: json['operating_hours'] ?? {},
-      dateRecorded: json['created_at'] ?? '',
+      dateRecorded: DateTime.parse(json['created_at']),
     );
   }
 
@@ -52,7 +52,7 @@ class Clinics {
       'longitude': longitude, 
       'services': services,
       'opaerating_hours': operatingHours,
-      'created_at': dateRecorded,
+      'created_at': dateRecorded.toIso8601String(),
     };
   }
 }

@@ -4,7 +4,7 @@ class Symptoms {
   final String symptom;
   final String severity;
   final String notes;
-  final String dateRecorded;
+  final DateTime dateRecorded;
 
   // constructor - required fields
   Symptoms({
@@ -23,8 +23,8 @@ class Symptoms {
       userId: json['user_id'], 
       symptom: json['symptom'], 
       severity: json['severity'], 
-      notes: json['notes'],
-      dateRecorded: json['created_at'] ?? '',
+      notes: json['notes'] ?? '',
+      dateRecorded: DateTime.parse(json['created_at']),
     );
   }
 
@@ -36,7 +36,7 @@ class Symptoms {
       'symptom': symptom,
       'severity': severity,
       'notes': notes,
-      'created_at': dateRecorded,
+      'created_at': dateRecorded.toIso8601String(),
     };
   }
 }
