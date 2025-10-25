@@ -12,11 +12,11 @@ class ApiService {
         Uri.parse('$baseUrl/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "fullname": fullname,
-          "email": email,
-          "phonenumber": phonenumber,
-          "username": username,
-          "password": password
+          'fullname': fullname,
+          'email': email,
+          'phonenumber': phonenumber,
+          'username': username,
+          'password': password
         }),
       );
     
@@ -29,8 +29,8 @@ class ApiService {
       Uri.parse('$baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        "username": username,
-        "password":password
+        'username': username,
+        'password':password
       }),
     );
     
@@ -58,14 +58,14 @@ class ApiService {
         Uri.parse('$baseUrl/clinics'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "name": name,
-          "address":address,
-          "phonenumber": phonenumber,
-          "email": email,
-          "latitude": latitude,
-          "longitude": longitude,
-          "services": services,
-          "operating_hours": operatingHours
+          'name': name,
+          'address':address,
+          'phonenumber': phonenumber,
+          'email': email,
+          'latitude': latitude,
+          'longitude': longitude,
+          'services': services,
+          'operating_hours': operatingHours
         }),
       );
       
@@ -91,8 +91,8 @@ class ApiService {
       Uri.parse('$baseUrl/tips'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        "title": title,
-        "content": content
+        'title': title,
+        'content': content
       }),
     );
     
@@ -127,10 +127,10 @@ class ApiService {
       Uri.parse('$baseUrl/symptoms'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        "user_id": userId,
-        "symptom": symptom,
-        "severity": severity,
-        "notes": notes
+        'user_id': userId,
+        'symptom': symptom,
+        'severity': severity,
+        'notes': notes
       }),
     );
     
@@ -167,12 +167,12 @@ class ApiService {
         Uri.parse('$baseUrl/alerts'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "title": title,
-          "message": message,
-          "severity": severity,
-          "location": location,
-          "alert_type": alertType,
-          "icon": icon
+          'title': title,
+          'message': message,
+          'severity': severity,
+          'location': location,
+          'alert_type': alertType,
+          'icon': icon
         }),
       );
 
