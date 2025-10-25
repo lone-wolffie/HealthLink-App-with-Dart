@@ -2,24 +2,26 @@ class Clinics {
   final int id;
   final String name;
   final String address;
-  final String phonenumber;
+  final String phoneNumber;
   final String email;
   final double latitude;
   final double longitude;
   final String services;
-  final Map<String, dynamic> operatingHours;
+  final Map<String, dynamic> operatingHours; 
+  final String dateRecorded;
 
   // constructor - required fields
   Clinics({
     required this.id,
     required this.name,
     required this.address,
-    required this.phonenumber,
+    required this.phoneNumber,
     required this.email,
     required this.latitude,
     required this.longitude,
     required this.services,
     required this.operatingHours,
+    required this.dateRecorded,
   });
 
   // create clinics object from JSON data
@@ -28,12 +30,13 @@ class Clinics {
       id: json['id'],
       name: json['name'],
       address: json['address'],
-      phonenumber: json['phonenumber'],
+      phoneNumber: json['phonenumber'],
       email: json['email'],
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       services: json['services'],
       operatingHours: json['operating_hours'] ?? {},
+      dateRecorded: json['created_at'] ?? '',
     );
   }
 
@@ -43,12 +46,13 @@ class Clinics {
       'id': id,
       'name': name, 
       'address': address,
-      'phonenumber': phonenumber, 
+      'phonenumber': phoneNumber, 
       'email': email, 
       'latitude': latitude, 
       'longitude': longitude, 
       'services': services,
-      'operating_hours': operatingHours,
+      'opaerating_hours': operatingHours,
+      'created_at': dateRecorded,
     };
   }
 }

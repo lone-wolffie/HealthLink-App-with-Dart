@@ -2,18 +2,20 @@ class User {
   final int id;
   final String fullname;
   final String email;
-  final String phonenumber;
+  final String phoneNumber;
   final String username;
   final String password;
+  final String dateRecorded;
 
   // constructor - required fields
   User({
     required this.id,
     required this.fullname,
     required this.email,
-    required this.phonenumber,
+    required this.phoneNumber,
     required this.username,
     required this.password,
+    required this.dateRecorded,
   });
 
   // create user object from JSON data
@@ -22,9 +24,10 @@ class User {
       id: json['id'],
       fullname: json['fullname'],
       email: json['email'],
-      phonenumber: json['phonenumber'],
+      phoneNumber: json['phonenumber'],
       username: json['username'],
       password: json['password'],
+      dateRecorded: json['created_at'] ?? '',
     );
   }
 
@@ -34,9 +37,10 @@ class User {
       'id': id,
       'fullname': fullname,
       'email': email,
-      'phonenumber': phonenumber,
+      'phonenumber': phoneNumber,
       'username': username,
       'password': password,
+      'created_at': dateRecorded,
     };
   }
 }
