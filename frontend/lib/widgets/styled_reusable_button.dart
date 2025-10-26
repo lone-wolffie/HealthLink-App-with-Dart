@@ -2,7 +2,7 @@ import 'package:flutter/material.dart'; // material design package
 
 class StyledReusableButton extends StatelessWidget { // appearance doesn’t change
   final String text; // what button displays
-  final VoidCallback onClick; // button clicked function
+  final void Function() onClick; // button clicked function
   final Color color;
 
   // constructor
