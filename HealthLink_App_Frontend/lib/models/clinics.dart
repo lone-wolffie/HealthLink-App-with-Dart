@@ -51,7 +51,7 @@ class Clinics {
       'latitude': latitude, 
       'longitude': longitude, 
       'services': services,
-      'opaerating_hours': operatingHours,
+      'operating_hours': operatingHours,
       'created_at': dateRecorded.toIso8601String(),
     };
   }
