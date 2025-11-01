@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
 
 import '../models/health_alerts.dart';
-
+import '../models/clinics.dart';
 
 class ApiService {
   static String get baseUrl {
@@ -57,13 +57,14 @@ class ApiService {
   }
 
   // get all clinics
-  static Future<List<Map<String, dynamic>>> getAllClinics() async {
+  static Future<List<Clinics>> getAllClinics() async {
     final response = await http.get(
       Uri.parse('${ApiService.baseUrl}/clinics')
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List data = jsonDecode(response.body);
+      return data.map((clinic) => Clinics.fromJson(clinic)).toList();
     } else {
       throw Exception('Failed to load all the clinics');
     }
