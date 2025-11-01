@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 class HealthAlerts {
   final int id;
   final String title;
@@ -21,6 +24,28 @@ class HealthAlerts {
     required this.isActive,
     required this.dateRecorded,
   });
+
+  IconData get iconData {
+    switch ((icon ?? '').toLowerCase()) {
+      case 'warning':
+        return Icons.warning;
+      case 'virus':
+        return Icons.coronavirus;
+      case 'hospital':
+      case 'health':
+        return Icons.local_hospital;
+      case 'water':
+        return Icons.water_drop;
+      case 'info':
+        return Icons.info;
+      default:
+        return Icons.campaign;
+    }
+  }
+
+  String get formattedDate {
+    return DateFormat('d MMM yyyy').format(dateRecorded);
+  }
 
   // create health alerts object from JSON data
   factory HealthAlerts.fromJson(Map<String, dynamic> json) {
