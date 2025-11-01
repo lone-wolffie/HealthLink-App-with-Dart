@@ -1,20 +1,36 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
+import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
 import 'package:http/http.dart' as http; // to make REST API calls to backend
+import 'dart:io' show Platform; // platform type
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:5000/api'; // android, web=localhost
+  static String get baseUrl {
+    if (kIsWeb) {
+      return 'http://localhost:3000/api'; // web
+    }
+
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:3000/api'; // android emulator
+    }
+    
+    if (Platform.isIOS) {
+      return 'http://localhost:3000/api'; // iOS Simulator
+    }
+
+    return 'http://192.168.0.12:3000/api'; // physical device
+  } 
 
   // signup
   static Future<Map<String, dynamic>> signup(
-    String fullname, String email, String phonenumber, 
+    String fullname, String email, String phoneNumber, 
     String username, String password ) async {
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/signup'),
+        Uri.parse('${ApiService.baseUrl}/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'fullname': fullname,
           'email': email,
-          'phonenumber': phonenumber,
+          'phonenumber': phoneNumber,
           'username': username,
           'password': password
         }),
@@ -26,7 +42,7 @@ class ApiService {
   // login
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
+      Uri.parse('${ApiService.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': username,
@@ -40,7 +56,7 @@ class ApiService {
   // get all clinics
   static Future<List<Map<String, dynamic>>> getAllClinics() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/clinics')
+      Uri.parse('${ApiService.baseUrl}/clinics')
     );
 
     if (response.statusCode == 200) {
@@ -52,15 +68,15 @@ class ApiService {
 
   // add a new clinics
   static Future<Map<String, dynamic>> addClinic(
-    String name, String address, String phonenumber, String email, 
+    String name, String address, String phoneNumber, String email, 
     double latitude, double longitude, List<String> services, Map<String, String> operatingHours ) async {
       final response = await http.post(
-        Uri.parse('$baseUrl/clinics'),
+        Uri.parse('${ApiService.baseUrl}/clinics'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': name,
           'address':address,
-          'phonenumber': phonenumber,
+          'phonenumber': phoneNumber,
           'email': email,
           'latitude': latitude,
           'longitude': longitude,
@@ -75,7 +91,7 @@ class ApiService {
   // get all health tips
   static Future<List<Map<String, dynamic>>> getAllHealthTips() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/tips')
+      Uri.parse('${ApiService.baseUrl}/tips')
     );
 
     if (response.statusCode == 200) {
@@ -88,7 +104,7 @@ class ApiService {
   // add a new health tip
   static Future<Map<String, dynamic>> addHealthTip(String title, String content) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/tips'),
+      Uri.parse('${ApiService.baseUrl}/tips'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'title': title,
@@ -102,7 +118,7 @@ class ApiService {
   // delete a health tip
   static Future<Map<String, dynamic>> deleteHealthTip(int id) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/tips/$id')
+      Uri.parse('${ApiService.baseUrl}/tips/$id')
     );
 
     return jsonDecode(response.body);
@@ -111,7 +127,7 @@ class ApiService {
   // get symptom history for specific user 
   static Future<List<Map<String, dynamic>>> getSymptomHistory(int userId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/symptoms/$userId')
+      Uri.parse('${ApiService.baseUrl}/symptoms/$userId')
     );
 
     if (response.statusCode == 200) {
@@ -124,7 +140,7 @@ class ApiService {
   // add a new symptom
   static Future<Map<String, dynamic>> addSymptom(int userId, String symptom, String severity, String notes) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/symptoms'),
+      Uri.parse('${ApiService.baseUrl}/symptoms'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'user_id': userId,
@@ -140,7 +156,7 @@ class ApiService {
   // delete a symptom
   static Future<Map<String,dynamic>> deleteSymptom(int id) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/symptoms/$id')
+      Uri.parse('${ApiService.baseUrl}/symptoms/$id')
     );
 
     return jsonDecode(response.body);
@@ -149,7 +165,7 @@ class ApiService {
   // get all active health alerts
   static Future<List<Map<String, dynamic>>> getAllActiveAlerts() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/alerts')
+      Uri.parse('${ApiService.baseUrl}/alerts')
     );
 
     if (response.statusCode == 200) {
@@ -164,7 +180,7 @@ class ApiService {
     String title, String message, String severity, 
     String location, String alertType, String icon ) async {
       final response = await http.post(
-        Uri.parse('$baseUrl/alerts'),
+        Uri.parse('${ApiService.baseUrl}/alerts'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'title': title,
@@ -182,7 +198,7 @@ class ApiService {
   // delete a health alert
   static Future<Map<String, dynamic>> deleteHealthAlert(int id) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/alerts/$id')
+      Uri.parse('${ApiService.baseUrl}/alerts/$id')
     );
 
     return jsonDecode(response.body);
