@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import '../services/api_service.dart';
+import '../models/health_alerts.dart';
+
 import '../widgets/alert_card.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/loading_indicator.dart';
@@ -16,28 +18,12 @@ class AlertsScreen extends StatefulWidget {
 }
 
 class _AlertsScreenState extends State<AlertsScreen> {
-  late Future<List<dynamic>> alertsFuture;
+  late Future<List<HealthAlerts>> alertsFuture;
 
   @override
   void initState() {
     super.initState();
-    alertsFuture = fetchAlerts();
-  }
-
-  Future<List<dynamic>> fetchAlerts() async {
-    const String url = 'http://localhost:3000/api/alerts'; // <-- update; 
-
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        throw Exception('Failed to load alerts: ${response.statusCode}');
-      }
-    } catch (error) {
-      throw Exception('Network error: $error');
-    }
+    alertsFuture = ApiService.getAllActiveAlerts();
   }
 
   IconData _getIconFromString(String iconName) {
@@ -63,18 +49,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
     }
   }
 
-  String _formatDate(String? raw) {
-    if (raw == null) return 'Unknown Date';
-    // If backend gives ISO string, return first 10 chars yyyy-mm-dd
-    if (raw.length >= 10) return raw.substring(0, 10);
-    return raw;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Health Alerts'),
-      body: FutureBuilder<List<dynamic>>(
+      body: FutureBuilder<List<HealthAlerts>>(
         future: alertsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -86,7 +65,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
               message: snapshot.error.toString(),
               onClick: () {
                 setState(() {
-                  alertsFuture = fetchAlerts();
+                  alertsFuture = ApiService.getAllActiveAlerts();
                 });
               },
             );
@@ -103,17 +82,17 @@ class _AlertsScreenState extends State<AlertsScreen> {
             padding: const EdgeInsets.all(12),
             itemCount: alerts.length,
             itemBuilder: (context, index) {
-              final alert = alerts[index] as Map<String, dynamic>;
+              final alert = alerts[index];
 
               return AlertCard(
-                title: alert['title'] ?? 'No Title',
-                message: alert['message'] ?? 'No message',
-                severity: alert['severity'] ?? 'low',
-                location: alert['location'] ?? 'Unknown',
-                alertType: alert['alert_type'] ?? 'general',
-                icon: _getIconFromString(alert['icon'] as String),
-                isActive: (alert['is_active'] == null) ? true : (alert['is_active'] as bool),
-                date: _formatDate(alert['published_date'] as String?),
+                title: alert.title,
+                message: alert.message,
+                severity: alert.severity,
+                location: alert.location ?? 'Unknown',
+                alertType: alert.alertType ?? 'general',
+                icon: _getIconFromString(alert.icon ?? ''),
+                isActive: alert.isActive,
+                date: alert.dateRecorded.toString().substring(0, 10),
               );
             },
           );
