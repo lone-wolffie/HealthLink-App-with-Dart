@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, 
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
 
+import '../models/health_alerts.dart';
+
+
 class ApiService {
   static String get baseUrl {
     if (kIsWeb) {
@@ -163,13 +166,14 @@ class ApiService {
   }
 
   // get all active health alerts
-  static Future<List<Map<String, dynamic>>> getAllActiveAlerts() async {
+  static Future<List<HealthAlerts>> getAllActiveAlerts() async {
     final response = await http.get(
       Uri.parse('${ApiService.baseUrl}/alerts')
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body); 
+      final List data = jsonDecode(response.body); 
+      return data.map((error) => HealthAlerts.fromJson(error)).toList();
     } else {
       throw Exception('Failed to load all health alerts');
     }
