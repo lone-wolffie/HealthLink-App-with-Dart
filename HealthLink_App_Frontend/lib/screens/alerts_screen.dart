@@ -25,7 +25,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Future<List<dynamic>> fetchAlerts() async {
-    const String url = 'https://api-url.com/api/alerts'; 
+    const String url = 'http://localhost:3000/api/alerts'; // <-- update; 
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -33,7 +33,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception('Failed to load alerts. Status: ${response.statusCode}');
+        throw Exception('Failed to load alerts: ${response.statusCode}');
       }
     } catch (error) {
       throw Exception('Network error: $error');
@@ -45,22 +45,36 @@ class _AlertsScreenState extends State<AlertsScreen> {
       case 'warning':
         return Icons.warning;
       case 'health':
+      case 'hospital':
         return Icons.health_and_safety;
       case 'virus':
         return Icons.coronavirus;
       case 'alert':
         return Icons.notification_important;
+      case 'syringe':
+      case 'vaccination':
+        return Icons.medical_services;
+      case 'water':
+        return Icons.water_drop;
+      case 'brain':
+        return Icons.psychology;
       default:
         return Icons.info;
     }
+  }
+
+  String _formatDate(String? raw) {
+    if (raw == null) return 'Unknown Date';
+    // If backend gives ISO string, return first 10 chars yyyy-mm-dd
+    if (raw.length >= 10) return raw.substring(0, 10);
+    return raw;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Health Alerts'),
-
-      body: FutureBuilder(
+      body: FutureBuilder<List<dynamic>>(
         future: alertsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -78,26 +92,28 @@ class _AlertsScreenState extends State<AlertsScreen> {
             );
           }
 
-          final alerts = snapshot.data!;
-
+          final alerts = snapshot.data ?? [];
           if (alerts.isEmpty) {
-            return const Center(child: Text('No alerts available.'));
+            return const Center(
+              child: Text('No alerts available.')
+            );
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.all(12),
             itemCount: alerts.length,
             itemBuilder: (context, index) {
-              final alert = alerts[index];
+              final alert = alerts[index] as Map<String, dynamic>;
 
               return AlertCard(
                 title: alert['title'] ?? 'No Title',
-                message: alert['message'] ?? 'No Details',
-                severity: alert['severity'] ?? 'Unknown',
-                location: alert['location'] ?? 'Unknown Location',
-                alertType: alert['alert_type'] ?? 'General',
-                icon: _getIconFromString(alert['icon'] ?? 'info'),
-                isActive: alert['is_active'] ?? false,
-                date: alert['published_date']?.substring(0, 10) ?? 'Unknown Date',
+                message: alert['message'] ?? 'No message',
+                severity: alert['severity'] ?? 'low',
+                location: alert['location'] ?? 'Unknown',
+                alertType: alert['alert_type'] ?? 'general',
+                icon: _getIconFromString(alert['icon'] as String),
+                isActive: (alert['is_active'] == null) ? true : (alert['is_active'] as bool),
+                date: _formatDate(alert['published_date'] as String?),
               );
             },
           );
