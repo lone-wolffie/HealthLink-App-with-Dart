@@ -4,6 +4,10 @@ class AlertCard extends StatelessWidget{
   final String title;
   final String message;
   final String severity;
+  final String location;
+  final String alertType;
+  final IconData icon;        
+  final bool isActive;
   final String date;
 
   // constructor
@@ -12,6 +16,10 @@ class AlertCard extends StatelessWidget{
     required this.title,
     required this.message,
     required this.severity,
+    required this.location,
+    required this.alertType,
+    required this.icon,
+    required this.isActive,
     required this.date,
 
   });
@@ -43,8 +51,9 @@ class AlertCard extends StatelessWidget{
       elevation: 3,
       child: ListTile(
         leading: Icon(
-          Icons.warning,
-          color: _getSeverityColor()
+          icon,
+          color: _getSeverityColor(),
+          size: 32,
         ),
 
         title: Text(
@@ -52,7 +61,24 @@ class AlertCard extends StatelessWidget{
           style: const TextStyle(fontWeight: FontWeight.bold)
         ),
 
-        subtitle: Text(message),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(message),
+
+            const SizedBox(height: 4),
+            Text('Location: $location'),
+            Text('Type: $alertType'),
+            Text(
+              isActive ? 'Status: Active' : 'Status: Cleared',
+              style: TextStyle(
+                color: isActive ? Colors.red : Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         trailing: Text(
           date,
           style: const TextStyle(
