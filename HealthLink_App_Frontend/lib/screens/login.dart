@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../widgets/styled_reusable_button.dart';
 import '../widgets/text_input_field.dart';
 import 'signup.dart';
@@ -18,15 +19,50 @@ class _LoginState extends State<Login> {
   final TextEditingController usernameController = TextEditingController(); 
   final TextEditingController passwordController = TextEditingController(); 
 
-  void _login() {
-    // authenticating an existing user
-    Navigator.pushReplacement(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => const HomeScreen()
-      ),
-    );
+  void _login() async {
+    final username = usernameController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter username and password')
+        ),
+      );
+      return;
+    }
+
+    try {
+      final response = await ApiService.login(username, password);
+
+      if (!mounted) return;
+
+      if (response['success'] == true) {
+        final userData = response['user'];
+        final userId = userData['id'];
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(userId: userId), // redirect to home screen
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Login failed')
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $error')
+        ),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../widgets/styled_reusable_button.dart';
 import '../widgets/text_input_field.dart';
 import 'login.dart';
@@ -22,15 +23,48 @@ class _SignupState extends State<Signup> {
   final TextEditingController usernameController = TextEditingController(); // user's username
   final TextEditingController passwordController = TextEditingController(); // user's password
 
-  void _signup() {
-    // backend Signup
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder:(context) => const Login() // opens login screen.
-      ),
-    );
+  void _signup() async {
+    final fullname = fullnameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneNumberController.text.trim();
+    final username = usernameController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (fullname.isEmpty || email.isEmpty || phone.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields')
+        ),
+      );
+      return;
+    }
+
+    try {
+      final response = await ApiService.signup(fullname, email, phone, username, password);
+
+      if (!mounted) return;
+
+      if (response['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Signup Successful! Please Login')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const Login()), // redirect to login screen
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Signup failed')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

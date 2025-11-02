@@ -21,13 +21,13 @@ class User {
   // create user object from JSON data
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      fullname: json['fullname'],
-      email: json['email'],
-      phoneNumber: json['phonenumber'],
-      username: json['username'],
-      password: json['password'],
-      dateRecorded: DateTime.parse(json['created_at']),
+      id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
+      fullname: json['fullname'] ?? '',
+      email: json['email'] ?? '',
+      phoneNumber: json['phonenumber'] ?? '',
+      username: json['username'] ?? '',
+      password: json['password'] ?? '',
+      dateRecorded: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
 
