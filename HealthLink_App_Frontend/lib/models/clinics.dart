@@ -6,7 +6,7 @@ class Clinics {
   final String email;
   final double latitude;
   final double longitude;
-  final String services;
+  final List<String> services;
   final Map<String, dynamic> operatingHours; 
   final DateTime dateRecorded;
 
@@ -34,7 +34,7 @@ class Clinics {
       email: json['email'],
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
-      services: json['services'],
+      services: List<String>.from(json['services'] ?? []),
       operatingHours: json['operating_hours'] ?? {},
       dateRecorded: DateTime.parse(json['created_at']),
     );
