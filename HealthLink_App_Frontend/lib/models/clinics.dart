@@ -45,11 +45,11 @@ class Clinics {
     }
 
     return Clinics(
-      id: json['id'],
-      name: json['name'],
-      address: json['address'],
-      phoneNumber: json['phonenumber'],
-      email: json['email'],
+      id: (json['id'] is int) ? json['id'] : int.tryParse('${json['id']}') ?? 0,
+      name: (json['name'] ?? '') as String,
+      address: (json['address'] ?? '') as String,
+      phoneNumber: (json['phonenumber'] ?? '') as String,
+      email: (json['email'] ?? '') as String,
       latitude: toDouble(json['latitude']),
       longitude: toDouble(json['longitude']),
       services: List<String>.from(json['services'] ?? []),
