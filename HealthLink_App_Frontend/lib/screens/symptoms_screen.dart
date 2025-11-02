@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_app_bar.dart';
 
 class SymptomsScreen extends StatelessWidget {
+  final int userId;
+
   const SymptomsScreen({
-    super.key
+    super.key,
+    required this.userId,
+
   });
 
   @override
@@ -13,41 +17,65 @@ class SymptomsScreen extends StatelessWidget {
         title: 'Common Symptoms',
         showBackButton: true,
       ),
+
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: const [
-          Text(
+        children: [
+          const Text(
             'Here are some common symptoms to look out for:',
-            style: TextStyle(
-              fontSize: 16, 
-              fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 20),
 
-          SizedBox(height: 20),
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.check_circle),
             title: Text('Fever or high temperature'),
           ),
 
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.check_circle),
             title: Text('Persistent cough'),
           ),
 
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.check_circle),
             title: Text('Headache or migraine'),
           ),
 
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.check_circle),
             title: Text('Fatigue or tiredness'),
           ),
 
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.check_circle),
             title: Text('Shortness of breath'),
+          ),
+
+          const SizedBox(height: 24),
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/symptomHistory',
+                arguments: userId, 
+              );
+            },
+            child: const Text('View My Logged Symptoms'),
+          ),
+
+          const SizedBox(height: 12),
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/addSymptom',
+                arguments: userId, 
+              );
+            },
+            child: const Text('Add New Symptom'),
           ),
         ],
       ),
