@@ -1,5 +1,6 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
 import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
+import 'package:healthlink_app/models/symptoms.dart';
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
 
@@ -129,13 +130,14 @@ class ApiService {
   }
 
   // get symptom history for specific user 
-  static Future<List<Map<String, dynamic>>> getSymptomHistory(int userId) async {
+  static Future<List<Symptoms>> getSymptomHistory(int userId) async {
     final response = await http.get(
       Uri.parse('${ApiService.baseUrl}/symptoms/$userId')
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List data = jsonDecode(response.body);
+      return data.map((item) => Symptoms.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load symptom history');
     }
