@@ -3,24 +3,26 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// import necessary routes
+// import necessary local routes
 import signupLoginRoutes from "./routes/signup-login.js";
 import clinicRoutes from "./routes/clinics.js";
 import healthTipsRoutes from "./routes/health-tips.js";
 import symptomsRoutes from "./routes/symptoms.js";
 import healthAlertsRoutes from "./routes/health-alerts.js";
+import userRoutes from "./routes/user.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Routes usage
 app.use("/api/auth", signupLoginRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/clinics", clinicRoutes);
 app.use("/api/tips", healthTipsRoutes);
 app.use("/api/symptoms", symptomsRoutes);
