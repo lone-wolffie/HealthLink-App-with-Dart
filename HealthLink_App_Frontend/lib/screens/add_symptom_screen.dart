@@ -35,6 +35,7 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
         _notesController.text.trim(),
       );
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(res['message'] ?? 'Saved')));
 
