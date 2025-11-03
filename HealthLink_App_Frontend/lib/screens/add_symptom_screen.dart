@@ -73,7 +73,7 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _severity,
+                  initialValue: _severity,
                   decoration: const InputDecoration(labelText: 'Severity'),
                   items: const [
                     DropdownMenuItem(value: 'low', child: Text('Low')),
