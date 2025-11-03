@@ -49,7 +49,16 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Incorrect password! Please try again." })
         }
 
-        res.status(200).json({ message: "Login successful." });
+        res.status(200).json({ 
+            message: "Login successful.",
+            user: {
+                id: user.id,
+                fullname: user.fullname,
+                email: user.email,
+                phonenumber: user.phonenumber,
+                username: user.username
+            } 
+        });
 
     } catch (error) {
         console.error("Login error:", error);
