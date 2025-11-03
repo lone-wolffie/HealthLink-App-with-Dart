@@ -36,13 +36,19 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res['message'] ?? 'Saved')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res['message'] ?? 'Saved')
+        )
+      );
 
       Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed: $e')));
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed: $error')
+        )
+      );
     } finally {
       setState(() => _loading = false);
     }
@@ -58,7 +64,11 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add Symptom'),
+      appBar: const CustomAppBar(
+        title: 'Add Symptom', 
+        actions: [],
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -69,26 +79,38 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
                 TextFormField(
                   controller: _symptomController,
                   decoration: const InputDecoration(labelText: 'Symptom'),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Enter a symptom' : null,
+                  validator: (value) =>
+                      (value == null || value.trim().isEmpty) ? 'Enter a symptom' : null,
                 ),
+
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: _severity,
                   decoration: const InputDecoration(labelText: 'Severity'),
                   items: const [
-                    DropdownMenuItem(value: 'low', child: Text('Low')),
-                    DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                    DropdownMenuItem(value: 'high', child: Text('High')),
+                    DropdownMenuItem(
+                      value: 'low', 
+                      child: Text('Low')
+                    ),
+                    DropdownMenuItem(
+                      value: 'medium', 
+                      child: Text('Medium')
+                    ),
+                    DropdownMenuItem(
+                      value: 'high', 
+                      child: Text('High')
+                    ),
                   ],
-                  onChanged: (v) => setState(() => _severity = v ?? 'low'),
+                  onChanged: (value) => setState(() => _severity = value ?? 'low'),
                 ),
+
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _notesController,
                   decoration: const InputDecoration(labelText: 'Notes (optional)'),
                   maxLines: 3,
                 ),
+                
                 const SizedBox(height: 18),
                 ElevatedButton(
                   onPressed: _loading ? null : _save,

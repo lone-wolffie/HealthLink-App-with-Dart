@@ -48,7 +48,7 @@ class _AddTipScreenState extends State<AddTipScreen> {
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Add Health Tip", 
-        showBackButton: true
+        showBackButton: true, actions: [],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

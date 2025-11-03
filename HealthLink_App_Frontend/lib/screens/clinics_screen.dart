@@ -14,7 +14,11 @@ class ClinicsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Nearby Clinics'),
+      appBar: const CustomAppBar(
+        title: 'Nearby Clinics', 
+        actions: [],
+      ),
+      
       body: FutureBuilder<List<Clinics>> (
         future: ApiService.getAllClinics(),
         builder: (context, snapshot) {

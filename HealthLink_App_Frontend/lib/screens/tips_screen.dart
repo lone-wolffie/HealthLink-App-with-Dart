@@ -49,7 +49,11 @@ class _TipsScreenState extends State<TipsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Health Tips"),
+      appBar: const CustomAppBar(
+        title: "Health Tips", 
+        actions: [],
+      ),
+      
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _tipsFuture,
         builder: (context, snapshot) {

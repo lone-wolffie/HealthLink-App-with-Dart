@@ -55,7 +55,11 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'My Symptom History'),
+      appBar: const CustomAppBar(
+        title: 'My Symptom History', 
+        actions: [],
+      ),
+
       body: FutureBuilder<List<Symptoms>>(
         future: _symptomsFuture,
         builder: (context, snapshot) {
@@ -104,6 +108,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                       Icons.delete, 
                       color: Colors.red
                     ),
+
                     onPressed: () async {
                       final confirm = await showDialog<bool>(
                         context: context,
@@ -115,6 +120,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                               onPressed: () => Navigator.pop(context, false),
                               child: const Text('Cancel'),
                             ),
+                            
                             TextButton(
                               onPressed: () => Navigator.pop(context, true),
                               child: const Text('Delete'),

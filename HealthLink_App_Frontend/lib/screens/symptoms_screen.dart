@@ -7,7 +7,6 @@ class SymptomsScreen extends StatelessWidget {
   const SymptomsScreen({
     super.key,
     required this.userId,
-
   });
 
   @override
@@ -15,7 +14,7 @@ class SymptomsScreen extends StatelessWidget {
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Common Symptoms',
-        showBackButton: true,
+        showBackButton: true, actions: [],
       ),
 
       body: ListView(
@@ -23,7 +22,10 @@ class SymptomsScreen extends StatelessWidget {
         children: [
           const Text(
             'Here are some common symptoms to look out for:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16, 
+              fontWeight: FontWeight.bold
+            ),
           ),
           const SizedBox(height: 20),
 

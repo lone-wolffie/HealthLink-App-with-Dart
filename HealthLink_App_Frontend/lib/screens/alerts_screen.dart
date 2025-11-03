@@ -52,7 +52,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Health Alerts'),
+      appBar: const CustomAppBar(
+        title: 'Health Alerts', 
+        actions: [],
+      ),
+      
       body: FutureBuilder<List<HealthAlerts>>(
         future: alertsFuture,
         builder: (context, snapshot) {
