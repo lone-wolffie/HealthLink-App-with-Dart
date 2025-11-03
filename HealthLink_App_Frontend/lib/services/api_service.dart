@@ -57,6 +57,36 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  // get user profile
+  static Future<Map<String, dynamic>> getUserProfile(int userId) async {
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/users/$userId')
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load profile');
+    }
+  }
+
+  // update user profile
+  static Future<Map<String, dynamic>> updateUserProfile(
+    int userId, String fullname, String email, String phoneNumber, String username ) async {
+      final response = await http.put(
+        Uri.parse('${ApiService.baseUrl}/users/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'fullname': fullname,
+          'email': email,
+          'phonenumber': phoneNumber,
+          'username': username
+        }),
+      );
+
+      return jsonDecode(response.body);
+  }
+
   // get all clinics
   static Future<List<Clinics>> getAllClinics() async {
     final response = await http.get(
