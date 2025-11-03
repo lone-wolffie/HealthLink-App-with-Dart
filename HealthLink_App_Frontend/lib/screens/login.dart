@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../widgets/styled_reusable_button.dart';
 import '../widgets/text_input_field.dart';
 import 'signup.dart';
-import 'home_screen.dart';
 
 class Login extends StatefulWidget {
   // constructor
@@ -35,19 +35,19 @@ class _LoginState extends State<Login> {
     try {
       final response = await ApiService.login(username, password);
 
-      if (!mounted) return;
-
       if (response['success'] == true) {
         final userData = response['user'];
         final userId = userData['id'];
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => HomeScreen(userId: userId), // redirect to home screen
-          ),
-        );
+        // save user
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt("userId", userId);
+
+        // redirect to home screen
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, "/home");
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response['message'] ?? 'Login failed')

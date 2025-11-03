@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../widgets/styled_reusable_button.dart';
 import '../widgets/text_input_field.dart';
-import 'login.dart';
-
 
 class Signup extends StatefulWidget {
   // constructor
@@ -45,17 +44,20 @@ class _SignupState extends State<Signup> {
       if (!mounted) return;
 
       if (response['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signup Successful! Please Login')),
-        );
+        final userId = response['userId'];
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const Login()), // redirect to login screen
-        );
+        // save user after signup
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt("userId", userId);
+
+        // redirect to home screen
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, "/home");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Signup failed')),
+          SnackBar(
+            content: Text(response['message'] ?? 'Signup failed')
+          ),
         );
       }
     } catch (error) {
