@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllActiveAlerts, addHealthAlert, deleteHealthAlert } from "../controllers/health-alerts.js";
+import { getAllActiveAlerts, addHealthAlert, deleteHealthAlert } from "../controllers/health_alerts.js";
 
 const router = express.Router();
 

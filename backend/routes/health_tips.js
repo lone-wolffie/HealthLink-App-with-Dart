@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllHealthTips, addHealthTip, deleteHealthTip } from "../controllers/health-tips.js";
+import { getAllHealthTips, addHealthTip, deleteHealthTip } from "../controllers/health_tips.js";
 
 const router = express.Router();
 

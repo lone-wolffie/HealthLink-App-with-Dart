@@ -4,11 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 // import necessary local routes
-import signupLoginRoutes from "./routes/signup-login.js";
+import signupLoginRoutes from "./routes/signup_login.js";
 import clinicRoutes from "./routes/clinics.js";
-import healthTipsRoutes from "./routes/health-tips.js";
+import healthTipsRoutes from "./routes/health_tips.js";
 import symptomsRoutes from "./routes/symptoms.js";
-import healthAlertsRoutes from "./routes/health-alerts.js";
+import healthAlertsRoutes from "./routes/health_alerts.js";
 import userRoutes from "./routes/user.js";
 
 dotenv.config();
