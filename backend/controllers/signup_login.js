@@ -21,10 +21,17 @@ export const signup = async (req, res) => {
             [fullname, email, phonenumber, username, hashedPassword]
         );
 
-        res.status(201).json({ message: "Signup successful." });
+        return res.status(201).json({ message: "Signup successful." });
     } catch (error) {
+        // If mail already exists
+        if (error.code === "23505") {
+            return res.status(400).json({
+                success: false,
+                message: "Email already registered. Please logging in."
+            });
+        }
         console.error("Signup error:", error);
-        res.status(500).json({ error: "Signup failed" });
+        return res.status(500).json({ error: "Signup failed" });
     }
 };
 
@@ -49,7 +56,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Incorrect password! Please try again." })
         }
 
-        res.status(200).json({ 
+        return res.status(200).json({ 
             message: "Login successful.",
             user: {
                 id: user.id,
@@ -62,6 +69,6 @@ export const login = async (req, res) => {
 
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).json({ error: "Login failed" });
+        return res.status(500).json({ error: "Login failed" });
     }
 };
