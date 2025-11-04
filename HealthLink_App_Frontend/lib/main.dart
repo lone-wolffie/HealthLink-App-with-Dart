@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'screens/login.dart';
-import 'screens/home_screen.dart';
-import 'screens/clinics_screen.dart';
-import 'screens/tips_screen.dart';
-import 'screens/symptom_history_screen.dart';
-import 'screens/add_symptom_screen.dart';
-import 'screens/alerts_screen.dart';
+import 'package:healthlink_app/screens/login.dart';
+import 'package:healthlink_app/screens/signup.dart';
+import 'package:healthlink_app/screens/home_screen.dart';
+import 'package:healthlink_app/screens/clinics_screen.dart';
+import 'package:healthlink_app/screens/tips_screen.dart';
+import 'package:healthlink_app/screens/symptom_history_screen.dart';
+import 'package:healthlink_app/screens/add_symptom_screen.dart';
+import 'package:healthlink_app/screens/alerts_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,8 +57,9 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "HealthLink App",
+      initialRoute: "/login",
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
 
@@ -66,7 +68,7 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
 
       routes: {
         "/login": (context) => const Login(),
-
+        "/signup": (context) => const Signup(),
         "/home": (context) {
           return FutureBuilder(
             future: SharedPreferences.getInstance(),
@@ -87,7 +89,7 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
 
         "/clinics": (context) => const ClinicsScreen(),
         "/tips": (context) => const TipsScreen(),
-        "/symptoms-history": (context) {
+        "/symptomHistory": (context) {
           return FutureBuilder(
             future: SharedPreferences.getInstance(),
             builder: (context, snapshot) {
@@ -99,7 +101,7 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
           );
         },
         
-        "/add-symptom": (context) {
+        "/addSymptom": (context) {
           return FutureBuilder(
             future: SharedPreferences.getInstance(),
             builder: (context, snapshot) {
@@ -111,7 +113,8 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
           );
         },
         
-        "/alerts": (context) => const AlertsScreen(),
+        "/healthAlerts": (context) => const AlertsScreen(),
+        "/addTip": (context) => const TipsScreen(),
       }
 
     );
