@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'screens/login.dart';
-// import 'screens/signup.dart';
-// import 'screens/profile_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/clinics_screen.dart';
 import 'screens/tips_screen.dart';
-// import 'screens/add_tip_screen.dart';
 import 'screens/symptom_history_screen.dart';
-// import 'screens/symptoms_screen.dart';
 import 'screens/add_symptom_screen.dart';
 import 'screens/alerts_screen.dart';
 
@@ -49,7 +45,11 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return const MaterialApp(
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator()
+          )
+        ),
       );
     }
 
@@ -66,13 +66,54 @@ class _HealthLinkAppState extends State<HealthLinkApp> {
 
       routes: {
         "/login": (context) => const Login(),
-        "/home": (context) => HomeScreen(userId: userId ?? 0),
+
+        "/home": (context) {
+          return FutureBuilder(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+            
+              final prefs = snapshot.data as SharedPreferences;
+              final savedUserId = prefs.getInt("userId") ?? 0;
+              return HomeScreen(userId: savedUserId);
+            },
+          );
+        },
+         
+
         "/clinics": (context) => const ClinicsScreen(),
         "/tips": (context) => const TipsScreen(),
-        "/symptoms-history": (context) => SymptomHistoryScreen(userId: userId ?? 0),
-        "/add-symptom": (context) => AddSymptomScreen(userId: userId ?? 0),
+        "/symptoms-history": (context) {
+          return FutureBuilder(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const CircularProgressIndicator();
+              
+              final prefs = snapshot.data as SharedPreferences;
+              return SymptomHistoryScreen(userId: prefs.getInt("userId") ?? 0);
+            },
+          );
+        },
+        
+        "/add-symptom": (context) {
+          return FutureBuilder(
+            future: SharedPreferences.getInstance(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const CircularProgressIndicator();
+              
+              final prefs = snapshot.data as SharedPreferences;
+              return AddSymptomScreen(userId: prefs.getInt("userId") ?? 0);
+            },
+          );
+        },
+        
         "/alerts": (context) => const AlertsScreen(),
-      },
+      }
+
     );
   }
 }
