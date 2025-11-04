@@ -35,7 +35,7 @@ class _LoginState extends State<Login> {
     try {
       final response = await ApiService.login(username, password);
 
-      if (response['success'] == true) {
+      if (response['user'] != null) {
         final userData = response['user'];
         final userId = userData['id'];
 
