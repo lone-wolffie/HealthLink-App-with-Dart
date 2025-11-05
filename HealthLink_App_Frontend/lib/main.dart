@@ -1,122 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:healthlink_app/screens/login.dart';
-import 'package:healthlink_app/screens/signup.dart';
-import 'package:healthlink_app/screens/home_screen.dart';
-import 'package:healthlink_app/screens/clinics_screen.dart';
-import 'package:healthlink_app/screens/tips_screen.dart';
-import 'package:healthlink_app/screens/symptom_history_screen.dart';
-import 'package:healthlink_app/screens/add_symptom_screen.dart';
-import 'package:healthlink_app/screens/alerts_screen.dart';
+import 'screens/login.dart';
+import 'screens/signup.dart';
+import 'screens/home_screen.dart';
+import 'screens/clinics_screen.dart';
+import 'screens/tips_screen.dart';
+import 'screens/symptom_history_screen.dart';
+import 'screens/add_symptom_screen.dart';
+import 'screens/alerts_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const HealthLinkApp());
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int? savedUserId = prefs.getInt("userId");
+
+  runApp(HealthLinkApp(savedUserId: savedUserId));
 }
 
-class HealthLinkApp extends StatefulWidget {
-  const HealthLinkApp({
-    super.key
-  });
-
-  @override
-  State<HealthLinkApp> createState() => _HealthLinkAppState();
-}
-
-class _HealthLinkAppState extends State<HealthLinkApp> {
-  int? userId;
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserSession();
-  }
-
-  Future<void> _loadUserSession() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefs.getInt("userId");
-      isLoading = false;
-    });
-  }
+class HealthLinkApp extends StatelessWidget {
+  final int? savedUserId;
+  const HealthLinkApp({super.key, this.savedUserId});
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: CircularProgressIndicator()
-          )
-        ),
-      );
-    }
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "HealthLink App",
-      initialRoute: "/login",
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: Colors.green,
       ),
 
-      // If user is logged in, go to HomeScreen, else, go to LoginScreen
-      home: userId == null ? const Login() : HomeScreen(userId: userId!),
+      // Decide starting screen
+      home: savedUserId == null ? const Login() : HomeScreen(userId: savedUserId!),
 
       routes: {
         "/login": (context) => const Login(),
         "/signup": (context) => const Signup(),
+
         "/home": (context) {
-          return FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
-            
-              final prefs = snapshot.data as SharedPreferences;
-              final savedUserId = prefs.getInt("userId") ?? 0;
-              return HomeScreen(userId: savedUserId);
-            },
-          );
+          final userId = ModalRoute.of(context)!.settings.arguments as int;
+          return HomeScreen(userId: userId);
         },
-         
 
         "/clinics": (context) => const ClinicsScreen(),
         "/tips": (context) => const TipsScreen(),
         "/symptomHistory": (context) {
-          return FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const CircularProgressIndicator();
-              
-              final prefs = snapshot.data as SharedPreferences;
-              return SymptomHistoryScreen(userId: prefs.getInt("userId") ?? 0);
-            },
-          );
+          final userId = ModalRoute.of(context)!.settings.arguments as int;
+          return SymptomHistoryScreen(userId: userId);
         },
-        
         "/addSymptom": (context) {
-          return FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const CircularProgressIndicator();
-              
-              final prefs = snapshot.data as SharedPreferences;
-              return AddSymptomScreen(userId: prefs.getInt("userId") ?? 0);
-            },
-          );
+          final userId = ModalRoute.of(context)!.settings.arguments as int;
+          return AddSymptomScreen(userId: userId);
         },
-        
         "/healthAlerts": (context) => const AlertsScreen(),
-        "/addTip": (context) => const TipsScreen(),
-      }
-
+      },
     );
   }
 }

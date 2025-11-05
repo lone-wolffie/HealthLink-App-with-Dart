@@ -6,9 +6,8 @@ import '../widgets/text_input_field.dart';
 import 'signup.dart';
 
 class Login extends StatefulWidget {
-  // constructor
   const Login({
-    super.key,
+    super.key
   });
 
   @override
@@ -16,53 +15,57 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController usernameController = TextEditingController(); 
-  final TextEditingController passwordController = TextEditingController(); 
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  void _login() async {
+  bool _isLoading = false;
+
+  Future<void> _login() async {
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Enter username and password')
-        ),
+        const SnackBar(content: Text('Enter username and password')),
       );
       return;
     }
+
+    setState(() => _isLoading = true);
 
     try {
       final response = await ApiService.login(username, password);
 
       if (response['user'] != null) {
-        final userData = response['user'];
-        final userId = userData['id'];
+        final user = response['user'];
+        final int userId = user['id'];
 
-        // save user
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt("userId", userId);
 
-        // redirect to home screen
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, "/home");
+
+        // ✅ Redirect to Home and REMOVE Login screen from stack
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "/home",
+          (route) => false,
+          arguments: userId,
+        );
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response['message'] ?? 'Login failed')
-          ),
+          SnackBar(content: Text(response['message'] ?? 'Login failed')),
         );
       }
-    } catch (error) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $error')
-        ),
+        SnackBar(content: Text("Error: $e")),
       );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,38 +76,41 @@ class _LoginState extends State<Login> {
         child: Column(
           children: [
             TextInputField(
-              textController: usernameController, 
-              label: 'Username', 
+              textController: usernameController,
+              label: 'Username',
               icon: Icons.person,
             ),
 
             const SizedBox(height: 12),
+
             TextInputField(
-              textController: passwordController, 
-              label: 'Password', 
+              textController: passwordController,
+              label: 'Password',
               icon: Icons.lock,
               hideText: true,
             ),
 
             const SizedBox(height: 24),
-            StyledReusableButton(
-              text: 'Login', 
-              onClick: _login,
-              color: Colors.blue,
-            ),
+
+            _isLoading
+                ? const CircularProgressIndicator()
+                : StyledReusableButton(
+                    text: 'Login',
+                    onClick: _login,
+                    color: Colors.blue,
+                  ),
+
+            const SizedBox(height: 12),
 
             TextButton(
               onPressed: () {
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => const Signup()
-                  ),
+                  context,
+                  MaterialPageRoute(builder: (context) => const Signup()),
                 );
               },
-              
               child: const Text("Don't have an account? Sign Up"),
-            )
+            ),
           ],
         ),
       ),
