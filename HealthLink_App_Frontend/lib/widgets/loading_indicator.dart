@@ -7,7 +7,6 @@ class LoadingIndicator extends StatelessWidget {
   const LoadingIndicator({
     super.key,
     this.message,
-
   });
 
   @override
@@ -16,7 +15,7 @@ class LoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(), // shows spinner during loading
+          const CircularProgressIndicator(), 
           if (message != null) ... [
             const SizedBox(height: 12),
             Text(

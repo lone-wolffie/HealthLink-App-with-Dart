@@ -1,41 +1,60 @@
-import 'package:flutter/material.dart'; // material design package
+import 'package:flutter/material.dart';
 
-class StyledReusableButton extends StatelessWidget { // appearance doesn’t change
-  final String text; // what button displays
-  final void Function() onClick; // button clicked function
-  final Color color;
+class StyledReusableButton extends StatelessWidget {
+  final String text;
+  final void Function() onClick;
+  final Color? color;
+  final bool useGradient;
 
-  // constructor
   const StyledReusableButton({
     super.key,
     required this.text,
     required this.onClick,
-    this.color = Colors.blue,
+    this.color,
+    this.useGradient = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton( // base material button widget
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color, // blue
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // 12px 
-        ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onClick,
+      child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: 14,
-          horizontal: 24
+          horizontal: 28,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: useGradient
+              ? const LinearGradient(
+                  colors: [
+                    Color(0xFF4B79A1),
+                    Color(0xFF283E51),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: useGradient ? null : (color ?? Colors.blue),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 79, 76, 76),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            letterSpacing: 0.4,
+          ),
         ),
       ),
-      onPressed: onClick,
-      child: Text( // what appears inside the button
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-        ),
-      ),
-
     );
-   
   }
 }
