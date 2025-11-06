@@ -6,7 +6,7 @@ export const getUserProfile = async (req, res) => {
     const { id } = req.params;
 
     const result = await db.query(
-      "SELECT id, fullname, email, phonenumber, username, created_at FROM users WHERE id = $1",
+      "SELECT id, fullname, email, phonenumber, username, created_at, profile_image FROM users WHERE id = $1",
       [id]
     );
 
@@ -14,7 +14,13 @@ export const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(result.rows[0]);
+    const user = result.rows[0];
+    if (user.profile_image) {
+      user.profile_image = `/uploads/profile/${user.profile_image}`;
+    }
+
+    res.status(200).json(user);
+
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch user profile" });
   }
@@ -37,5 +43,31 @@ export const updateUserProfile = async (req, res) => {
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to update profile" });
+  }
+};
+
+// upload user profile image
+export const uploadProfileImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const filename = req.file.filename; // image name
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+    
+    await db.query(
+      "UPDATE users SET profile_image = $1 WHERE id = $2",
+      [filename, id]
+    );
+
+    return res.status(200).json({
+      message: "Profile image uploaded successfully",
+      imageURL: `/uploads/profile/${filename}`,
+    });
+    
+  } catch (error) {
+    console.error("Error uploading profile image:", error);
+    res.status(500).json({ message: "Failed to upload profile image" });
   }
 };

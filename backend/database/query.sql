@@ -14,6 +14,9 @@ CREATE TABLE users (
     
 );
 
+ALTER TABLE users ADD COLUMN profile_image TEXT;
+
+
 -- Clinics Table
 CREATE TABLE clinics (
     id SERIAL PRIMARY KEY,

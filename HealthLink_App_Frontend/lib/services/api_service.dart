@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, 
 import 'package:healthlink_app/models/symptoms.dart';
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
+import 'package:path/path.dart';
 
 import '../models/health_alerts.dart';
 import '../models/clinics.dart';
@@ -11,17 +12,13 @@ class ApiService {
   static String get baseUrl {
     if (kIsWeb) {
       return 'http://localhost:3000/api'; // web
-    }
-
-    if (Platform.isAndroid) {
+    } else if (Platform.isAndroid) {
       return 'http://10.0.2.2:3000/api'; // android emulator
-    }
-    
-    if (Platform.isIOS) {
+    } else if (Platform.isIOS) {
       return 'http://localhost:3000/api'; // iOS Simulator
+    } else {
+      return 'http://192.168.0.12:3000/api'; // physical device
     }
-
-    return 'http://192.168.0.12:3000/api'; // physical device
   } 
 
   // signup
@@ -85,6 +82,31 @@ class ApiService {
       );
 
       return jsonDecode(response.body);
+  }
+
+  // upload user profile image
+  static Future<bool> uploadProfileImage(int userId, String imagePath) async {
+    try {
+      var uri = Uri.parse('${ApiService.baseUrl}/users/upload-profile/$userId');
+      var request = http.MultipartRequest('POST', uri);
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'profileImage', 
+          imagePath,
+          filename: basename(imagePath),
+        ),
+      );
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      print('Upload response: $responseBody');
+
+      return response.statusCode == 200;
+    } catch (error) {
+      print('Upload error: $error');
+      return false;
+    }
   }
 
   // get all clinics

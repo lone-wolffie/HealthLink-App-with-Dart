@@ -1,6 +1,6 @@
 name: healthlink_app
 description: "A Flutter frontend for HealthLink App."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -30,6 +30,8 @@ dependencies:
   font_awesome_flutter: ^10.5.0
 
   intl: ^0.19.0
+  image_picker: ^1.0.7
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

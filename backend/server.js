@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -21,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Routes usage
+app.use("/uploads/profile", express.static("uploads/profile"));
 app.use("/api/auth", signupLoginRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/clinics", clinicRoutes);

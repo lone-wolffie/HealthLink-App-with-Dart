@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:typed_data';
 import '../services/api_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,6 +23,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _loading = true;
   bool _saving = false;
   bool _isEditing = false;
+  String? _profileImagePath;
+  Uint8List? _imageBytes;
 
   Map<String, dynamic>? _userData;
 
@@ -107,6 +113,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+
+    if (picked != null) {
+      if (kIsWeb) {
+        // Web
+        final bytes = await picked.readAsBytes();
+        setState(() => _imageBytes = bytes);
+      } else {
+        // Mobile
+        setState(() => _profileImagePath = picked.path);
+
+        // upload image to backend
+        bool success = await ApiService.uploadProfileImage(widget.userId, picked.path);
+
+        if (success) {
+          _showSnack('Profile picture updated successfully');
+        } else {
+          _showSnack('Failed to upload profile picture', isError: true);
+        }
+      }
+    }
+  }
+
   void _showSnack(String message, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -189,11 +220,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: 36,
-                          backgroundColor: Colors.green.shade600,
-                          child: Text(initials, style: const TextStyle(
-                            fontSize: 28, color: Colors.white)
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 36,
+                            backgroundColor: Colors.green.shade600,
+                            backgroundImage: kIsWeb
+                              ? (_imageBytes != null ? MemoryImage(_imageBytes!) : null)
+                              : (_profileImagePath != null ? FileImage(File(_profileImagePath!)) : null),
+                            child: (kIsWeb ? _imageBytes == null : _profileImagePath == null)
+                              ? Text(
+                                initials,
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  color: Colors.white
+                                ),
+                              )
+                              : null,
                           ),
                         ),
                         const SizedBox(width: 14),
