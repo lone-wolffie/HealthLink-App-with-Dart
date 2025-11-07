@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/home_screen.dart';
@@ -12,48 +11,84 @@ import 'screens/alerts_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  int? savedUserId = prefs.getInt("userId");
+  int? savedUserId = prefs.getInt('userId');
 
   runApp(HealthLinkApp(savedUserId: savedUserId));
 }
 
 class HealthLinkApp extends StatelessWidget {
   final int? savedUserId;
-  const HealthLinkApp({super.key, this.savedUserId});
+
+  const HealthLinkApp({
+    super.key, 
+    this.savedUserId
+  });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "HealthLink App",
+      title: 'HealthLink App',
       theme: ThemeData(
         primarySwatch: Colors.green,
+        useMaterial3: true,
       ),
 
-      // Decide starting screen
-      home: savedUserId == null ? const Login() : HomeScreen(userId: savedUserId!),
+      // starting screen
+      initialRoute: savedUserId == null ? '/login' : '/home',
 
-      routes: {
-        "/login": (context) => const Login(),
-        "/signup": (context) => const Signup(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/login':
+            return MaterialPageRoute(builder: (_) => const Login());
+          
+          case '/signup':
+            return MaterialPageRoute(builder: (_) => const Signup());
+          
+          case '/home':
+            int? userId;
+            
+            if (settings.arguments != null && settings.arguments is int) {
+              userId = settings.arguments as int;
+            } else {
+              userId = savedUserId;
+            }
 
-        "/home": (context) {
-          final userId = ModalRoute.of(context)!.settings.arguments as int;
-          return HomeScreen(userId: userId);
-        },
-
-        "/clinics": (context) => const ClinicsScreen(),
-        "/tips": (context) => const TipsScreen(),
-        "/symptomHistory": (context) {
-          final userId = ModalRoute.of(context)!.settings.arguments as int;
-          return SymptomHistoryScreen(userId: userId);
-        },
-        "/addSymptom": (context) {
-          final userId = ModalRoute.of(context)!.settings.arguments as int;
-          return AddSymptomScreen(userId: userId);
-        },
-        "/healthAlerts": (context) => const AlertsScreen(),
+            if (userId != null) {
+              return MaterialPageRoute(
+                builder: (_) => HomeScreen(userId: userId!),
+              );
+            } else {
+              // If no userId, redirect to login
+              return MaterialPageRoute(builder: (_) => const Login());
+            }
+          
+          case '/clinics':
+            return MaterialPageRoute(builder: (_) => const ClinicsScreen());
+          
+          case '/tips':
+            return MaterialPageRoute(builder: (_) => const TipsScreen());
+          
+          case '/symptomHistory':
+            final userId = settings.arguments as int;
+            return MaterialPageRoute(
+              builder: (_) => SymptomHistoryScreen(userId: userId),
+            );
+          
+          case '/addSymptom':
+            final userId = settings.arguments as int;
+            return MaterialPageRoute(
+              builder: (_) => AddSymptomScreen(userId: userId),
+            );
+          
+          case '/healthAlerts':
+            return MaterialPageRoute(builder: (_) => const AlertsScreen());
+          
+          default:
+            return MaterialPageRoute(builder: (_) => const Login());
+        }
       },
     );
   }
