@@ -28,7 +28,8 @@ class _LoginState extends State<Login> {
     if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Enter your username and password')
+          content: Text('Enter your username and password'),
+          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -45,6 +46,8 @@ class _LoginState extends State<Login> {
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('userId', userId);
+        await prefs.setString('username', user['username']);
+
 
         if (!mounted) return;
 
@@ -59,7 +62,8 @@ class _LoginState extends State<Login> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response['message'] ?? 'Login failed')
+            content: Text(response['message'] ?? 'Login failed'),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -67,6 +71,7 @@ class _LoginState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $error'),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -161,7 +166,13 @@ class _LoginState extends State<Login> {
                                 MaterialPageRoute(builder: (_) => const Signup()),
                               );
                             },
-                            child: const Text('Sign Up'),
+                            child: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4B79A1),
+                              ),
+                            ),
                           )
                         ],
                       ),

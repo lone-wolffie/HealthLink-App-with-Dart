@@ -79,7 +79,8 @@ class _SignupState extends State<Signup> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $error')
+          content: Text('Error: $error'),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -87,15 +88,15 @@ class _SignupState extends State<Signup> {
     }
   }
 
-  @override
-  void dispose() {
-    fullnameController.dispose();
-    emailController.dispose();
-    phoneNumberController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   fullnameController.dispose();
+  //   emailController.dispose();
+  //   phoneNumberController.dispose();
+  //   usernameController.dispose();
+  //   passwordController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +199,7 @@ class _SignupState extends State<Signup> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Already have an account?'),
+                          const Text('Login after signup'),
                           TextButton(
                             onPressed: () {
                               Navigator.pushReplacementNamed(
