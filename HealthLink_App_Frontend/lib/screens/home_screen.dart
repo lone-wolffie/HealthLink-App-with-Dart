@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           BottomNavigationBarItem(
             icon: Icon(Icons.local_hospital), 
-            label: 'Clinics'
+            label: 'Top Clinics'
           ),
 
           BottomNavigationBarItem(
@@ -77,7 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _HomeDashboard extends StatefulWidget {
   final int userId;
-  const _HomeDashboard({required this.userId});
+  const _HomeDashboard({
+    required this.userId
+  });
 
   @override
   State<_HomeDashboard> createState() => _HomeDashboardState();
@@ -95,7 +97,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
   Future<void> loadUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      username = prefs.getString("username") ?? ""; // fallback if empty
+      username = prefs.getString("username") ?? ""; // fallback if username is empty
     });
   }
 
@@ -106,8 +108,6 @@ class _HomeDashboardState extends State<_HomeDashboard> {
         padding: const EdgeInsets.all(18),
         child: Column(
           children: [
-
-            // ✅ Centered Welcome Text with Username
             Center(
               child: Column(
                 children: [
@@ -119,6 +119,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                       color: Colors.green.shade700,
                     ),
                   ),
+
                   const SizedBox(height: 6),
                   Text(
                     'Manage your health and wellness with ease.',
@@ -133,8 +134,6 @@ class _HomeDashboardState extends State<_HomeDashboard> {
             ),
 
             const SizedBox(height: 25),
-
-            // ✅ Top Feature Card
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -143,12 +142,20 @@ class _HomeDashboardState extends State<_HomeDashboard> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.health_and_safety, size: 55, color: Colors.green.shade700),
+                  Icon(
+                    Icons.health_and_safety, 
+                    size: 55, 
+                    color: Colors.green.shade700
+                  ),
+
                   const SizedBox(width: 15),
                   Expanded(
                     child: Text(
                       'Track symptoms early to stay healthier and informed 💚',
-                      style: TextStyle(fontSize: 16, color: Colors.green.shade900),
+                      style: TextStyle(
+                        fontSize: 16, 
+                        color: Colors.green.shade900
+                      ),
                     ),
                   )
                 ],
@@ -156,8 +163,6 @@ class _HomeDashboardState extends State<_HomeDashboard> {
             ),
 
             const SizedBox(height: 30),
-
-            // ✅ Quick Actions
             GridView.count(
               crossAxisCount: 2,
               physics: const NeverScrollableScrollPhysics(),
@@ -168,7 +173,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                 _ActionTile(
                   icon: Icons.history,
                   label: 'Symptom History',
-                  color: Colors.blue,
+                  color: const Color.fromARGB(255, 23, 141, 238),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => SymptomHistoryScreen(userId: widget.userId)),
@@ -177,11 +182,17 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                 _ActionTile(
                   icon: Icons.add_circle_outline,
                   label: 'Add Symptom',
-                  color: Colors.green,
+                  color: const Color.fromARGB(255, 48, 179, 52),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => AddSymptomScreen(userId: widget.userId)),
                   ),
+                ),
+                _ActionTile(
+                  icon: Icons.tips_and_updates,
+                  label: 'Health Tips',
+                  color: const Color.fromARGB(255, 239, 144, 2),
+                  onTap: () => Navigator.pushNamed(context, '/tips'),
                 ),
               ],
             ),
@@ -191,8 +202,6 @@ class _HomeDashboardState extends State<_HomeDashboard> {
     );
   }
 }
-
-
 
 // Reusable Tile Widget
 class _ActionTile extends StatelessWidget {
@@ -225,6 +234,7 @@ class _ActionTile extends StatelessWidget {
                 size: 42, 
                 color: color
               ),
+              
               const SizedBox(height: 8),
               Text(
                 label, 

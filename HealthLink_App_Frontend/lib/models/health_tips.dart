@@ -3,6 +3,7 @@ class HealthTips {
   final String title;
   final String content;
   final DateTime dateRecorded;
+  final String category; 
 
   // constructor - required fields
   HealthTips({
@@ -10,6 +11,7 @@ class HealthTips {
     required this.title,
     required this.content,
     required this.dateRecorded,
+    required this.category,
   });
 
   // create health tips object from JSON data
@@ -19,6 +21,7 @@ class HealthTips {
       title: json['title'], 
       content: json['content'],
       dateRecorded: DateTime.parse(json['created_at']),
+      category: json['category'] ?? 'General Wellness',
     );
   }
 
@@ -29,6 +32,7 @@ class HealthTips {
       'title': title,
       'content': content,
       'created_at': dateRecorded.toIso8601String(),
+      'category': category,
     };
   }
 }

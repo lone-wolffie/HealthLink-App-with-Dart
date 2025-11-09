@@ -1,10 +1,10 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
 import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
+import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-
 import '../models/health_alerts.dart';
 import '../models/clinics.dart';
 
@@ -146,13 +146,14 @@ class ApiService {
   }
 
   // get all health tips
-  static Future<List<Map<String, dynamic>>> getAllHealthTips() async {
+  static Future<List<HealthTips>> getAllHealthTips() async {
     final response = await http.get(
       Uri.parse('${ApiService.baseUrl}/tips')
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List data = jsonDecode(response.body);
+      return data.map((tip) => HealthTips.fromJson(tip)).toList();
     } else {
       throw Exception('Failed to load all health tips');
     }

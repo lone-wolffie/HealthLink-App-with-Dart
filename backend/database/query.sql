@@ -16,7 +16,6 @@ CREATE TABLE users (
 
 ALTER TABLE users ADD COLUMN profile_image TEXT;
 
-
 -- Clinics Table
 CREATE TABLE clinics (
     id SERIAL PRIMARY KEY,
@@ -57,6 +56,36 @@ CREATE TABLE health_tips (
   content TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE health_tips 
+ADD COLUMN category VARCHAR(100) DEFAULT 'General';
+
+INSERT INTO health_tips (title, content, category) VALUES
+('Stay Hydrated', 'Drink at least 6-8 glasses of clean water every day to support circulation, digestion, and healthy skin.', 'Nutrition'),
+('Balanced Diet', 'Include fruits, vegetables, whole grains, and lean proteins in your daily meals to boost your immune system.', 'Nutrition'),
+('Regular Exercise', 'Aim for at least 30 minutes of physical activity daily. Walking, jogging, or cycling are great options.', 'Physical Activity'),
+('Adequate Sleep', 'Adults should get 7-9 hours of sleep every night to support mental and physical health.', 'Lifestyle'),
+('Hand Hygiene', 'Wash your hands regularly with soap and running water for at least 20 seconds to prevent infections.', 'Hygiene'),
+('Limit Sugar Intake', 'Reduce consumption of sugary beverages and snacks to maintain healthy blood sugar levels.', 'Nutrition'),
+('Manage Stress', 'Practice relaxation techniques such as deep breathing, meditation, or listening to calming music.', 'Mental Health'),
+('Stay Vaccinated', 'Keep your immunizations up to date to reduce the risk of preventable diseases.', 'Medical Care'),
+('Avoid Smoking', 'Tobacco use harms nearly every organ in the body. Quitting improves health at any age.', 'Lifestyle'),
+('Sun Protection', 'Wear sunscreen when outdoors to protect your skin from harmful UV rays and reduce skin cancer risk.', 'Lifestyle'),
+('Healthy Breakfast', 'Start your day with a nutritious breakfast to maintain energy and concentration throughout the day.', 'Nutrition'),
+('Stay Active at Work', 'Take short walking or stretching breaks every hour to prevent stiffness and improve circulation.', 'Physical Activity'),
+('Drink Herbal Teas', 'Herbal teas like ginger, chamomile, and peppermint promote relaxation and good digestion.', 'Nutrition'),
+('Eat More Fiber', 'Include whole grains, beans, fruits, and vegetables to improve digestion and prevent constipation.', 'Nutrition'),
+('Moderate Salt Intake', 'Use less salt when cooking and avoid highly processed foods to support healthy blood pressure.', 'Nutrition'),
+('Dental Care', 'Brush twice a day and floss daily to maintain good oral hygiene and prevent gum disease.', 'Hygiene'),
+('Healthy Snacking', 'Choose nuts, fruits, or yogurt instead of sugary snacks for sustained energy.', 'Nutrition'),
+('Stay Connected', 'Spend meaningful time with friends and family to support emotional well-being.', 'Mental Health'),
+('Limit Screen Time', 'Reduce time spent on phones and screens, especially before bedtime, to improve sleep quality.', 'Lifestyle'),
+('Proper Posture', 'Maintain good posture while sitting and standing to reduce back and neck strain.', 'Lifestyle'),
+('Cook at Home More Often', 'Preparing meals at home allows better control of ingredients and supports healthier eating.', 'Nutrition'),
+('Listen to Your Body', 'Rest when you feel tired and seek medical attention when symptoms persist.', 'General Wellness'),
+('Practice Gratitude', 'Reflecting on positive experiences daily can reduce anxiety and improve mood.', 'Mental Health'),
+('Stay Informed', 'Get health information from credible sources and consult professionals instead of self-diagnosing.', 'General Wellness'),
+('Routine Checkups', 'Visit your healthcare provider regularly for screenings and preventative care.', 'Medical Care');
 
 -- Symptoms checker Table
 CREATE TABLE symptoms_checker (
