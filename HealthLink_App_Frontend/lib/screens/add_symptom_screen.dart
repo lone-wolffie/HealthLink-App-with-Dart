@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthlink_app/widgets/loading_indicator.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_app_bar.dart';
 
@@ -6,9 +7,8 @@ class AddSymptomScreen extends StatefulWidget {
   final int userId;
 
   const AddSymptomScreen({
-    super.key, 
-    required this.userId
-  
+    super.key,
+    required this.userId,
   });
 
   @override
@@ -39,15 +39,13 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(res['message'] ?? 'Saved')
-        )
+        ),
       );
 
       Navigator.pop(context);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed: $error')
-        )
+        SnackBar(content: Text('Failed: $error')),
       );
     } finally {
       setState(() => _loading = false);
@@ -65,64 +63,137 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'Add Symptom', 
+        title: 'Add Symptom',
         actions: [],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(18),
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _symptomController,
-                  decoration: const InputDecoration(labelText: 'Symptom'),
-                  validator: (value) =>
-                      (value == null || value.trim().isEmpty) ? 'Enter a symptom' : null,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    )
+                  ],
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _symptomController,
+                      decoration: InputDecoration(
+                        labelText: 'Symptom',
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 212, 209, 209),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      validator: (value) => (value == null || value.trim().isEmpty)
+                          ? 'Enter a symptom'
+                          : null,
+                    ),
 
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _severity,
-                  decoration: const InputDecoration(labelText: 'Severity'),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'low', 
-                      child: Text('Low')
+                    const SizedBox(height: 18),
+
+                    const Text(
+                      'Severity',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17,
+                      ),
                     ),
-                    DropdownMenuItem(
-                      value: 'medium', 
-                      child: Text('Medium')
+                    const SizedBox(height: 8),
+
+                    Wrap(
+                      spacing: 10,
+                      children: [
+                        _severityChip('low', Colors.green),
+                        _severityChip('medium', Colors.orange),
+                        _severityChip('high', Colors.red),
+                      ],
                     ),
-                    DropdownMenuItem(
-                      value: 'high', 
-                      child: Text('High')
+
+                    const SizedBox(height: 22),
+
+                    const Text(
+                      'Notes (optional)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _notesController,
+                      maxLines: 10,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 212, 209, 209),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
                     ),
                   ],
-                  onChanged: (value) => setState(() => _severity = value ?? 'low'),
                 ),
+              ),
 
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'Notes (optional)'),
-                  maxLines: 3,
-                ),
-                
-                const SizedBox(height: 18),
-                ElevatedButton(
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
                   onPressed: _loading ? null : _save,
                   child: _loading
-                      ? const CircularProgressIndicator()
-                      : const Text('Save'),
+                      ? const LoadingIndicator()
+                      : const Text(
+                          'Save Symptom',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _severityChip(String value, Color color) {
+    final bool selected = _severity == value;
+
+    return ChoiceChip(
+      label: Text(
+        value[0].toUpperCase() + value.substring(1),
+        style: TextStyle(
+          color: selected ? Colors.white : color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      selected: selected,
+      selectedColor: color,
+      onSelected: (_) => setState(() => _severity = value),
     );
   }
 }
