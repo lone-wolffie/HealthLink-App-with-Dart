@@ -9,6 +9,7 @@ import healthTipsRoutes from "./routes/health_tips.js";
 import symptomsRoutes from "./routes/symptoms.js";
 import healthAlertsRoutes from "./routes/health_alerts.js";
 import userRoutes from "./routes/user.js";
+import appointmentsRoutes from "./routes/appointments.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/clinics", clinicRoutes);
 app.use("/api/tips", healthTipsRoutes);
 app.use("/api/symptoms", symptomsRoutes);
 app.use("/api/alerts", healthAlertsRoutes);
+app.use("/api/appointments", appointmentsRoutes);
 
 //get route
 app.get("/", (req, res) => {

@@ -145,6 +145,46 @@ class ApiService {
       return jsonDecode(response.body);
   }
 
+  // book an appointment
+  static Future<Map<String, dynamic>> bookAppointment(
+    int userId, int clinicId, String appointmentDate, String appointmentTime ) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/appointments'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'clinic_id': clinicId,
+        'appointment_date': appointmentDate,
+        'appointment_time': appointmentTime,
+      }),
+    );
+
+    return jsonDecode(response.body);
+  }
+
+  // get all appointments for a specific user
+  static Future<List<Map<String, dynamic>>> getUserAppointments(int userId) async {
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/appointments/user/$userId'),
+    );
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load user appointments');
+    }
+  }
+
+  // cancel an appointment
+  static Future<Map<String, dynamic>> cancelAppointment(int appointmentId) async {
+    final response = await http.patch(
+      Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/cancel'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    return jsonDecode(response.body);
+  }
+
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
     final response = await http.get(

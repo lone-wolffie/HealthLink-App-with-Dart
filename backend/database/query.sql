@@ -47,7 +47,72 @@ VALUES
 
 ('Gertrudes Children Hospital', 'Muthaiga Rd, Nairobi', '+254 20 7206000', 'info@gerties.org', -1.2490, 36.8284,
  ARRAY['Pediatrics', 'Emergency', 'Vaccination'],
- '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}');
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}'),
+
+('M.P. Shah Hospital', 'Shivachi Rd, Parklands, Nairobi', '+254 20 4291000', 'info@mpshahhospital.com', -1.2636, 36.8121,
+ ARRAY['Emergency', 'Orthopedics', 'Dialysis'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Coptic Hospital', 'Ngong Rd, Nairobi', '+254 20 2723012', 'info@coptichospital.org', -1.3002, 36.7836,
+ ARRAY['Emergency', 'Radiology', 'Maternity'],
+ '{"monday":"07:30-18:00","tuesday":"07:30-18:00","wednesday":"07:30-18:00","thursday":"07:30-18:00","friday":"07:30-18:00","saturday":"08:00-14:00","sunday":"Closed"}'),
+
+("St. Mary's Mission Hospital", 'Langata Rd, Nairobi', '+254 20 6000061', 'info@stmaryshospital.co.ke', -1.3325, 36.7901,
+ ARRAY['General Practice', 'Maternity', 'Vaccination'],
+ '{"monday":"08:00-16:00","tuesday":"08:00-16:00","wednesday":"08:00-16:00","thursday":"08:00-16:00","friday":"08:00-16:00","saturday":"09:00-12:00","sunday":"Closed"}'),
+
+('The Mater Hospital', 'Dunga Rd, South B, Nairobi', '+254 20 6903000', 'info@materkenya.com', -1.3092, 36.8441,
+ ARRAY['Emergency', 'Cardiology', 'Surgery'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Karen Hospital', 'Langata Rd, Nairobi', '+254 20 6613000', 'info@karenhospital.org', -1.3191, 36.7445,
+ ARRAY['Emergency', 'Cardiology', 'Surgery'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Ruaraka Uhai Neema Hospital', 'Thika Rd, Nairobi', '+254 20 2535326', 'info@neemahospital.org', -1.2485, 36.8821,
+ ARRAY['General Practice', 'Maternity', 'Vaccination'],
+ '{"monday":"08:00-16:00","tuesday":"08:00-16:00","wednesday":"08:00-16:00","thursday":"08:00-16:00","friday":"08:00-16:00","saturday":"09:00-12:00","sunday":"Closed"}'),
+
+('St. Francis Community Hospital', 'Kasarani, Nairobi', '+254 20 2025454', 'info@stfrancishospital.or.ke', -1.2289, 36.8992,
+ ARRAY['Emergency', 'Pediatrics', 'Radiology'],
+ '{"monday":"07:30-18:00","tuesday":"07:30-18:00","wednesday":"07:30-18:00","thursday":"07:30-18:00","friday":"07:30-18:00","saturday":"08:00-14:00","sunday":"Closed"}'),
+
+("Nairobi Women's Hospital", 'Hurlingham, Nairobi', '+254 703 081000', 'info@nwch.co.ke', -1.2925, 36.7831,
+ ARRAY['Emergency', 'Maternity', 'Gynecology'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Avenue Hospital Nairobi', '1st Parklands Ave, Nairobi', '+254 709 760000', 'info@avenuehealthcare.com', -1.2643, 36.8129,
+ ARRAY['Emergency', 'Radiology', 'General Practice'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Chiromo Hospital Group', 'Chiromo Ln, Westlands, Nairobi', '+254 730 935000', 'info@chiromohospitalgroup.co.ke', -1.2649, 36.8012,
+ ARRAY['Mental Health', 'Counseling', 'Psychiatry'],
+ '{"monday":"08:00-18:00","tuesday":"08:00-18:00","wednesday":"08:00-18:00","thursday":"08:00-18:00","friday":"08:00-18:00","saturday":"09:00-14:00","sunday":"Closed"}'),
+
+('Langata Hospital', 'Langata South Rd, Nairobi', '+254 722 204427', 'info@langatahospital.co.ke', -1.3621, 36.7449,
+ ARRAY['Maternity', 'Pediatrics', 'Vaccination'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"08:00-12:00","sunday":"Closed"}'),
+
+('Equity Afia Buruburu', 'Mumias South Rd, Nairobi', '+254 763 063000', 'buruburu@equityafia.co.ke', -1.2846, 36.8867,
+ ARRAY['General Practice', 'Dental', 'Laboratory'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Tenwek Mission Hospital', 'Bomet County, Kenya', '+254 20 2044012', 'info@tenwekhospital.org', -0.7833, 35.3500,
+ ARRAY['Surgery', 'Cardiology', 'Eye Care'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}'),
+
+('Moi Teaching and Referral Hospital', 'Nandi Rd, Eldoret, Kenya', '+254 53 2061037', 'info@mtrh.go.ke', 0.5143, 35.2780,
+ ARRAY['Oncology', 'Renal Care', 'Emergency'],
+ '{"monday":"08:00-18:00","tuesday":"08:00-18:00","wednesday":"08:00-18:00","thursday":"08:00-18:00","friday":"08:00-18:00","saturday":"09:00-14:00","sunday":"Closed"}'),
+
+('Kijabe Hospital', 'Kijabe, Kiambu County, Kenya', '+254 20 3246000', 'info@kijabehospital.org', -0.9333, 36.6167,
+ ARRAY['Orthopedics', 'Pediatrics', 'Rehabilitation'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-12:00","sunday":"Closed"}'),
+
+('Coast General Teaching & Referral Hospital', 'Kizingo, Mombasa, Kenya', '+254 41 2315430', 'info@coastgeneral.go.ke', -4.0435, 39.6682,
+ ARRAY['Emergency', 'Dialysis', 'Maternity'],
+ '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}');
+
 
 -- Health Tips Table
 CREATE TABLE health_tips (
@@ -123,6 +188,44 @@ INSERT INTO health_alerts (title, message, severity, location, alert_type, icon)
 ('Air Pollution Warning', 'Air quality is poor in Industrial Area, Nairobi. Limit outdoor activities.', 'high', 'Industrial Area, Nairobi', 'environment_alert', 'smog'),
 ('Child Immunization Reminder', 'Ensure your child receives scheduled immunizations at your nearest health center.', 'medium', 'Nationwide', 'public_health', 'baby');
 
+-- create enum for appointment status
+CREATE TYPE appointment_status AS ENUM ('booked','confirmed','cancelled','completed');
+
+-- appointments table
+CREATE TABLE appointments (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,             
+    clinic_id INTEGER NOT NULL,           
+    appointment_at TIMESTAMP WITH TIME ZONE NOT NULL, 
+    duration_mins INTEGER DEFAULT 30,     
+    purpose TEXT,                         
+    notes TEXT,                           
+    status appointment_status DEFAULT 'booked',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- foreign keys
+ALTER TABLE appointments
+    ADD CONSTRAINT fk_appointments_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_appointments_clinic
+        FOREIGN KEY (clinic_id) REFERENCES clinics(id) ON DELETE CASCADE;
+
+-- auto-update 
+CREATE OR REPLACE FUNCTION trg_set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at
+BEFORE UPDATE ON appointments
+FOR EACH ROW
+EXECUTE PROCEDURE trg_set_updated_at();
+
 -- Create Indexes
 -- Indexes for users table
 CREATE INDEX idx_users_email ON users(email);
@@ -147,7 +250,11 @@ CREATE INDEX idx_alerts_location ON health_alerts(location);
 CREATE INDEX idx_alerts_type ON health_alerts(alert_type);
 CREATE INDEX idx_alerts_is_active ON health_alerts(is_active);
 
-
+-- Indexes for appointments table
+CREATE INDEX idx_appointments_user ON appointments(user_id);
+CREATE INDEX idx_appointments_clinic ON appointments(clinic_id);
+CREATE INDEX idx_appointments_status ON appointments(status);
+CREATE INDEX idx_appointments_time ON appointments(appointment_at);
 
 
 

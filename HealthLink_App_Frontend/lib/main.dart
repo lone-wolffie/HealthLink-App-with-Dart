@@ -4,6 +4,8 @@ import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/home_screen.dart';
 import 'screens/clinics_screen.dart';
+import 'screens/clinic_details_screen.dart';
+import 'screens/book_appointment_screen.dart';
 import 'screens/tips_screen.dart';
 import 'screens/symptom_history_screen.dart';
 import 'screens/add_symptom_screen.dart';
@@ -85,6 +87,11 @@ class HealthLinkApp extends StatelessWidget {
           
           case '/healthAlerts':
             return MaterialPageRoute(builder: (_) => const AlertsScreen());
+
+          case '/clinicDetails': 
+            return MaterialPageRoute(builder: (_) => const ClinicDetailsScreen());
+          case '/bookAppointment': 
+            return MaterialPageRoute(builder: (_) => const BookAppointmentScreen(clinic: {},));
           
           default:
             return MaterialPageRoute(builder: (_) => const Login());
