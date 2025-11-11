@@ -1,12 +1,12 @@
 class Appointment {
-  final int? userId;
-  final int? clinicId;
+  final int userId;
+  final int clinicId;
   final String appointmentAt;
   final String notes;
 
   Appointment({
-    this.userId,
-    this.clinicId,
+    required this.userId,
+    required this.clinicId,
     required this.appointmentAt,
     required this.notes,
   });
