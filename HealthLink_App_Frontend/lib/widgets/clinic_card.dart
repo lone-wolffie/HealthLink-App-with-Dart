@@ -160,7 +160,7 @@ class ClinicCard extends StatelessWidget {
               // *** NEW VIEW / BOOK BUTTON ***
               _button(
                 icon: Icons.arrow_forward_ios_rounded,
-                label: "Book",
+                label: "Book Appointment",
                 color: Colors.purple,
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
