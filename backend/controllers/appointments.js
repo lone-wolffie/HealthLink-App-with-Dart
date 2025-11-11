@@ -9,7 +9,7 @@ export const createAppointment = async (req, res) => {
       return res.status(400).json({ error: "user id, clinic id and appointment time are required" });
     }
 
-    const result = await pool.query(
+    const result = await db.query(
       `INSERT INTO appointments (user_id, clinic_id, appointment_at, purpose, notes)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
@@ -33,7 +33,7 @@ export const getUserAppointments = async (req, res) => {
   try {
     const { user_id } = req.params;
 
-    const result = await pool.query(
+    const result = await db.query(
       `SELECT a.*, c.name AS clinic_name, c.address
        FROM appointments a
        JOIN clinics c ON a.clinic_id = c.id
@@ -55,7 +55,7 @@ export const cancelAppointment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query(
+    await db.query(
       "UPDATE appointments SET status = 'cancelled' WHERE id = $1",
       [id]
     );
