@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthlink_app/screens/my_appointments_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:healthlink_app/screens/symptom_history_screen.dart';
 import 'package:healthlink_app/screens/add_symptom_screen.dart';
@@ -112,7 +113,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
               child: Column(
                 children: [
                   Text(
-                    username.isNotEmpty ? "Welcome $username 👋" : "Welcome 👋",
+                    username.isNotEmpty ? "Welcome $username to HealthLink App 👋" : "Welcome 👋",
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
@@ -193,6 +194,15 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                   label: 'Health Tips',
                   color: const Color.fromARGB(255, 239, 144, 2),
                   onTap: () => Navigator.pushNamed(context, '/tips'),
+                ),
+                _ActionTile(
+                  icon: Icons.add_circle_outline,
+                  label: 'My Appointments',
+                  color: const Color.fromARGB(255, 179, 48, 135),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => MyAppointmentsScreen()),
+                  ),
                 ),
               ],
             ),

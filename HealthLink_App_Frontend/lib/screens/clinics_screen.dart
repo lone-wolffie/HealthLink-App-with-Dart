@@ -121,7 +121,7 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                           services: clinic.services,
                           operatingHours: clinic.operatingHours.map(
                             (key, value) => MapEntry(key, value.toString()),
-                          ),
+                          ), clinic: clinic,
                         ),
                       );
                     },

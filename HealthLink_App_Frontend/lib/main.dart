@@ -4,12 +4,13 @@ import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/home_screen.dart';
 import 'screens/clinics_screen.dart';
-import 'screens/clinic_details_screen.dart';
+//import 'screens/clinic_details_screen.dart';
 import 'screens/book_appointment_screen.dart';
 import 'screens/tips_screen.dart';
 import 'screens/symptom_history_screen.dart';
 import 'screens/add_symptom_screen.dart';
 import 'screens/alerts_screen.dart';
+import 'screens/my_appointments_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,10 +89,20 @@ class HealthLinkApp extends StatelessWidget {
           case '/healthAlerts':
             return MaterialPageRoute(builder: (_) => const AlertsScreen());
 
-          case '/clinicDetails': 
-            return MaterialPageRoute(builder: (_) => const ClinicDetailsScreen());
-          case '/bookAppointment': 
-            return MaterialPageRoute(builder: (_) => const BookAppointmentScreen(clinic: {},));
+          /*case '/clinicDetails': 
+            return MaterialPageRoute(builder: (_) => const ClinicDetailsScreen()); */
+          case '/bookAppointment':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (_) => BookAppointmentScreen(
+                userId: args['userId'],
+                clinicId: args['clinicId'],
+                clinicName: args['clinicName'],
+              ),
+            );
+
+          case '/myAppointments': 
+          return MaterialPageRoute(builder: (_) => const MyAppointmentsScreen());
           
           default:
             return MaterialPageRoute(builder: (_) => const Login());

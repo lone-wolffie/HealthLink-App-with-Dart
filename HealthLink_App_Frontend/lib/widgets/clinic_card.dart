@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../screens/book_appointment_screen.dart';
+import '../models/clinics.dart';
 
 class ClinicCard extends StatelessWidget {
   final String name;
@@ -8,6 +11,7 @@ class ClinicCard extends StatelessWidget {
   final String email;
   final List<String> services;
   final Map<String, String> operatingHours;
+  final Clinics clinic;
 
   const ClinicCard({
     super.key,
@@ -17,6 +21,7 @@ class ClinicCard extends StatelessWidget {
     required this.email,
     required this.services,
     required this.operatingHours,
+    required this.clinic,
   });
 
   final List<String> orderedDays = const [
@@ -144,12 +149,6 @@ class ClinicCard extends StatelessWidget {
                 onTap: () => launchUrl(Uri(scheme: 'tel', path: phoneNumber)),
               ),
               _button(
-                icon: Icons.email_outlined,
-                label: "Email",
-                color: Colors.blue,
-                onTap: () => launchUrl(Uri(scheme: 'mailto', path: email)),
-              ),
-              _button(
                 icon: Icons.map_outlined,
                 label: "Map",
                 color: Colors.deepOrange,
@@ -161,23 +160,32 @@ class ClinicCard extends StatelessWidget {
               // *** NEW VIEW / BOOK BUTTON ***
               _button(
                 icon: Icons.arrow_forward_ios_rounded,
-                label: "View",
+                label: "Book",
                 color: Colors.purple,
-                onTap: () {
-                  Navigator.pushNamed(
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  final userId = prefs.getInt('userId');
+
+                  if (userId == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please log in first.")),
+                    );
+                    return;
+                  }
+
+                  Navigator.push(
                     context,
-                    '/clinicDetails',
-                    arguments: {
-                      'name': name,
-                      'address': address,
-                      'phone': phoneNumber,
-                      'email': email,
-                      'services': services,
-                      'hours': operatingHours,
-                    },
+                    MaterialPageRoute(
+                      builder: (_) => BookAppointmentScreen(
+                        userId: userId,
+                        clinicId: clinic.id,
+                        clinicName: clinic.name,
+                      ),
+                    ),
                   );
                 },
               ),
+
             ],
           ),
         ],

@@ -7,6 +7,7 @@ import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
 import '../models/health_alerts.dart';
 import '../models/clinics.dart';
+import '../models/appointment.dart';
 
 class ApiService {
   static String get baseUrl {
@@ -146,18 +147,21 @@ class ApiService {
   }
 
   // book an appointment
-  static Future<Map<String, dynamic>> bookAppointment(
-    int userId, int clinicId, String appointmentDate, String appointmentTime ) async {
+  static Future<Map<String, dynamic>> bookAppointment(Appointment appointment) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/appointments'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': userId,
-        'clinic_id': clinicId,
-        'appointment_date': appointmentDate,
-        'appointment_time': appointmentTime,
-      }),
+      body: jsonEncode(
+        // 'user_id': appointment.userId,
+        // 'clinic_id': appointment.clinicId,
+        // 'appointment_date': appointment.appointmentAt,
+        // 'notes': appointment.notes,
+        appointment.toJson()
+      ),
     );
+
+    print("STATUS CODE → ${response.statusCode}");
+    print("RESPONSE BODY → ${response.body}");
 
     return jsonDecode(response.body);
   }
@@ -165,7 +169,7 @@ class ApiService {
   // get all appointments for a specific user
   static Future<List<Map<String, dynamic>>> getUserAppointments(int userId) async {
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/appointments/user/$userId'),
+      Uri.parse('${ApiService.baseUrl}/appointments/$userId'),
     );
 
     if (response.statusCode == 200) {

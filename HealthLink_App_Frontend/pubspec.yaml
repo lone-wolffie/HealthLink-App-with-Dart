@@ -33,7 +33,7 @@ dependencies:
   image_picker: ^1.0.7
   path: ^1.9.0
   url_launcher: ^6.3.2
-  device_calendar: ^5.2.0
+  device_calendar: 4.3.3
   flutter_local_notifications: ^17.0.0
   timezone: ^0.9.2
 
