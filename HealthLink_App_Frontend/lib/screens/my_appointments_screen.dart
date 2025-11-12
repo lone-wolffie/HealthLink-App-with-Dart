@@ -1,94 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:healthlink_app/services/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
+import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class MyAppointmentsScreen extends StatefulWidget {
+  final int userId;
 
-  const MyAppointmentsScreen({
-    super.key,
-  });
-  
+  const MyAppointmentsScreen({super.key, required this.userId});
+
   @override
-  _MyAppointmentsScreenState createState() => _MyAppointmentsScreenState();
+  State<MyAppointmentsScreen> createState() => _MyAppointmentsScreenState();
 }
 
 class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
-  List<Map<String, dynamic>> appointments = [];
-  bool isLoading = true;
+  late Future<List<Map<String, dynamic>>> _appointmentsFuture;
 
   @override
   void initState() {
     super.initState();
-    loadAppointments();
+    _appointmentsFuture = ApiService.getUserAppointments(widget.userId);
   }
 
-  Future<void> loadAppointments() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+  Future<void> _refresh() async {
+    setState(() {
+      _appointmentsFuture = ApiService.getUserAppointments(widget.userId);
+    });
+  }
 
-    if (userId == null) {
+  Future<void> _cancelAppointment(int appointmentId) async {
+    final response = await ApiService.cancelAppointment(appointmentId);
+
+    if (response["message"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("You must log in first")),
+        SnackBar(content: Text(response["message"])),
       );
-      Navigator.pop(context);
-      return;
+      _refresh();
     }
-
-    try {
-      final data = await ApiService.getUserAppointments(userId);
-      setState(() {
-        appointments = data;
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error loading appointments: $e");
-      setState(() => isLoading = false);
-    }
-  }
-
-  Future<void> cancelAppointment(int appointmentId) async {
-    final result = await ApiService.cancelAppointment(appointmentId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(result['message'] ?? "Appointment cancelled")),
-    );
-    loadAppointments(); // refresh list
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("My Appointments"),
+      appBar: CustomAppBar(title: "My Appointments"),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _appointmentsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: LoadingIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("You have no appointments yet."));
+          }
+
+          final appointments = snapshot.data!;
+
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: appointments.length,
+              itemBuilder: (context, index) {
+                final appt = appointments[index];
+
+                // Format date/time
+                final dateTime = DateTime.parse(appt["appointment_at"]);
+                final date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+                final time = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+
+                return Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appt["clinic_name"] ?? "Clinic #${appt["clinic_id"]}",
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text("📅 Date: $date"),
+                        Text("⏰ Time: $time"),
+                        if (appt["notes"] != null && appt["notes"] != "") ...[
+                          const SizedBox(height: 8),
+                          Text("📝 Notes: ${appt["notes"]}"),
+                        ],
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Chip(
+                              label: Text(appt["status"]),
+                              backgroundColor: _statusColor(appt["status"]),
+                            ),
+                            if (appt["status"] == "booked")
+                              TextButton(
+                                onPressed: () => _cancelAppointment(appt["id"]),
+                                child: const Text("Cancel"),
+                              )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : appointments.isEmpty
-              ? Center(child: Text("No appointments yet"))
-              : ListView.builder(
-                  itemCount: appointments.length,
-                  itemBuilder: (context, index) {
-                    final appt = appointments[index];
-                    return Card(
-                      margin: EdgeInsets.all(10),
-                      child: ListTile(
-                        title: Text(appt['clinic_name'] ?? "Clinic"),
-                        subtitle: Text(
-                            "${appt['appointment_date']} at ${appt['appointment_time']}"),
-                        trailing: appt['status'] == 'cancelled'
-                            ? Text("Cancelled",
-                                style: TextStyle(color: Colors.red))
-                            : ElevatedButton(
-                                onPressed: () =>
-                                    cancelAppointment(appt['id']),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
-                                child: Text("Cancel"),
-                              ),
-                      ),
-                    );
-                  },
-                ),
     );
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case "booked":
+        return const Color.fromARGB(255, 151, 200, 241);
+      case "cancelled":
+        return const Color.fromARGB(255, 253, 166, 175);
+      case "completed":
+        return const Color.fromARGB(255, 178, 250, 180);
+      default:
+        return Colors.grey.shade300;
+    }
   }
 }

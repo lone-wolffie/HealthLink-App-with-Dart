@@ -101,8 +101,11 @@ class HealthLinkApp extends StatelessWidget {
               ),
             );
 
-          case '/myAppointments': 
-          return MaterialPageRoute(builder: (_) => const MyAppointmentsScreen());
+          case '/myAppointments':
+            final userId = settings.arguments as int;
+            return MaterialPageRoute(
+              builder: (_) => MyAppointmentsScreen(userId: userId),
+            );
           
           default:
             return MaterialPageRoute(builder: (_) => const Login());

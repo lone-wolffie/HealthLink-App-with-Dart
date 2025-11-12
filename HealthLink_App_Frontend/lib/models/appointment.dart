@@ -15,7 +15,7 @@ class Appointment {
     return {
       'user_id': userId,
       'clinic_id': clinicId,
-      'appointment_date': appointmentAt,
+      'appointment_at': appointmentAt,
       'notes': notes,
     };
   }

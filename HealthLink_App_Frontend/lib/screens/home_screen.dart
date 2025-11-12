@@ -201,7 +201,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                   color: const Color.fromARGB(255, 179, 48, 135),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => MyAppointmentsScreen()),
+                    MaterialPageRoute(builder: (_) => MyAppointmentsScreen(userId: widget.userId)),
                   ),
                 ),
               ],

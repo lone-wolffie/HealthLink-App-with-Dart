@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/services/api_service.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
+import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final int userId;
@@ -24,45 +27,116 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final TextEditingController notesController = TextEditingController();
   bool isLoading = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   print("USER ID PASSED TO SCREEN: ${widget.userId}");
-  //   print("CLINIC ID PASSED TO SCREEN: ${widget.clinicId}");
-  // }
-
+  /// Format selected date
+  String get formattedDate =>
+      selectedDate != null ? DateFormat('dd/MM/yyyy').format(selectedDate!) : 'Pick Appointment Date';
 
   Future<void> pickDate() async {
-    final date = await showDatePicker(
+    final date = await showModalBottomSheet<DateTime>(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 366)),
+      backgroundColor: const Color(0xFF1C1B1F), 
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        DateTime tempDate = DateTime.now();
+
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF833775),  
+              surface: Color(0xFF1C1B1F),
+              onSurface: Colors.white70,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Color(0xFFBB86FC),
+              ),
+            ),
+          ),
+          child: Container(
+            height: 420,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Text(
+                    'Select Appointment Date',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: CalendarDatePicker(
+                    initialDate: tempDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 366)),
+                    onDateChanged: (day) => tempDate = day,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context, tempDate),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF833775),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Confirm',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
 
-    if (date != null) {
-      setState(() => selectedDate = date);
-    }
+    if (date != null) setState(() => selectedDate = date);
   }
+
+
 
   Future<void> pickTime() async {
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      helpText: 'Select Appointment Time',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child!,
+        );
+      },
     );
 
-    if (time != null) {
-      setState(() => selectedTime = time);
-    }
+    if (time != null) setState(() => selectedTime = time);
   }
 
   Future<void> submitAppointment() async {
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select date and time.")),
+        const SnackBar(
+          content: Text('Please select date and time.'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        ),
       );
       return;
     }
+
+    setState(() => isLoading = true);
 
     final appointmentDate = DateTime(
       selectedDate!.year,
@@ -70,7 +144,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       selectedDate!.day,
       selectedTime!.hour,
       selectedTime!.minute,
-    ).toIso8601String(); // Convert to ISO format
+    ).toIso8601String();
 
     Appointment appointment = Appointment(
       userId: widget.userId,
@@ -83,14 +157,22 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     if (!mounted) return;
 
-    if (response["success"] == true) {
-      Navigator.pop(context, true);
+    setState(() => isLoading = false);
+
+    if (response.containsKey('appointment')) {
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Appointment booked successfully!")),
+        const SnackBar(
+          content: Text('Appointment booked successfully!'),
+          backgroundColor: Color.fromARGB(255, 12, 185, 9),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to book appointment.")),
+        const SnackBar(
+          content: Text('Failed to book appointment.'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        ),
       );
     }
   }
@@ -98,38 +180,123 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Book - ${widget.clinicName}")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: pickDate,
-              child: Text(selectedDate == null
-                  ? "Pick Appointment Date"
-                  : "Date: ${selectedDate!.toLocal().toString().split(' ')[0]}"),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: pickTime,
-              child: Text(selectedTime == null
-                  ? "Pick Appointment Time"
-                  : "Time: ${selectedTime!.format(context)}"),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: notesController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: "Notes (optional)",
-                border: OutlineInputBorder(),
+      appBar: CustomAppBar(
+        title: 'Book Appointment - ${widget.clinicName}'
+      ),
+      body: isLoading
+          ? const LoadingIndicator()
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Date & Time', 
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildSelectionTile(
+                    label: formattedDate,
+                    icon: Icons.calendar_today,
+                    onTap: pickDate,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  _buildSelectionTile(
+                    label: selectedTime == null ? 'Pick Appointment Time' : selectedTime!.format(context),
+                    icon: Icons.access_time,
+                    onTap: pickTime,
+                  ),
+
+                  const SizedBox(height: 24),
+                  Text(
+                    'Notes (optional)', 
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+
+                  TextField(
+                    controller: notesController,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder()
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: submitAppointment,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Color.fromARGB(255, 12, 185, 9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Book Appointment', 
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        )
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: submitAppointment,
-              child: const Text("Book Appointment"),
+    );
+  }
+
+  Widget _buildSelectionTile({
+    required String label, 
+    required IconData icon, 
+    required VoidCallback onTap
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: 14, 
+          horizontal: 16
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.grey[50],
+          border: Border.all(
+            color: const Color(0xFF833775),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12, 
+              blurRadius: 6, 
+              offset: const Offset(0, 3)
             ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            Icon(
+              icon,
+              color: const Color(0xFF833775),
+              size: 22,
+            )
           ],
         ),
       ),
