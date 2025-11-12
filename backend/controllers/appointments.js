@@ -16,7 +16,7 @@ export const createAppointment = async (req, res) => {
       [user_id, clinic_id, appointment_at, purpose, notes]
     );
 
-    res.status(201).json({ 
+    res.status(200).json({ 
         message: "Appointment booked successfully", 
         appointment: result.rows[0] 
     });
@@ -42,7 +42,7 @@ export const getUserAppointments = async (req, res) => {
       [user_id]
     );
 
-    res.json(result.rows);
+    res.status(200).json(result.rows);
   } catch (error) {
     console.error("Error fetching appointments:", error);
     res.status(500).json({ error: "Failed to get user appointments" });
@@ -60,9 +60,44 @@ export const cancelAppointment = async (req, res) => {
       [id]
     );
 
-    res.json({ message: "Appointment cancelled" });
+    res.status(200).json({ message: "Appointment cancelled" });
   } catch (error) {
     console.error("Error cancelling appointment:", error);
     res.status(500).json({ error: "Failed to cancel an appointment" });
+  }
+};
+
+// mark an appointment as complete
+export const completeAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await db.query(
+      "UPDATE appointments SET status = 'completed' WHERE id = $1",
+      [id]
+    );
+
+    res.status(200).json({ message: "Appointment marked as completed" });
+  } catch (error) {
+    console.error("Error marking appointment as completed:", error);
+    res.status(500).json({ error: "Failed to mark appointment as completed" });
+  }
+};
+
+// reschedule an appointment
+export const rescheduleAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { appointment_at } = req.body;
+
+    await db.query(
+      "UPDATE appointments SET appointment_at = $1, updated_at = NOW() WHERE id = $2",
+      [appointment_at, id]
+    );
+
+    res.status(200).json({ message: "Appointment rescheduled successfully" });
+  } catch (error) {
+    console.error("Error rescheduling an appointment:", error);
+    res.status(500).json({ error: "Failed to reschedule an appointment" });
   }
 };

@@ -152,16 +152,9 @@ class ApiService {
       Uri.parse('${ApiService.baseUrl}/appointments'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(
-        // 'user_id': appointment.userId,
-        // 'clinic_id': appointment.clinicId,
-        // 'appointment_date': appointment.appointmentAt,
-        // 'notes': appointment.notes,
         appointment.toJson()
       ),
     );
-
-    print("STATUS CODE → ${response.statusCode}");
-    print("RESPONSE BODY → ${response.body}");
 
     return jsonDecode(response.body);
   }
@@ -188,6 +181,45 @@ class ApiService {
 
     return jsonDecode(response.body);
   }
+
+  // mark appointment as completed
+  static Future<Map<String, dynamic>> completeAppointment(int appointmentId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/appointments/$appointmentId/complete'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return {'message': 'Appointment marked as completed successfully'};
+      } else {
+        return {'error': 'Failed to complete appointment: ${response.body}'};
+      }
+    } catch (e) {
+      return {'error': 'Error completing appointment: $e'};
+    }
+  }
+
+  // reschedule an appointment
+  static Future<Map<String, dynamic>> rescheduleAppointment(
+    int appointmentId, String newDateTime) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/appointments/$appointmentId/reschedule'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'appointment_at': newDateTime}),
+      );
+
+      if (response.statusCode == 200) {
+        return {'message': 'Appointment rescheduled successfully!'};
+      } else {
+        return {'error': 'Failed to reschedule appointment: ${response.body}'};
+      }
+    } catch (e) {
+      return {'error': 'Error rescheduling appointment: $e'};
+    }
+  }
+ 
 
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
