@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/login.dart';
-import 'screens/signup.dart';
-import 'screens/home_screen.dart';
-import 'screens/clinics_screen.dart';
+import 'package:healthlink_app/screens/login.dart';
+import 'package:healthlink_app/screens/signup.dart';
+import 'package:healthlink_app/screens/home_screen.dart';
+import 'package:healthlink_app/screens/clinics_screen.dart';
 import 'package:healthlink_app/services/notification_service.dart';
-import 'screens/book_appointment_screen.dart';
-import 'screens/tips_screen.dart';
-import 'screens/symptom_history_screen.dart';
-import 'screens/add_symptom_screen.dart';
-import 'screens/alerts_screen.dart';
-import 'screens/my_appointments_screen.dart';
+import 'package:healthlink_app/screens/book_appointment_screen.dart';
+import 'package:healthlink_app/screens/tips_screen.dart';
+import 'package:healthlink_app/screens/symptom_history_screen.dart';
+import 'package:healthlink_app/screens/add_symptom_screen.dart';
+import 'package:healthlink_app/screens/alerts_screen.dart';
+import 'package:healthlink_app/screens/my_appointments_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.initialize(
     onSelectNotification: (payload) {
-      print('Notification tapped with payload: $payload');
+      debugPrint('Notification tapped with payload: $payload');
     },
   );
 
@@ -94,8 +94,6 @@ class HealthLinkApp extends StatelessWidget {
           case '/healthAlerts':
             return MaterialPageRoute(builder: (_) => const AlertsScreen());
 
-          /*case '/clinicDetails': 
-            return MaterialPageRoute(builder: (_) => const ClinicDetailsScreen()); */
           case '/bookAppointment':
             final args = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(

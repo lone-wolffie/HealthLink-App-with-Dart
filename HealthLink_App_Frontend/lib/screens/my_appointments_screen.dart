@@ -8,10 +8,7 @@ import 'package:healthlink_app/widgets/loading_indicator.dart';
 class MyAppointmentsScreen extends StatefulWidget {
   final int userId;
 
-  const MyAppointmentsScreen({
-    super.key, 
-    required this.userId
-  });
+  const MyAppointmentsScreen({super.key, required this.userId});
 
   @override
   State<MyAppointmentsScreen> createState() => _MyAppointmentsScreenState();
@@ -46,9 +43,14 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
         ),
       );
-    } 
-    
+    }
+
     if (response.containsKey('message')) {
+      // cancel notification
+      await NotificationService.cancelReminder(appointmentId);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Appointment cancelled successfully'),
@@ -65,7 +67,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancel Appointment'),
-        content: const Text('Are you sure you want to cancel this appointment?'),
+        content: const Text(
+          'Are you sure you want to cancel this appointment?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -101,6 +105,11 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     }
 
     if (response.containsKey('message')) {
+      // cancel notification
+      await NotificationService.cancelReminder(appointmentId);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Appointment marked as completed'),
@@ -114,7 +123,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   // reschedule appointment
   Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
-    DateTime selectedDate = DateTime.parse(appt["appointment_at"]);
+    DateTime selectedDate = DateTime.parse(appt['appointment_at']);
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(selectedDate);
 
     // pick a new date
@@ -122,14 +131,12 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       context: context,
       backgroundColor: const Color(0xFF1C1B1F),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20)
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
 
       builder: (context) {
         DateTime tempDate = selectedDate;
-        
+
         return Theme(
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
@@ -138,9 +145,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
               onSurface: Colors.white70,
             ),
             textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Color(0xFFBB86FC) 
-              ),
+              style: TextButton.styleFrom(foregroundColor: Color(0xFFBB86FC)),
             ),
           ),
           child: Container(
@@ -160,7 +165,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                
+
                 Expanded(
                   child: CalendarDatePicker(
                     initialDate: tempDate,
@@ -170,7 +175,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -181,19 +186,17 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                    ), 
+                    ),
                     child: const Text(
                       'Confirm',
-                      style: TextStyle(
-                        color: Colors.white
-                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ); 
+        );
       },
     );
     if (newDate == null) return;
@@ -233,20 +236,25 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       newTime.minute,
     ).toUtc().toIso8601String();
 
-    final response = await ApiService.rescheduleAppointment(appt['id'], newDateTime);
+    final response = await ApiService.rescheduleAppointment(
+      appt['id'],
+      newDateTime,
+    );
 
     if (response.containsKey('error')) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to reschedule the appointment'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
         ),
       );
-    } 
-    
+    }
+
     if (response.containsKey('message')) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Appointment rescheduled successfully'),
@@ -264,11 +272,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF833775),
         onPressed: _refresh,
-        child: const Icon(
-          Icons.refresh, 
-          color: Colors.white
-        ),
+        child: const Icon(Icons.refresh, color: Colors.white),
       ),
+
       body: Column(
         children: [
           _buildFilterChips(),
@@ -284,20 +290,20 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
-                      child: Text('You have no appointments yet.')
-                    );
+                    child: Text('You have no appointments yet.'),
+                  );
                 }
 
                 final filteredAppointments = _selectedFilter == 'all'
-                    ? snapshot.data!
-                    : snapshot.data!
-                        .where((appt) => appt['status'] == _selectedFilter)
-                        .toList();
+                  ? snapshot.data!
+                  : snapshot.data!
+                    .where((appt) => appt['status'] == _selectedFilter)
+                    .toList();
 
                 if (filteredAppointments.isEmpty) {
                   return Center(
-                      child: Text('No $_selectedFilter appointments.')
-                    );
+                    child: Text('No $_selectedFilter appointments.'),
+                  );
                 }
 
                 return RefreshIndicator(
@@ -314,8 +320,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
                       return Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)
-                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 4,
                         margin: const EdgeInsets.only(bottom: 14),
                         child: Padding(
@@ -343,7 +349,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    backgroundColor: _statusColor(appt['status']),
+                                    backgroundColor: _statusColor(
+                                      appt['status'],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -352,32 +360,32 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                                 children: [
                                   const Icon(
                                     Icons.calendar_today,
-                                    size: 16, 
-                                    color: Colors.grey
+                                    size: 16,
+                                    color: Colors.grey,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Date: $date',
                                     style: const TextStyle(
-                                        color: Colors.black87
-                                      )
+                                      color: Colors.black87,
                                     ),
+                                  ),
                                 ],
                               ),
                               Row(
                                 children: [
                                   const Icon(
                                     Icons.access_time,
-                                    size: 16, 
-                                    color: Colors.grey
+                                    size: 16,
+                                    color: Colors.grey,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Time: $time',
-                                      style: const TextStyle(
-                                        color: Colors.black87
-                                      )
+                                    style: const TextStyle(
+                                      color: Colors.black87,
                                     ),
+                                  ),
                                 ],
                               ),
                               if (appt['notes'] != null && appt['notes'] != "") ...[
@@ -415,7 +423,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         vertical: 8
       ),
       child: Wrap(
-        spacing: 8,
+        spacing: 10,
         children: filters.map((filter) {
           final selected = _selectedFilter == filter;
           return FilterChip(

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:healthlink_app/services/notification_service.dart';
 import 'package:intl/intl.dart';
+import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
 
 class BookAppointmentScreen extends StatefulWidget {
   final int userId;
@@ -32,16 +29,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   bool isLoading = false;
 
   
-  // Format selected date
-  String get formattedDate =>
-      selectedDate != null ? DateFormat('dd/MM/yyyy').format(selectedDate!) : 'Pick Appointment Date';
+  // format selected date
+  String get formattedDate => selectedDate != null ? DateFormat('dd/MM/yyyy').format(selectedDate!) : 'Pick Appointment Date';
 
   Future<void> pickDate() async {
     final date = await showModalBottomSheet<DateTime>(
       context: context,
       backgroundColor: const Color(0xFF1C1B1F),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20)
+        ),
       ),
       builder: (context) {
         DateTime tempDate = DateTime.now();
@@ -80,7 +78,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   child: CalendarDatePicker(
                     initialDate: tempDate,
                     firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 366)),
+                    lastDate: DateTime.now().add(
+                      const Duration(days: 366)
+                    ),
                     onDateChanged: (day) => tempDate = day,
                   ),
                 ),
@@ -98,7 +98,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     ),
                     child: const Text(
                       'Confirm',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
                     ),
                   ),
                 ),
@@ -127,32 +129,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     if (time != null) setState(() => selectedTime = time);
   }
-
-  // Future<void> _scheduleReminder(DateTime appointmentDateTime) async {
-  //   final reminderTime = appointmentDateTime.subtract(const Duration(hours: 24));
-  //   if (reminderTime.isBefore(DateTime.now())) return;
-
-  //   await flutterLocalNotificationsPlugin.zonedSchedule(
-  //     appointmentDateTime.millisecondsSinceEpoch ~/ 1000,
-  //     'Upcoming Appointment Reminder',
-  //     'You have an appointment at ${widget.clinicName} in 24 hours.',
-  //     tz.TZDateTime.from(reminderTime, tz.local),
-  //     const NotificationDetails(
-  //       android: AndroidNotificationDetails(
-  //         'appointment_channel',
-  //         'Appointment Reminders',
-  //         channelDescription: 'Reminds users 24 hours before appointment',
-  //         importance: Importance.high,
-  //         priority: Priority.high,
-  //         icon: '@mipmap/ic_launcher',
-  //       ),
-  //     ),
-  //     androidAllowWhileIdle: true,
-  //     uiLocalNotificationDateInterpretation:
-  //         UILocalNotificationDateInterpretation.absoluteTime,
-  //     matchDateTimeComponents: DateTimeComponents.dateAndTime,
-  //   );
-  // }
 
   Future<void> submitAppointment() async {
     if (selectedDate == null || selectedTime == null) {
@@ -191,13 +167,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     if (response.containsKey('appointment')) {
       final appointmentId = response['appointment']?['id'] ?? 
-                             response['data']?['id'] ?? 
-                             localDateTime.millisecondsSinceEpoch;
+        response['data']?['id'] ?? 
+        localDateTime.millisecondsSinceEpoch;
       
       await NotificationService.scheduleAppointmentReminder(
-          appointmentId: appointmentId,
-          appointmentDateTime: localDateTime,
-          clinicName: widget.clinicName,
+        appointmentId: appointmentId,
+        appointmentDateTime: localDateTime,
+        clinicName: widget.clinicName,
       );
 
       if (!mounted) return; 
@@ -236,7 +212,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Select Date & Time', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Select Date & Time', 
+                    style: Theme.of(context).textTheme.titleMedium
+                  ),
                   const SizedBox(height: 16),
                   _buildSelectionTile(
                     label: formattedDate,
@@ -250,12 +229,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     onTap: pickTime,
                   ),
                   const SizedBox(height: 24),
-                  Text('Notes (optional)', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Notes (optional)', 
+                    style: Theme.of(context).textTheme.titleMedium
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: notesController,
                     maxLines: 5,
-                    decoration: const InputDecoration(border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder()
+                    ),
                   ),
                   const Spacer(),
                   SizedBox(
@@ -271,7 +255,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       ),
                       child: const Text(
                         'Book Appointment',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 16, 
+                          color: Colors.white
+                        ),
                       ),
                     ),
                   ),
@@ -289,13 +276,23 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        padding: const EdgeInsets.symmetric(
+          vertical: 14, 
+          horizontal: 16
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.grey[50],
-          border: Border.all(color: const Color(0xFF833775), width: 1.2),
+          border: Border.all(
+            color: const Color(0xFF833775), 
+            width: 1.2
+          ),
           boxShadow: [
-            BoxShadow(color: Colors.black12, blurRadius: 6, offset: const Offset(0, 3)),
+            BoxShadow(
+              color: Colors.black12, 
+              blurRadius: 6, 
+              offset: const Offset(0, 3)
+            ),
           ],
         ),
         child: Row(
@@ -304,10 +301,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(fontSize: 15, color: Colors.black87),
+                style: const TextStyle(
+                  fontSize: 15, 
+                  color: Colors.black87
+                ),
               ),
             ),
-            Icon(icon, color: const Color(0xFF833775), size: 22),
+            Icon(
+              icon, 
+              color: const Color(0xFF833775), 
+              size: 22
+            ),
           ],
         ),
       ),
