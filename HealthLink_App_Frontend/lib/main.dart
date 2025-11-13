@@ -4,7 +4,7 @@ import 'screens/login.dart';
 import 'screens/signup.dart';
 import 'screens/home_screen.dart';
 import 'screens/clinics_screen.dart';
-//import 'screens/clinic_details_screen.dart';
+import 'package:healthlink_app/services/notification_service.dart';
 import 'screens/book_appointment_screen.dart';
 import 'screens/tips_screen.dart';
 import 'screens/symptom_history_screen.dart';
@@ -14,6 +14,11 @@ import 'screens/my_appointments_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize(
+    onSelectNotification: (payload) {
+      print('Notification tapped with payload: $payload');
+    },
+  );
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   int? savedUserId = prefs.getInt('userId');

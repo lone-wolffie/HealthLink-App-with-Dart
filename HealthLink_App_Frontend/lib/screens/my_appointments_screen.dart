@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
@@ -44,7 +46,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
         ),
       );
-    } else if (response.containsKey('message')) {
+    } 
+    
+    if (response.containsKey('message')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Appointment cancelled successfully'),
@@ -89,14 +93,13 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     if (response.containsKey('error')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to mark as completed'),
+          content: Text('Failed to mark appointment as completed'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
         ),
       );
       return;
     }
 
-    // If success message exists
     if (response.containsKey('message')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -119,7 +122,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       context: context,
       backgroundColor: const Color(0xFF1C1B1F),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20)
+        ),
       ),
 
       builder: (context) {
@@ -155,6 +160,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                
                 Expanded(
                   child: CalendarDatePicker(
                     initialDate: tempDate,
@@ -164,6 +170,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -202,8 +209,14 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
             colorScheme: const ColorScheme.dark(
               primary: Color(0xFF833775),
               onPrimary: Colors.white,
-              surface: Color(0xFF2A2A2A),
-              onSurface: Colors.white,
+              surface: Color(0xFF1C1B1F),
+              onSurface: Colors.white70,
+            ),
+            timePickerTheme: const TimePickerThemeData(
+              backgroundColor: Color(0xFF1C1B1F),
+              hourMinuteTextColor: Colors.white,
+              dialHandColor: Color(0xFF833775),
+              dialBackgroundColor: Color(0xFF2C2C2C),
             ),
           ),
           child: child!,
@@ -218,18 +231,17 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       newDate.day,
       newTime.hour,
       newTime.minute,
-    ).toIso8601String();
+    ).toUtc().toIso8601String();
 
-    final response =
-        await ApiService.rescheduleAppointment(appt["id"], newDateTime);
+    final response = await ApiService.rescheduleAppointment(appt['id'], newDateTime);
 
     if (response.containsKey('error')) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to reschedule the appointment'),
-            backgroundColor: Color.fromARGB(255, 244, 29, 13),
-          ),
+          content: Text('Failed to reschedule the appointment'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        ),
       );
     } 
     
@@ -265,7 +277,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
               future: _appointmentsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: LoadingIndicator());
+                  return const Center(
+                    child: LoadingIndicator()
+                  );
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -294,8 +308,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                     itemBuilder: (context, index) {
                       final appt = filteredAppointments[index];
                       final dateTime = DateTime.parse(appt['appointment_at']);
-                      final date = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
-                      final time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+                      final localDateTime = dateTime.toLocal();
+                      final date = DateFormat('dd/MM/yyyy').format(localDateTime);
+                      final time = DateFormat('hh:mm a').format(localDateTime);
 
                       return Card(
                         shape: RoundedRectangleBorder(
@@ -370,9 +385,9 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                                 Text(
                                   'Notes: ${appt['notes']}',
                                   style: const TextStyle(
-                                      color: Colors.black54
-                                    )
+                                    color: Colors.black54
                                   ),
+                                ),
                               ],
                               const SizedBox(height: 12),
                               _buildActionButtons(appt),
