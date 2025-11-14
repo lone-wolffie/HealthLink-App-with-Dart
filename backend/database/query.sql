@@ -226,6 +226,18 @@ BEFORE UPDATE ON appointments
 FOR EACH ROW
 EXECUTE PROCEDURE trg_set_updated_at();
 
+-- medications table
+CREATE TABLE medications (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  dose TEXT NOT NULL,
+  times JSONB NOT NULL,
+  notes TEXT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create Indexes
 -- Indexes for users table
 CREATE INDEX idx_users_email ON users(email);
@@ -256,7 +268,8 @@ CREATE INDEX idx_appointments_clinic ON appointments(clinic_id);
 CREATE INDEX idx_appointments_status ON appointments(status);
 CREATE INDEX idx_appointments_time ON appointments(appointment_at);
 
-
+-- Indexes for medications table
+CREATE INDEX idx_medications_user_id ON medications(user_id);
 
 
 
