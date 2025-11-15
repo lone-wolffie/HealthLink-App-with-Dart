@@ -1,13 +1,14 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
-import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
-import 'package:healthlink_app/models/health_tips.dart';
-import 'package:healthlink_app/models/symptoms.dart';
-import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-import '../models/health_alerts.dart';
-import '../models/clinics.dart';
-import '../models/appointment.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
+import 'package:http/http.dart' as http; // to make REST API calls to backend
+import 'package:healthlink_app/models/health_tips.dart';
+import 'package:healthlink_app/models/symptoms.dart';
+import 'package:healthlink_app/models/health_alerts.dart';
+import 'package:healthlink_app/models/clinics.dart';
+import 'package:healthlink_app/models/appointment.dart';
+import 'package:healthlink_app/models/medication.dart';
 
 class ApiService {
   static String get baseUrl {
@@ -220,7 +221,70 @@ class ApiService {
     }
   }
  
+  // create a new medication
+  static Future<bool> createMedication({
+    required int userId,
+    required String name,
+    required String dose,
+    required List<String> times,
+    String? notes
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/medication'),
+      headers: {'Content-Type' : 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'name': name,
+        'dose': dose,
+        'times': times,
+        'notes': notes,
+      }),
+    );
 
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // get all medications for a specific user
+  static Future<List<Medication>> getUserMedication(int userId) async {
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/medications/$userId')
+    );
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((error) => Medication.fromJson(error)).toList();
+    } else {
+      throw Exception('Failed to get all the medications');
+    }
+  }
+
+  // get a single medication
+  static Future<Medication> getMedication(int id) async {
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/medications/med/$id')
+    );
+
+    if (response.statusCode == 200) {
+      return Medication.fromJson(
+        jsonDecode(response.body)
+      );
+    } else {
+      throw Exception('Failed to get the specified medication');
+    }
+  }
+
+  // delete medication
+  static Future<bool> deleteMedication(int id) async {
+    final response = await http.delete(
+      Uri.parse('${ApiService.baseUrl}/medications/$id')
+    );
+    
+    return response.statusCode == 200;
+  }
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
     final response = await http.get(

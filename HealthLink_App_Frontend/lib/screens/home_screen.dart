@@ -3,6 +3,7 @@ import 'package:healthlink_app/screens/my_appointments_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:healthlink_app/screens/symptom_history_screen.dart';
 import 'package:healthlink_app/screens/add_symptom_screen.dart';
+import 'package:healthlink_app/screens/medications_screen.dart';
 import 'package:healthlink_app/screens/alerts_screen.dart';
 import 'package:healthlink_app/screens/clinics_screen.dart';
 import 'package:healthlink_app/screens/profile_screen.dart';
@@ -182,11 +183,11 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                 ),
                 _ActionTile(
                   icon: Icons.add_circle_outline,
-                  label: 'Add Symptom',
+                  label: 'My Medications',
                   color: const Color.fromARGB(255, 48, 179, 52),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => AddSymptomScreen(userId: widget.userId)),
+                    MaterialPageRoute(builder: (_) => MedicationsSreen(userId: widget.userId)),
                   ),
                 ),
                 _ActionTile(
