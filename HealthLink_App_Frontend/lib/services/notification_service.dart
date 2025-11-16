@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,44 +7,41 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  /// CHANNELS
-  // Appointment reminders
+  // appointment reminders
   static const String _appointmentChannelId = 'appointment_channel';
   static const String _appointmentChannelName = 'Appointment Reminders';
 
-  // Medication reminders
+  // medication reminders
   static const String _medChannelId = 'medication_channel';
   static const String _medChannelName = 'Medication Reminders';
 
-  /// Initialize all notifications
+  // initialize all notifications
   static Future<void> initialize({
     Function(String? payload)? onSelectNotification,
   }) async {
     try {
       tz.initializeTimeZones();
-      final String deviceTimeZone =
-          await FlutterNativeTimezone.getLocalTimezone();
+      final String deviceTimeZone = await FlutterNativeTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(deviceTimeZone));
     } catch (error) {
       tz.initializeTimeZones();
+      tz.setLocalLocation(tz.getLocation('UTC'));
       debugPrint('Warning: Unable to set timezone: $error');
     }
 
     // Android init
-    const AndroidInitializationSettings androidInit =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS/macOS init
-    final DarwinInitializationSettings iosInit = DarwinInitializationSettings(
+    // iOS init
+    final iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    final InitializationSettings initSettings = InitializationSettings(
+    final initSettings = InitializationSettings(
       android: androidInit,
       iOS: iosInit,
     );
@@ -58,13 +55,11 @@ class NotificationService {
       },
     );
 
-    // Create Android channels
+    // Create android channels
     if (!kIsWeb && Platform.isAndroid) {
-      final androidPlugin = _notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-      // Appointment channel
+      // appointment channel
       await androidPlugin?.createNotificationChannel(
         const AndroidNotificationChannel(
           _appointmentChannelId,
@@ -74,7 +69,7 @@ class NotificationService {
         ),
       );
 
-      // Medication channel
+      // medication channel
       await androidPlugin?.createNotificationChannel(
         const AndroidNotificationChannel(
           _medChannelId,
@@ -86,9 +81,7 @@ class NotificationService {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 🟣 APPOINTMENT REMINDER — 24 HOURS BEFORE
-  // ---------------------------------------------------------------------------
+  // appointments reminder 24 hours before
   static Future<void> scheduleAppointmentReminder({
     required int appointmentId,
     required DateTime appointmentDateTime,
@@ -96,8 +89,9 @@ class NotificationService {
   }) async {
     try {
       final DateTime localTime = appointmentDateTime.toLocal();
-      final tz.TZDateTime reminderTime = tz.TZDateTime.from(localTime, tz.local)
-          .subtract(const Duration(hours: 24));
+      final tz.TZDateTime reminderTime = tz.TZDateTime.from(localTime, tz.local).subtract(
+        const Duration(hours: 24)
+      );
 
       if (reminderTime.isBefore(tz.TZDateTime.now(tz.local))) return;
 
@@ -120,21 +114,30 @@ class NotificationService {
         reminderTime,
         details,
         androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
 
-      debugPrint("Scheduled appointment reminder at: $reminderTime");
+      debugPrint('Scheduled appointment reminder at: $reminderTime');
     } catch (error) {
-      debugPrint("Appointment schedule error: $error");
+      debugPrint('Appointment schedule error: $error');
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 🔵 MEDICATION DAILY REMINDER — FIRES DAILY AT GIVEN TIME
-  // ---------------------------------------------------------------------------
-  static Future<void> scheduleMedicationReminder({
+  // cancel appointment reminder
+  static Future<void> cancelAppointmentReminder(int appointmentId) async {
+    try {
+      await _notificationsPlugin.cancel(appointmentId);
+      debugPrint('Cancelled appointment reminder for ID: $appointmentId');
+    } catch (error) {
+      debugPrint('Error cancelling appointment reminder: $error');
+    }
+  }
+
+
+  // medication reminder on scheduled time
+  static Future<void> scheduleDailyMedicationReminder({
     required int medicationId,
+    required int index,
     required String medicationName,
     required String dose,
     required String time,
@@ -156,11 +159,15 @@ class NotificationService {
         minute,
       );
 
-      // If time already passed today → schedule for tomorrow
+      // If time has already passed today, schedule for tomorrow
       if (scheduleTime.isBefore(now)) {
-        scheduleTime = scheduleTime.add(const Duration(days: 1));
+        scheduleTime = scheduleTime.add(
+          const Duration(days: 1)
+        );
       }
 
+      final notificationId = medicationId * 100 + index;
+      
       const details = NotificationDetails(
         android: AndroidNotificationDetails(
           _medChannelId,
@@ -174,32 +181,31 @@ class NotificationService {
       );
 
       await _notificationsPlugin.zonedSchedule(
-        medicationId, // UNIQUE
+        notificationId,
         'Medication Reminder',
         'Time to take $medicationName ($dose)',
         scheduleTime,
         details,
         androidAllowWhileIdle: true,
-        matchDateTimeComponents: DateTimeComponents.time, // 🔥 DAILY REPEAT
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time, 
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
 
-      debugPrint("Medication reminder scheduled: $scheduleTime");
+      debugPrint('Medication reminder scheduled at $scheduleTime');
     } catch (error) {
-      debugPrint("Medication reminder error: $error");
+      debugPrint('Medication reminder error: $error');
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // ❌ CANCEL REMINDERS
-  // ---------------------------------------------------------------------------
-  static Future<void> cancelReminder(int id) async {
+  // cancel medication reminder
+  static Future<void> cancelMedicationReminders(int medicationId, {int maxTimes = 10}) async {
     try {
-      await _notificationsPlugin.cancel(id);
-      debugPrint("Cancelled reminder ID=$id");
+      for (int i = 0; i < maxTimes; i++) {
+        final id = medicationId * 100 + i;
+        await _notificationsPlugin.cancel(id);
+      }
     } catch (error) {
-      debugPrint("Error cancelling reminder: $error");
+      debugPrint('Error cancelling reminder: $error');
     }
   }
 }

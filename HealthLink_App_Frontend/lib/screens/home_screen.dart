@@ -182,12 +182,12 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                   ),
                 ),
                 _ActionTile(
-                  icon: Icons.add_circle_outline,
+                  icon: Icons.medication,
                   label: 'My Medications',
                   color: const Color.fromARGB(255, 48, 179, 52),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => MedicationsSreen(userId: widget.userId)),
+                    MaterialPageRoute(builder: (_) => MedicationsScreen(userId: widget.userId)),
                   ),
                 ),
                 _ActionTile(

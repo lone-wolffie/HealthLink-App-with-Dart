@@ -4,6 +4,7 @@ import { db } from "../config/db.js";
 export const createMedication = async (req, res) => {
     try {
         const { user_id, name, dose, times, notes } = req.body;
+        console.log("Received times:", times);
         
         if (!user_id || !name || !dose || !times || !Array.isArray(times) || times.length === 0) {
             return res.status(400).json({error: "user id, name, dose and dosage time are required"});
@@ -11,10 +12,10 @@ export const createMedication = async (req, res) => {
 
         await db.query(
             `INSERT INTO medications (user_id, name, dose, times, notes)
-            VALUES ($1, $2, $3, $4, $5)
+            VALUES ($1, $2, $3, $4::jsonb, $5)
             RETURNING *
             `,
-            [user_id, name, dose, times, notes || null]
+            [user_id, name, dose, JSON.stringify(times), notes || null]
         );
 
         return res.status(200).json({ message: "Medication added successfully" });

@@ -21,25 +21,23 @@ class Medication {
 
   factory Medication.fromJson(Map<String, dynamic> json) {
     return Medication(
-      id: json['id'],
-      userId: json['user_id'],
-      name: json['name'],
-      dose: json['dose'],
-      times: List<String>.from(json['times'] ?? []),
-      notes: json['notes'],
+      id: json['id'] as int?,
+      userId: json['user_id'] as int,
+      name: json['name'] as String,
+      dose: json['dose'] as String,
+      times: (json['times'] is List) ? List<String>.from(json['times']) : [],
+      notes: json['notes'] as String?,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'user_id': userId,
-      'name': name,
-      'dose': dose,
-      'times': times,
-      'notes': notes,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        'user_id': userId,
+        'name': name,
+        'dose': dose,
+        'times': times,
+        'notes': notes,
+      };
 }

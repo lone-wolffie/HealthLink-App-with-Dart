@@ -47,7 +47,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
     if (response.containsKey('message')) {
       // cancel notification
-      await NotificationService.cancelReminder(appointmentId);
+      await NotificationService.cancelAppointmentReminder(appointmentId);
 
       if (!mounted) return;
 
@@ -106,7 +106,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
     if (response.containsKey('message')) {
       // cancel notification
-      await NotificationService.cancelReminder(appointmentId);
+      await NotificationService.cancelAppointmentReminder(appointmentId);
 
       if (!mounted) return;
 

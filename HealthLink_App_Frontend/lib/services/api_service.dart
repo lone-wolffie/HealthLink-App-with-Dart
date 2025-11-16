@@ -1,7 +1,7 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
 import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-import 'package:flutter/foundation.dart' show kIsWeb; // web, android emulator, iOS Simulator or physical device
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint; // web, android emulator, iOS Simulator or physical device
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
@@ -21,45 +21,49 @@ class ApiService {
     } else {
       return 'http://192.168.0.12:3000/api'; // physical device
     }
-  } 
+  }
 
   // signup
   static Future<Map<String, dynamic>> signup(
-    String fullname, String email, String phoneNumber, 
-    String username, String password ) async {
-      final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}/auth/signup'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'fullname': fullname,
-          'email': email,
-          'phonenumber': phoneNumber,
-          'username': username,
-          'password': password
-        }),
-      );
-    
-      return jsonDecode(response.body);
+    String fullname,
+    String email,
+    String phoneNumber,
+    String username,
+    String password,
+  ) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/auth/signup'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'fullname': fullname,
+        'email': email,
+        'phonenumber': phoneNumber,
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    return jsonDecode(response.body);
   }
-  
+
   // login
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password':password
-      }),
+      body: jsonEncode({'username': username, 'password': password}),
     );
-    
+
     return jsonDecode(response.body);
   }
 
   // get user profile
   static Future<Map<String, dynamic>> getUserProfile(int userId) async {
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/users/$userId')
+      Uri.parse('${ApiService.baseUrl}/users/$userId'),
     );
 
     if (response.statusCode == 200) {
@@ -71,19 +75,24 @@ class ApiService {
 
   // update user profile
   static Future<Map<String, dynamic>> updateUserProfile(
-    int userId, String fullname, String email, String phoneNumber, String username ) async {
-      final response = await http.put(
-        Uri.parse('${ApiService.baseUrl}/users/$userId'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'fullname': fullname,
-          'email': email,
-          'phonenumber': phoneNumber,
-          'username': username
-        }),
-      );
+    int userId,
+    String fullname,
+    String email,
+    String phoneNumber,
+    String username,
+  ) async {
+    final response = await http.put(
+      Uri.parse('${ApiService.baseUrl}/users/$userId'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'fullname': fullname,
+        'email': email,
+        'phonenumber': phoneNumber,
+        'username': username,
+      }),
+    );
 
-      return jsonDecode(response.body);
+    return jsonDecode(response.body);
   }
 
   // upload user profile image
@@ -94,7 +103,7 @@ class ApiService {
 
       request.files.add(
         await http.MultipartFile.fromPath(
-          'profileImage', 
+          'profileImage',
           imagePath,
           filename: basename(imagePath),
         ),
@@ -102,20 +111,18 @@ class ApiService {
 
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
-      print('Upload response: $responseBody');
+      debugPrint('Upload response: $responseBody');
 
       return response.statusCode == 200;
     } catch (error) {
-      print('Upload error: $error');
+      debugPrint('Upload error: $error');
       return false;
     }
   }
 
   // get all clinics
   static Future<List<Clinics>> getAllClinics() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/clinics')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/clinics'));
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -125,43 +132,52 @@ class ApiService {
     }
   }
 
-  // add a new clinics
+  // add a new clinic
   static Future<Map<String, dynamic>> addClinic(
-    String name, String address, String phoneNumber, String email, 
-    double latitude, double longitude, List<String> services, Map<String, String> operatingHours ) async {
-      final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}/clinics'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'address':address,
-          'phonenumber': phoneNumber,
-          'email': email,
-          'latitude': latitude,
-          'longitude': longitude,
-          'services': services,
-          'operating_hours': operatingHours
-        }),
-      );
-      
-      return jsonDecode(response.body);
+    String name,
+    String address,
+    String phoneNumber,
+    String email,
+    double latitude,
+    double longitude,
+    List<String> services,
+    Map<String, String> operatingHours,
+  ) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/clinics'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'address': address,
+        'phonenumber': phoneNumber,
+        'email': email,
+        'latitude': latitude,
+        'longitude': longitude,
+        'services': services,
+        'operating_hours': operatingHours,
+      }),
+    );
+
+    return jsonDecode(response.body);
   }
 
   // book an appointment
-  static Future<Map<String, dynamic>> bookAppointment(Appointment appointment) async {
+  static Future<Map<String, dynamic>> bookAppointment(
+    Appointment appointment,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/appointments'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(
-        appointment.toJson()
-      ),
+      body: jsonEncode(appointment.toJson()),
     );
 
     return jsonDecode(response.body);
   }
 
   // get all appointments for a specific user
-  static Future<List<Map<String, dynamic>>> getUserAppointments(int userId) async {
+  static Future<List<Map<String, dynamic>>> getUserAppointments(
+    int userId,
+  ) async {
     final response = await http.get(
       Uri.parse('${ApiService.baseUrl}/appointments/$userId'),
     );
@@ -174,7 +190,9 @@ class ApiService {
   }
 
   // cancel an appointment
-  static Future<Map<String, dynamic>> cancelAppointment(int appointmentId) async {
+  static Future<Map<String, dynamic>> cancelAppointment(
+    int appointmentId,
+  ) async {
     final response = await http.patch(
       Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/cancel'),
       headers: {'Content-Type': 'application/json'},
@@ -184,7 +202,9 @@ class ApiService {
   }
 
   // mark appointment as completed
-  static Future<Map<String, dynamic>> completeAppointment(int appointmentId) async {
+  static Future<Map<String, dynamic>> completeAppointment(
+    int appointmentId,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/complete'),
@@ -196,14 +216,16 @@ class ApiService {
       } else {
         return {'error': 'Failed to complete appointment: ${response.body}'};
       }
-    } catch (e) {
-      return {'error': 'Error completing appointment: $e'};
+    } catch (error) {
+      return {'error': 'Error completing appointment: $error'};
     }
   }
 
   // reschedule an appointment
   static Future<Map<String, dynamic>> rescheduleAppointment(
-    int appointmentId, String newDateTime) async {
+    int appointmentId,
+    String newDateTime,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/reschedule'),
@@ -216,22 +238,22 @@ class ApiService {
       } else {
         return {'error': 'Failed to reschedule appointment: ${response.body}'};
       }
-    } catch (e) {
-      return {'error': 'Error rescheduling appointment: $e'};
+    } catch (error) {
+      return {'error': 'Error rescheduling appointment: $error'};
     }
   }
- 
+
   // create a new medication
   static Future<bool> createMedication({
     required int userId,
     required String name,
     required String dose,
     required List<String> times,
-    String? notes
+    String? notes,
   }) async {
     final response = await http.post(
-      Uri.parse('${ApiService.baseUrl}/medication'),
-      headers: {'Content-Type' : 'application/json'},
+      Uri.parse('${ApiService.baseUrl}/medications'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'user_id': userId,
         'name': name,
@@ -251,7 +273,7 @@ class ApiService {
   // get all medications for a specific user
   static Future<List<Medication>> getUserMedication(int userId) async {
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/medications/$userId')
+      Uri.parse('${ApiService.baseUrl}/medications/$userId'),
     );
 
     if (response.statusCode == 200) {
@@ -265,13 +287,11 @@ class ApiService {
   // get a single medication
   static Future<Medication> getMedication(int id) async {
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/medications/med/$id')
+      Uri.parse('${ApiService.baseUrl}/medications/med/$id'),
     );
 
     if (response.statusCode == 200) {
-      return Medication.fromJson(
-        jsonDecode(response.body)
-      );
+      return Medication.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to get the specified medication');
     }
@@ -280,16 +300,19 @@ class ApiService {
   // delete medication
   static Future<bool> deleteMedication(int id) async {
     final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/medications/$id')
+      Uri.parse('${ApiService.baseUrl}/medications/$id'),
     );
-    
-    return response.statusCode == 200;
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
+
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/tips')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/tips'));
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -300,32 +323,32 @@ class ApiService {
   }
 
   // add a new health tip
-  static Future<Map<String, dynamic>> addHealthTip(String title, String content) async {
+  static Future<Map<String, dynamic>> addHealthTip(
+    String title,
+    String content,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/tips'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'title': title,
-        'content': content
-      }),
+      body: jsonEncode({'title': title, 'content': content}),
     );
-    
+
     return jsonDecode(response.body);
   }
 
   // delete a health tip
   static Future<Map<String, dynamic>> deleteHealthTip(int id) async {
     final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/tips/$id')
+      Uri.parse('${ApiService.baseUrl}/tips/$id'),
     );
 
     return jsonDecode(response.body);
   }
 
-  // get symptom history for specific user 
+  // get symptom history for specific user
   static Future<List<Symptoms>> getSymptomHistory(int userId) async {
     final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/symptoms/$userId')
+      Uri.parse('${ApiService.baseUrl}/symptoms/$userId'),
     );
 
     if (response.statusCode == 200) {
@@ -337,7 +360,12 @@ class ApiService {
   }
 
   // add a new symptom
-  static Future<Map<String, dynamic>> addSymptom(int userId, String symptom, String severity, String notes) async {
+  static Future<Map<String, dynamic>> addSymptom(
+    int userId,
+    String symptom,
+    String severity,
+    String notes,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/symptoms'),
       headers: {'Content-Type': 'application/json'},
@@ -345,17 +373,17 @@ class ApiService {
         'user_id': userId,
         'symptom': symptom,
         'severity': severity,
-        'notes': notes
+        'notes': notes,
       }),
     );
-    
+
     return jsonDecode(response.body);
   }
 
   // delete a symptom
-  static Future<Map<String,dynamic>> deleteSymptom(int id) async {
+  static Future<Map<String, dynamic>> deleteSymptom(int id) async {
     final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/symptoms/$id')
+      Uri.parse('${ApiService.baseUrl}/symptoms/$id'),
     );
 
     return jsonDecode(response.body);
@@ -363,12 +391,10 @@ class ApiService {
 
   // get all active health alerts
   static Future<List<HealthAlerts>> getAllActiveAlerts() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/alerts')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/alerts'));
 
     if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body); 
+      final List data = jsonDecode(response.body);
       return data.map((error) => HealthAlerts.fromJson(error)).toList();
     } else {
       throw Exception('Failed to load all health alerts');
@@ -377,32 +403,35 @@ class ApiService {
 
   // add a new health alert
   static Future<Map<String, dynamic>> addHealthAlert(
-    String title, String message, String severity, 
-    String location, String alertType, String icon ) async {
-      final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}/alerts'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'title': title,
-          'message': message,
-          'severity': severity,
-          'location': location,
-          'alert_type': alertType,
-          'icon': icon
-        }),
-      );
+    String title,
+    String message,
+    String severity,
+    String location,
+    String alertType,
+    String icon,
+  ) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/alerts'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'title': title,
+        'message': message,
+        'severity': severity,
+        'location': location,
+        'alert_type': alertType,
+        'icon': icon,
+      }),
+    );
 
-      return jsonDecode(response.body);
+    return jsonDecode(response.body);
   }
 
   // delete a health alert
   static Future<Map<String, dynamic>> deleteHealthAlert(int id) async {
     final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/alerts/$id')
+      Uri.parse('${ApiService.baseUrl}/alerts/$id'),
     );
 
     return jsonDecode(response.body);
   }
 }
-
-
