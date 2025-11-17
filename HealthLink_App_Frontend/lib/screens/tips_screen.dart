@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/api_service.dart';
-import '../models/health_tips.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/loading_indicator.dart';
-import '../widgets/error_message.dart';
+import 'package:healthlink_app/services/api_service.dart';
+import 'package:healthlink_app/models/health_tips.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
+import 'package:healthlink_app/widgets/loading_indicator.dart';
+import 'package:healthlink_app/widgets/error_message.dart';
 
 class TipsScreen extends StatefulWidget {
   const TipsScreen({
@@ -65,7 +65,7 @@ class _TipsScreenState extends State<TipsScreen> {
     });
   }
 
-  /// Load saved favorites from SharedPreferences
+  // load favorites 
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final favList = prefs.getStringList('favoriteTips') ?? [];
@@ -74,7 +74,7 @@ class _TipsScreenState extends State<TipsScreen> {
     });
   }
 
-  /// Save favorites to SharedPreferences
+  /// Save favorites 
   Future<void> _saveFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
@@ -87,7 +87,7 @@ class _TipsScreenState extends State<TipsScreen> {
     setState(() {
       _filteredTips = _allTips.where((tip) {
         final matchesSearch = tip.title.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-            tip.content.toLowerCase().contains(_searchController.text.toLowerCase());
+          tip.content.toLowerCase().contains(_searchController.text.toLowerCase());
 
         final matchesCategory = _selectedCategory == 'All' || tip.category == _selectedCategory;
         return matchesSearch && matchesCategory;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
-import '../services/api_service.dart';
-import '../widgets/custom_app_bar.dart';
+import 'package:healthlink_app/services/api_service.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
 
 class AddSymptomScreen extends StatefulWidget {
   final int userId;
@@ -28,7 +28,7 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
     setState(() => _loading = true);
 
     try {
-      final res = await ApiService.addSymptom(
+      final response = await ApiService.addSymptom(
         widget.userId,
         _symptomController.text.trim(),
         _severity,
@@ -38,17 +38,36 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(res['message'] ?? 'Saved')
+          content: Row(
+            children: [
+              const SizedBox(width: 12),
+              Text(
+                response['message'] ?? 'Symptom added successfully'
+              ),
+            ],
+          ),
+          backgroundColor: Color.fromARGB(255, 12, 185, 9),
         ),
       );
 
-      Navigator.pop(context);
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $error')),
+        SnackBar(
+          content: Row(
+            children: [
+              Expanded(
+                child: Text('Failed to add symptom')
+              ),
+            ],
+          ),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        ),
       );
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -59,141 +78,403 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
     super.dispose();
   }
 
+  Color _getSeverityColor(String severity) {
+    switch (severity) {
+      case 'low':
+        return Colors.green;
+      case 'medium':
+        return Colors.orange;
+      case 'high':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getSeverityIcon(String severity) {
+    switch (severity) {
+      case 'low':
+        return Icons.sentiment_satisfied;
+      case 'medium':
+        return Icons.sentiment_neutral;
+      case 'high':
+        return Icons.sentiment_very_dissatisfied;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
+  String _getSeverityDescription(String severity) {
+    switch (severity) {
+      case 'low':
+        return 'Mild discomfort';
+      case 'medium':
+        return 'Moderate concern';
+      case 'high':
+        return 'Severe or urgent';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Add Symptom',
         actions: [],
       ),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    )
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextFormField(
-                      controller: _symptomController,
-                      decoration: InputDecoration(
-                        labelText: 'Symptom',
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 212, 209, 209),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      validator: (value) => (value == null || value.trim().isEmpty)
-                          ? 'Enter a symptom'
-                          : null,
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    const Text(
-                      'Severity',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 17,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Wrap(
-                      spacing: 10,
-                      children: [
-                        _severityChip('low', Colors.green),
-                        _severityChip('medium', Colors.orange),
-                        _severityChip('high', Colors.red),
-                      ],
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    const Text(
-                      'Notes (optional)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    TextFormField(
-                      controller: _notesController,
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 212, 209, 209),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: _loading ? null : _save,
-                  child: _loading
-                      ? const LoadingIndicator()
-                      : const Text(
-                          'Save Symptom',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16, 
-                            fontWeight: FontWeight.bold
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                theme.colorScheme.primaryContainer,
+                                theme.colorScheme.secondaryContainer,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.health_and_safety,
+                            size: 65,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      Center(
+                        child: Text(
+                          "Track how you're feeling",
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 137, 136, 136),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: const Color.fromARGB(255, 84, 166, 234),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.errorContainer,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.sick_outlined,
+                                      color: theme.colorScheme.error,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'What are you experiencing?',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              TextFormField(
+                                controller: _symptomController,
+                                decoration: InputDecoration(
+                                  labelText: 'Symptom',
+                                  hintText: 'e.g., Headache, Fever, Cough',
+                                  prefixIcon: const Icon(Icons.edit_note),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surface,
+                                ),
+                                validator: (value) => (value == null || value.trim().isEmpty) ? 'Please describe your symptom' : null,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: const Color.fromARGB(255, 84, 166, 234),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: _getSeverityColor(_severity),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Severity Level',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          _getSeverityDescription(_severity),
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(255, 137, 136, 136),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              Column(
+                                children: [
+                                  _severityOption('low', 'Low', 'Mild, manageable'),
+                                  const SizedBox(height: 8),
+                                  _severityOption('medium', 'Medium', 'Noticeable, concerning'),
+                                  const SizedBox(height: 8),
+                                  _severityOption('high', 'High', 'Severe, needs attention'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: const Color.fromARGB(255, 84, 166, 234),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.tertiaryContainer,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.description_outlined,
+                                      color: theme.colorScheme.tertiary,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Additional Details',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 44),
+                                child: Text(
+                                  'Optional',
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(255, 137, 136, 136),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              TextFormField(
+                                controller: _notesController,
+                                maxLines: 5,
+                                decoration: InputDecoration(
+                                  hintText: 'When did it start? What makes it better or worse? Any other details...',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    blurRadius: 6,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: FilledButton(
+                    onPressed: _loading ? null : _save,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _getSeverityColor(_severity),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _loading
+                        ? const SizedBox(
+                            child: LoadingIndicator(),
+                          )
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.save_outlined, 
+                                size: 22
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Save Symptom',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _severityChip(String value, Color color) {
+  Widget _severityOption(String value, String label, String description) {
+    final theme = Theme.of(context);
     final bool selected = _severity == value;
-
-    return ChoiceChip(
-      label: Text(
-        value[0].toUpperCase() + value.substring(1),
-        style: TextStyle(
-          color: selected ? Colors.white : color,
-          fontWeight: FontWeight.w600,
+    final color = _getSeverityColor(value);
+    
+    return InkWell(
+      onTap: () => setState(() => _severity = value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected ? color.withOpacity(0.1) : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? color : theme.colorScheme.outline.withOpacity(0.2),
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: selected ? color.withOpacity(0.2) : theme.colorScheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _getSeverityIcon(value),
+                color: selected ? color : theme.colorScheme.onSurfaceVariant,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: selected ? color : null,
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      selected: selected,
-      selectedColor: color,
-      onSelected: (_) => setState(() => _severity = value),
     );
   }
 }

@@ -60,6 +60,31 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  // reset password if forgotten
+  static Future<Map<String, dynamic>> resetPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiService.baseUrl}/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to send reset link: ${response.body}'
+        };
+      }
+    } catch (error) {
+      return {
+        'success': false,
+        'message': 'Error sending reset link: $error'
+      };
+    }
+  }
+
   // get user profile
   static Future<Map<String, dynamic>> getUserProfile(int userId) async {
     final response = await http.get(

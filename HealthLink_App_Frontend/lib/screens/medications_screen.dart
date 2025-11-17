@@ -57,15 +57,14 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
           children: const [
             Icon(
               Icons.warning_rounded, 
-              color: Colors.orange, 
-              size: 28
+              color: Colors.orange, size: 28
             ),
             SizedBox(width: 12),
             Text('Delete Medication'),
           ],
         ),
         content: Text(
-          'Are you sure you want to delete "${med.name}"?\n\nThis will also cancel all scheduled reminders.',
+          'Are you sure you want to delete "${med.name}"?',
           style: const TextStyle(height: 1.5),
         ),
         actions: [
@@ -79,7 +78,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: const Text('Yes, Delete'),
           ),
         ],
       ),
@@ -97,15 +96,11 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         SnackBar(
           content: Row(
             children: const [
-              Icon(
-                Icons.check_circle, 
-                color: Colors.white
-              ),
               SizedBox(width: 12),
               Text('Medication deleted successfully'),
             ],
           ),
-          backgroundColor: Colors.green,
+          backgroundColor:  Color.fromARGB(255, 12, 185, 9),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
           ),
@@ -118,15 +113,12 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         SnackBar(
           content: Row(
             children: const [
-              Icon(
-                Icons.error, 
-                color: Colors.white
-              ),
               SizedBox(width: 12),
               Text('Failed to delete medication'),
             ],
           ),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
           ),
@@ -152,7 +144,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _onAdd,
-        backgroundColor: const Color.fromARGB(255, 150, 237, 153),
+        backgroundColor: Colors.green,
         icon: const Icon(Icons.add),
         label: const Text('Add Medication'),
       ),
@@ -160,27 +152,22 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         children: [
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(
-              // gradient: LinearGradient(
-              //   colors: [Colors.blue, Colors.blue.shade700],
-              //   begin: Alignment.topLeft,
-              //   end: Alignment.bottomRight,
-              // ),
-            ),
+            decoration: BoxDecoration(),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Search Bar
+                  const SizedBox(height: 16),
+
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(255, 53, 50, 50),
-                          blurRadius: 6,
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -238,11 +225,6 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.error_outline, 
-                          size: 64, 
-                          color: Colors.red[300]
-                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Error loading medications',
@@ -416,7 +398,7 @@ class _MedicationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -431,7 +413,7 @@ class _MedicationCard extends StatelessWidget {
                 width: 6,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color],
+                    colors: [color, color.withOpacity(0.6)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -449,7 +431,7 @@ class _MedicationCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: color,
+                              color: color.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -535,10 +517,10 @@ class _MedicationCard extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: color,
+                              color: color.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: color,
+                                color: color.withOpacity(0.3),
                                 width: 1,
                               ),
                             ),

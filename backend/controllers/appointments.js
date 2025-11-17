@@ -10,10 +10,10 @@ export const createAppointment = async (req, res) => {
     }
 
     const result = await db.query(
-      `INSERT INTO appointments (user_id, clinic_id, appointment_at, purpose, notes)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO appointments (user_id, clinic_id, appointment_at, notes)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [user_id, clinic_id, appointment_at, purpose, notes]
+      [user_id, clinic_id, appointment_at, notes]
     );
 
     res.status(200).json({ 

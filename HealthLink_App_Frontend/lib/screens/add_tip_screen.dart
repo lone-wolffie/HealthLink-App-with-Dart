@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import '../widgets/custom_app_bar.dart';
+import 'package:healthlink_app/services/api_service.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
 
 class AddTipScreen extends StatefulWidget {
   const AddTipScreen({
@@ -22,7 +22,8 @@ class _AddTipScreenState extends State<AddTipScreen> {
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill all fields')
+          content: Text('Please fill all fields'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
         )
       );
       return;
@@ -36,7 +37,8 @@ class _AddTipScreenState extends State<AddTipScreen> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add tip: $error')
+          content: Text('Failed to add health tip'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
         )
       );
     }
@@ -47,8 +49,9 @@ class _AddTipScreenState extends State<AddTipScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: "Add Health Tip", 
-        showBackButton: true, actions: [],
+        title: 'Add Health Tip', 
+        showBackButton: true, 
+        actions: [],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -56,20 +59,24 @@ class _AddTipScreenState extends State<AddTipScreen> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(labelText: "Title"),
+              decoration: const InputDecoration(
+                labelText: 'Title'
+              ),
             ),
 
             const SizedBox(height: 12),
             TextField(
               controller: _contentController,
-              maxLines: 4,
-              decoration: const InputDecoration(labelText: "Content"),
+              maxLines: 5,
+              decoration: const InputDecoration(
+                labelText: 'Content'
+              ),
             ),
             
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submit,
-              child: const Text("Save Tip"),
+              child: const Text('Save Tip'),
             ),
           ],
         ),

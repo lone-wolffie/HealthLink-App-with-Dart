@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/symptoms.dart';
-import '../services/api_service.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/loading_indicator.dart';
+import 'package:healthlink_app/models/symptoms.dart';
+import 'package:healthlink_app/services/api_service.dart';
+import 'package:healthlink_app/widgets/custom_app_bar.dart';
+import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class SymptomHistoryScreen extends StatefulWidget {
   final int userId;
@@ -19,6 +19,7 @@ class SymptomHistoryScreen extends StatefulWidget {
 
 class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
   late Future<List<Symptoms>> _symptomsFuture;
+  String _selectedFilter = 'all';
 
   @override
   void initState() {
@@ -37,14 +38,17 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Symptom removed')
+        SnackBar(
+          content: Text('Symptom removed successfully'),
+          backgroundColor: Color.fromARGB(255, 12, 185, 9),
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Delete failed: $error')
+          content: Text('Delete failed: $error'),
+          backgroundColor: Color.fromARGB(255, 244, 29, 13),
         ),
       );
     }
@@ -63,209 +67,589 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
     }
   }
 
+  IconData _severityIcon(String severity) {
+    switch (severity.toLowerCase()) {
+      case 'low':
+        return Icons.sentiment_satisfied;
+      case 'medium':
+        return Icons.sentiment_neutral;
+      case 'high':
+        return Icons.sentiment_very_dissatisfied;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
   String _dateGroup(DateTime date) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final theDate = DateTime(date.year, date.month, date.day);
+    final today = DateTime(
+      now.year, 
+      now.month, 
+      now.day
+    );
 
-    if (theDate == today) return 'Today';
-    if (theDate == today.subtract(const Duration(days: 1))) return 'Yesterday';
+    final theDate = DateTime(
+      date.year, 
+      date.month, 
+      date.day
+    );
+
+    if (theDate == today) {
+      return 'Today';
+    }
+    if (theDate == today.subtract(
+      const Duration(days: 1)
+    )) {
+      return 'Yesterday';
+    }
     return DateFormat('EEEE, MMM d, yyyy').format(date);
+  }
+
+  int _getSeverityCount(List<Symptoms> symptoms, String severity) {
+    if (severity == 'all') return symptoms.length;
+    return symptoms.where((symptom) => symptom.severity.toLowerCase() == severity).length;
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'My Symptom History',
+        title: 'Symptom History',
         actions: [],
       ),
-
       body: FutureBuilder<List<Symptoms>>(
         future: _symptomsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: LoadingIndicator(),
-            );
-          }
-
-          if (snapshot.hasError) {
             return Center(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Something went wrong.'),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () => setState(_loadSymptoms),
-                    child: const Text('Retry'),
+                  const LoadingIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading symptom history...',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             );
           }
 
-          final symptoms = snapshot.data ?? [];
-
-          if (symptoms.isEmpty) {
+          if (snapshot.hasError) {
             return Center(
-              child: Text(
-                'No symptoms logged yet.',
-                style: TextStyle(
-                  fontSize: 16, 
-                  color: Colors.grey.shade600
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Something went wrong',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Unable to load your symptom history',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () => setState(_loadSymptoms),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Try Again'),
+                    ),
+                  ],
                 ),
               ),
             );
           }
 
+          final allSymptoms = snapshot.data ?? [];
+
+          if (allSymptoms.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.sick_outlined,
+                        size: 64,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'No Symptoms Logged',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Start tracking your symptoms to build your health history',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          // Filter symptoms
+          final filteredSymptoms = _selectedFilter == 'all'
+            ? allSymptoms
+            : allSymptoms
+              .where((symptom) => symptom.severity.toLowerCase() == _selectedFilter)
+                .toList();
+
+          // group by date recorded
           final grouped = <String, List<Symptoms>>{};
-          for (var symptom in symptoms) {
+          for (var symptom in filteredSymptoms) {
             final dateLabel = _dateGroup(symptom.dateRecorded);
             grouped.putIfAbsent(dateLabel, () => []).add(symptom);
           }
 
           final sortedKeys = grouped.keys.toList();
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
+          return Column(
             children: [
-              for (var group in sortedKeys) ...[
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10, 
-                    bottom: 6
-                  ),
-                  child: Text(
-                    group,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color.fromARGB(255, 33, 44, 243),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-
-                ...grouped[group]!.map((symptom) {
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 14),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(173, 0, 0, 0),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.filter_list,
+                            color: theme.colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Filter by Severity',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        _buildFilterChip(
+                          'all', 
+                          Icons.list, 
+                          allSymptoms
+                        ),
+                        _buildFilterChip(
+                          'low', 
+                          Icons.sentiment_satisfied, 
+                          allSymptoms
+                        ),
+                        _buildFilterChip(
+                          'medium', 
+                          Icons.sentiment_neutral, 
+                          allSymptoms
+                        ),
+                        _buildFilterChip(
+                          'high', 
+                          Icons.sentiment_very_dissatisfied, 
+                          allSymptoms
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: filteredSymptoms.isEmpty
+                    ? _buildEmptyFilterState()
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          setState(_loadSymptoms);
+                        },
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           children: [
-                            Expanded(
-                              child: Text(
-                                symptom.symptom,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                            for (var group in sortedKeys) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 12, 
+                                  bottom: 8
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_month_outlined,
+                                      size: 16,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      group,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete, 
-                                color: Colors.red
-                              ),
-                              onPressed: () async {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: const Text('Delete symptom?'),
-                                    content: const Text('This action cannot be undone.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context, false),
-                                        child: const Text('Cancel'),
+                              ...grouped[group]!.map((symptom) {
+                                return Card(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: BorderSide(
+                                      color: theme.colorScheme.outline.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: _severityColor(symptom.severity).withOpacity(0.1),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: _severityColor(symptom.severity),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Icon(
+                                                _severityIcon(symptom.severity),
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    symptom.symptom,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '${symptom.severity[0].toUpperCase()}${symptom.severity.substring(1)}',
+                                                    style: TextStyle(
+                                                      color: _severityColor(symptom.severity),
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.delete_outline,
+                                                color: Color.fromARGB(255, 244, 29, 13),
+                                              ),
+                                              onPressed: () async {
+                                                final confirm = await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (_) => AlertDialog(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    icon: Icon(
+                                                      Icons.delete_outline,
+                                                      color: Color.fromARGB(255, 244, 29, 13),
+                                                      size: 48,
+                                                    ),
+                                                    title: const Text(
+                                                      'Delete Symptom?',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    content: const Text(
+                                                      'This action cannot be undone. Are you sure you want to delete this symptom entry?',
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context, false),
+                                                        child: Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            color: theme.colorScheme.onSurfaceVariant,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      FilledButton(
+                                                        onPressed: () => Navigator.pop(context, true),
+                                                        style: FilledButton.styleFrom(
+                                                          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+                                                        ),
+                                                        child:const Text('Yes, Delete'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                                if (confirm == true) {
+                                                  await _deleteSymptom(symptom.id);
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context, true),
-                                        child: const Text('Delete'),
+
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.access_time,
+                                                  size: 16,
+                                                  color: theme.colorScheme.onSurfaceVariant,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  DateFormat('hh:mm a').format(symptom.dateRecorded),
+                                                  style: TextStyle(
+                                                    color: theme.colorScheme.onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            if (symptom.notes.isNotEmpty) ...[
+                                              const SizedBox(height: 12),
+                                              Container(
+                                                padding: const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: theme.colorScheme.surfaceContainerHighest,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.note_outlined,
+                                                      size: 18,
+                                                      color: theme.colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            'Notes',
+                                                            style: TextStyle(
+                                                              color: theme.colorScheme.onSurfaceVariant,
+                                                              fontWeight: FontWeight.w600,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(height: 4),
+                                                          Text(
+                                                            symptom.notes,
+                                                            style: theme.textTheme.bodySmall,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                 );
-                                if (confirm == true) {
-                                  await _deleteSymptom(symptom.id);
-                                }
-                              },
-                            ),
+                              }),
+                            ],
                           ],
                         ),
-
-                        Text(
-                          DateFormat('hh:mm a').format(symptom.dateRecorded),
-                          style: TextStyle(
-                            fontSize: 13, 
-                            color: Colors.grey.shade600
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        Chip(
-                          label: Text(
-                            symptom.severity[0].toUpperCase() + symptom.severity.substring(1),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          backgroundColor: _severityColor(symptom.severity),
-                        ),
-
-                        if (symptom.notes.isNotEmpty)
-                          Container(
-                            margin: const EdgeInsets.only(top: 14),
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color.fromARGB(255, 173, 171, 171)),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.notes, 
-                                  color: Colors.grey.shade600, 
-                                  size: 20
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    symptom.notes,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey.shade800,
-                                      height: 1.5,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                }),
-              ]
+                      ),
+              ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(
+    String filter, IconData icon, List<Symptoms> allSymptoms) {
+      final theme = Theme.of(context);
+      final selected = _selectedFilter == filter;
+      final count = _getSeverityCount(allSymptoms, filter);
+      final color = filter == 'all'
+        ? theme.colorScheme.primary
+        : _severityColor(filter);
+
+      return FilterChip(
+        avatar: Icon(
+          icon,
+          size: 16,
+          color: selected ? Colors.white : color,
+        ),
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(filter == 'all' ? 'All' : '${filter[0].toUpperCase()}${filter.substring(1)}'),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: selected
+                    ? Colors.white.withOpacity(0.3)
+                    : color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: selected ? Colors.white : color,
+                ),
+              ),
+            ),
+          ],
+        ),
+        selected: selected,
+        onSelected: (_) {
+          setState(() {
+            _selectedFilter = filter;
+          });
+        },
+        backgroundColor: theme.colorScheme.surface,
+        selectedColor: color,
+        checkmarkColor: Colors.white,
+        labelStyle: TextStyle(
+          color: selected ? Colors.white : theme.colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: selected ? color : theme.colorScheme.outline.withOpacity(0.3),
+          ),
+        ),
+      );
+    }
+    
+
+  Widget _buildEmptyFilterState() {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.filter_list_off,
+                size: 64,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No ${_selectedFilter == 'all' ? '' : _selectedFilter} Symptoms',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try selecting a different severity filter',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextButton.icon(
+              onPressed: () {
+                setState(() {
+                  _selectedFilter = 'all';
+                });
+              },
+              icon: const Icon(Icons.clear_all),
+              label: const Text('Show All'),
+            ),
+          ],
+        ),
       ),
     );
   }
