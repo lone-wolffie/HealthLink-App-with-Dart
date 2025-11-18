@@ -74,6 +74,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         SnackBar(
           content: const Text('Please enter your username and password'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -96,6 +100,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           SnackBar(
             content: Text('Welcome back, ${user['username']}'),
             backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
 
@@ -111,6 +119,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           SnackBar(
             content: Text(response['message'] ?? 'Login failed'),
             backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -120,6 +132,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         SnackBar(
           content: Text('Error: $error'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     } finally {
@@ -134,6 +150,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         SnackBar(
           content: const Text('Please enter your email'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -145,9 +165,13 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       if (response['success'] == true) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Password reset link sent! Check your email.'),
             backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           )
         );
 
@@ -158,6 +182,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           SnackBar(
             content: Text(response['message'] ?? 'Failed to send reset link'),
             backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -167,6 +195,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         SnackBar(
           content: Text('Error: $error'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }

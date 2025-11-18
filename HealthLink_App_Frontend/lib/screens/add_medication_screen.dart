@@ -74,6 +74,10 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
           SnackBar(
             content: const Text('This time has already been added'),
             backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
         return;
@@ -91,14 +95,12 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     if (selectedTimes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
-            children: [
-              Expanded(
-                child: Text('Please add at least one daily time')
-              ),
-            ],
-          ),
+          content: Text('Please add at least one daily time'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -126,9 +128,13 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Failed to add medication'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           duration: Duration(seconds: 2),
         ),
       );
@@ -137,9 +143,13 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text('Medication added successfully'),
         backgroundColor: Color.fromARGB(255, 12, 185, 9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         duration: Duration(seconds: 2),
       ),
     );
@@ -267,7 +277,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                   labelText: 'Dose',
                                   hintText: 'e.g., 500mg, 1 tablet',
                                   prefixIcon: const Icon(
-                                    Icons.straighten
+                                    Icons.medication_liquid
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),

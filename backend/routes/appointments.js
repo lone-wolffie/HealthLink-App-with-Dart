@@ -3,15 +3,15 @@ import { createAppointment, getUserAppointments, cancelAppointment, completeAppo
 
 const router = express.Router();
 
-// Book appointment
+// book appointment route
 router.post("/", createAppointment);
-// Get all appointments for a specific user
+// get all appointments for a specific user route
 router.get("/:user_id", getUserAppointments);
-// Cancel an appointment
+// cancel an appointment route
 router.patch("/:id/cancel", cancelAppointment);
-// complete an appointment
+// complete an appointment route
 router.put("/:id/complete", completeAppointment);
-// reschedule an appointment
+// reschedule an appointment route
 router.put("/:id/reschedule", rescheduleAppointment);
 
 export default router;

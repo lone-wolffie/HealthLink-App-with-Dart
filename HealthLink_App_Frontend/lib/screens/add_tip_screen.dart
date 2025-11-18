@@ -21,9 +21,13 @@ class _AddTipScreenState extends State<AddTipScreen> {
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please fill all fields'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         )
       );
       return;
@@ -39,6 +43,10 @@ class _AddTipScreenState extends State<AddTipScreen> {
         SnackBar(
           content: Text('Failed to add health tip'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         )
       );
     }

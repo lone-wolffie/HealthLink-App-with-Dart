@@ -168,6 +168,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: isError ? Color.fromARGB(255, 244, 29, 13) : Color.fromARGB(255, 12, 185, 9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         content: Row(
           children: [
             Icon(isError ? Icons.error : Icons.check_circle, color: Colors.white),

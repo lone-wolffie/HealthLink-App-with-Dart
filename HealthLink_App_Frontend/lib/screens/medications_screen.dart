@@ -94,13 +94,9 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: const [
-              SizedBox(width: 12),
-              Text('Medication deleted successfully'),
-            ],
-          ),
+          content: Text('Medication deleted successfully'),  
           backgroundColor:  Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
           ),

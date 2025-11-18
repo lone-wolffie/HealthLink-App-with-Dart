@@ -50,10 +50,14 @@ class HealthLinkApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/login':
-            return MaterialPageRoute(builder: (_) => const Login());
+            return MaterialPageRoute(
+              builder: (_) => const Login()
+            );
           
           case '/signup':
-            return MaterialPageRoute(builder: (_) => const Signup());
+            return MaterialPageRoute(
+              builder: (_) => const Signup()
+            );
           
           case '/home':
             int? userId;
@@ -70,14 +74,20 @@ class HealthLinkApp extends StatelessWidget {
               );
             } else {
               // If no userId, redirect to login
-              return MaterialPageRoute(builder: (_) => const Login());
+              return MaterialPageRoute(
+                builder: (_) => const Login()
+              );
             }
           
           case '/clinics':
-            return MaterialPageRoute(builder: (_) => const ClinicsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const ClinicsScreen()
+            );
           
           case '/tips':
-            return MaterialPageRoute(builder: (_) => const TipsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const TipsScreen()
+            );
           
           case '/symptomHistory':
             final userId = settings.arguments as int;
@@ -92,7 +102,9 @@ class HealthLinkApp extends StatelessWidget {
             );
           
           case '/healthAlerts':
-            return MaterialPageRoute(builder: (_) => const AlertsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const AlertsScreen()
+            );
 
           case '/bookAppointment':
             final args = settings.arguments as Map<String, dynamic>;
@@ -111,7 +123,9 @@ class HealthLinkApp extends StatelessWidget {
             );
           
           default:
-            return MaterialPageRoute(builder: (_) => const Login());
+            return MaterialPageRoute(
+              builder: (_) => const Login()
+            );
         }
       },
     );

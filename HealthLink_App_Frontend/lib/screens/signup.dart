@@ -6,7 +6,9 @@ import 'package:healthlink_app/widgets/text_input_field.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key});
+  const Signup({
+    super.key
+  });
 
   @override
   State<Signup> createState() => _SignupState();
@@ -78,6 +80,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
         SnackBar(
           content:  Text('Please fill in all required fields'), 
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -89,6 +95,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
         SnackBar(
           content: Text('Please enter a valid email address'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -114,6 +124,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
           SnackBar(
             content: Text('Welcome to HealthLink, $username!'),
             backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
 
@@ -127,6 +141,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
           SnackBar(
             content: Text(response['message'] ?? 'Signup failed. Please try again.'),
             backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -136,6 +154,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
         SnackBar(
           content:  Text('Error: $error'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         )
       ); 
     } finally {

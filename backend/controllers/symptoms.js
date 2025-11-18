@@ -13,7 +13,7 @@ export const getSymptomHistory = async (req, res) => {
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error getting symptoms history:", error);
-        res.status(500).json({ message: "Failed to load symptoms history" });
+        res.status(500).json({ error: "Failed to load symptoms history" });
     }
 };
 
@@ -27,14 +27,15 @@ export const addSymptom = async (req, res) => {
         }
 
         await db.query(
-            "INSERT INTO symptoms_checker (user_id, symptom, severity, notes) VALUES ($1, $2, $3, $4)",
+            `INSERT INTO symptoms_checker (user_id, symptom, severity, notes) 
+            VALUES ($1, $2, $3, $4)`,
             [user_id, symptom, severity, notes || ""]
         );
 
-        res.status(201).json({ message: "Symptom added successfully" });
+        res.status(200).json({ message: "Symptom added successfully" });
     } catch (error) {
         console.error("Error adding new symptom:", error);
-        res.status(500).json({ message: "Failed to add a new symptom" });
+        res.status(500).json({ error: "Failed to add a new symptom" });
     }
 };
 
@@ -55,6 +56,6 @@ export const deleteSymptom = async (req, res) => {
         res.status(200).json({ message: "Symptom deleted successfully" });
     } catch (error) {
         console.error("Error deleting the symptom:", error);
-        res.status(500).json({ message: "Failed to delete the symptom" });
+        res.status(500).json({ error: "Failed to delete the symptom" });
     }
 };

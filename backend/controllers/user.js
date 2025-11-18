@@ -6,7 +6,8 @@ export const getUserProfile = async (req, res) => {
     const { id } = req.params;
 
     const result = await db.query(
-      "SELECT id, fullname, email, phonenumber, username, created_at, profile_image FROM users WHERE id = $1",
+      `SELECT id, fullname, email, phonenumber, username, created_at, profile_image 
+      FROM users WHERE id = $1`,
       [id]
     );
 
@@ -22,7 +23,7 @@ export const getUserProfile = async (req, res) => {
     res.status(200).json(user);
 
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch user profile" });
+    res.status(500).json({ error: "Failed to fetch user profile" });
   }
 };
 
@@ -35,14 +36,14 @@ export const updateUserProfile = async (req, res) => {
 
     await db.query(
       `UPDATE users 
-       SET fullname = $1, email = $2, phonenumber = $3, username = $4 
-       WHERE id = $5`,
+      SET fullname = $1, email = $2, phonenumber = $3, username = $4 
+      WHERE id = $5`,
       [fullname, email, phonenumber, username, id]
     );
 
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update profile" });
+    res.status(500).json({ error: "Failed to update profile" });
   }
 };
 
@@ -50,7 +51,7 @@ export const updateUserProfile = async (req, res) => {
 export const uploadProfileImage = async (req, res) => {
   try {
     const { id } = req.params;
-    const filename = req.file.filename; // image name
+    const filename = req.file.filename; 
 
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
@@ -68,6 +69,6 @@ export const uploadProfileImage = async (req, res) => {
     
   } catch (error) {
     console.error("Error uploading profile image:", error);
-    res.status(500).json({ message: "Failed to upload profile image" });
+    res.status(500).json({ error: "Failed to upload profile image" });
   }
 };

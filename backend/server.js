@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Routes usage
+// routes usage
 app.use("/uploads/profile", express.static("uploads/profile"));
 app.use("/api/auth", signupLoginRoutes);
 app.use("/api/users", userRoutes);

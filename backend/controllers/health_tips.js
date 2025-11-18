@@ -9,7 +9,7 @@ export const getAllHealthTips = async (req, res) => {
         res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching all the health tips:", error);
-        res.status(500).json({ message: "Failed to load all the health tips" });
+        res.status(500).json({ error: "Failed to load all the health tips" });
     }
 };
 
@@ -27,10 +27,10 @@ export const addHealthTip = async (req, res) => {
             [title, content]
         );
 
-        res.status(201).json({ message: "Health tip added sucessfully." });
+        res.status(200).json({ message: "Health tip added sucessfully." });
     } catch (error) {
         console.error("Error adding the health tip");
-        res.status(500).json({ message: "Failed to add the health tip" });
+        res.status(500).json({ error: "Failed to add the health tip" });
     }
 };
 
@@ -52,6 +52,6 @@ export const deleteHealthTip = async (req, res) => {
         res.status(200).json({ message: "Health tip deleted successfully" });
     } catch (error) {
         console.error("Error deleting the health tip:", error);
-        res.status(500).json({ message: "Failed to delete the health tip" });
+        res.status(500).json({ error: "Failed to delete the health tip" });
     }
 };

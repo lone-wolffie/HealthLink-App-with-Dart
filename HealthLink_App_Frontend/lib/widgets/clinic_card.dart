@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../screens/book_appointment_screen.dart';
-import '../models/clinics.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:healthlink_app/screens/book_appointment_screen.dart';
+import 'package:healthlink_app/models/clinics.dart';
 
 class ClinicCard extends StatelessWidget {
   final String name;
@@ -25,14 +25,20 @@ class ClinicCard extends StatelessWidget {
   });
 
   final List<String> orderedDays = const [
-    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   @override
   Widget build(BuildContext context) {
-    // Normalize Keys for Ordering
     final normalizedHours = operatingHours.map((key, value) {
-      final formattedKey = key[0].toUpperCase() + key.substring(1).toLowerCase();
+      final formattedKey =
+          key[0].toUpperCase() + key.substring(1).toLowerCase();
       return MapEntry(formattedKey, value);
     });
 
@@ -53,52 +59,60 @@ class ClinicCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          // Clinic Name
-          Text(name,
-              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
+          Text(
+            name,
+            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 10),
 
-          // Address
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 18, color: Colors.grey),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 18,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(address,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+                child: Text(
+                  address,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
 
-          // Phone
           Row(
             children: [
               const Icon(Icons.phone_outlined, size: 18, color: Colors.grey),
               const SizedBox(width: 6),
-              Text(phoneNumber,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+              Text(
+                phoneNumber,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+              ),
             ],
           ),
           const SizedBox(height: 6),
 
-          // Email
           Row(
             children: [
               const Icon(Icons.email_outlined, size: 18, color: Colors.grey),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(email,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+                child: Text(
+                  email,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 14),
 
-          // Services
-          const Text('Services',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+          const Text(
+            'Services',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 6),
 
           Wrap(
@@ -106,7 +120,10 @@ class ClinicCard extends StatelessWidget {
             runSpacing: 8,
             children: services.map((service) {
               return Chip(
-                label: Text(service, style: const TextStyle(color: Colors.white)),
+                label: Text(
+                  service,
+                  style: const TextStyle(color: Colors.white),
+                ),
                 backgroundColor: Colors.blueAccent,
               );
             }).toList(),
@@ -114,22 +131,26 @@ class ClinicCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Operating Hours
-          const Text('Operating Hours',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+          const Text(
+            'Operating Hours',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 6),
 
           Column(
             children: orderedDays.map((day) {
-              if (!normalizedHours.containsKey(day)) return const SizedBox.shrink();
+              if (!normalizedHours.containsKey(day))
+                return const SizedBox.shrink();
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(day, style: TextStyle(color: Colors.grey.shade800)),
-                    Text(normalizedHours[day]!,
-                        style: const TextStyle(fontWeight: FontWeight.w500)),
+                    Text(
+                      normalizedHours[day]!,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
                   ],
                 ),
               );
@@ -138,29 +159,29 @@ class ClinicCard extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // ACTION BUTTONS
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _button(
                 icon: Icons.call,
-                label: "Call",
+                label: 'Call',
                 color: Colors.green,
                 onTap: () => launchUrl(Uri(scheme: 'tel', path: phoneNumber)),
               ),
               _button(
                 icon: Icons.map_outlined,
-                label: "Map",
+                label: 'Map',
                 color: Colors.deepOrange,
                 onTap: () => launchUrl(
-                  Uri.parse("https://www.google.com/maps/search/?api=1&query=$address"),
+                  Uri.parse(
+                    "https://www.google.com/maps/search/?api=1&query=$address",
+                  ),
                 ),
               ),
 
-              // *** NEW VIEW / BOOK BUTTON ***
               _button(
                 icon: Icons.arrow_forward_ios_rounded,
-                label: "Book Appointment",
+                label: 'Book Appointment',
                 color: Colors.purple,
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
@@ -168,7 +189,10 @@ class ClinicCard extends StatelessWidget {
 
                   if (userId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please log in first.")),
+                      const SnackBar(
+                        content: Text('Please log in first.'),
+                        backgroundColor: Color.fromARGB(255, 244, 29, 13),
+                      ),
                     );
                     return;
                   }
@@ -185,7 +209,6 @@ class ClinicCard extends StatelessWidget {
                   );
                 },
               ),
-
             ],
           ),
         ],
@@ -203,9 +226,19 @@ class ClinicCard extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, size: 18, color: color),
+          Icon(
+            icon, 
+            size: 18, 
+            color: color
+          ),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: color, 
+              fontWeight: FontWeight.w600
+            ),
+          ),
         ],
       ),
     );

@@ -41,12 +41,14 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
           content: Row(
             children: [
               const SizedBox(width: 12),
-              Text(
-                response['message'] ?? 'Symptom added successfully'
-              ),
+              Text(response['message'] ?? 'Symptom added successfully'),
             ],
           ),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
 
@@ -54,14 +56,12 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: [
-              Expanded(
-                child: Text('Failed to add symptom')
-              ),
-            ],
-          ),
+          content: Text('Failed to add symptom'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     } finally {

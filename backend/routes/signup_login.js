@@ -1,7 +1,6 @@
 import express from "express";
 import { signup, login } from "../controllers/signup_login.js";
 
-
 const router = express.Router();
 
 // signup route

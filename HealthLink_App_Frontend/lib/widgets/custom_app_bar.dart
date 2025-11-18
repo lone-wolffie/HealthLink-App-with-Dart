@@ -21,10 +21,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         title,
         style: const TextStyle(
           color: Colors.black87,
-            fontWeight: FontWeight.w600,
-            fontSize: 23,
-          ),
+          fontWeight: FontWeight.w600,
+          fontSize: 23,
         ),
+      ),
       centerTitle: true,
       leading: showBackButton
         ? IconButton(
@@ -37,10 +37,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               }
             },
           )
-        : null, // if showBackButton = false
+        : null, 
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight); // height = 56px
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight); 
 }

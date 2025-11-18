@@ -4,13 +4,13 @@ CREATE DATABASE HealthCareLinkApp;
 
 -- Users Table for signup
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    fullname VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    phonenumber VARCHAR(20),
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  fullname VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phonenumber VARCHAR(20),
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     
 );
 
@@ -18,16 +18,17 @@ ALTER TABLE users ADD COLUMN profile_image TEXT;
 
 -- Clinics Table
 CREATE TABLE clinics (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    address TEXT NOT NULL,
-    phonenumber VARCHAR(20),
-    email VARCHAR(255),
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
-    services TEXT[],
-    operating_hours JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  address TEXT NOT NULL,
+  phonenumber VARCHAR(20),
+  email VARCHAR(255),
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  services TEXT[],
+  operating_hours JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- Insert Sample Clinics
@@ -113,13 +114,13 @@ VALUES
  ARRAY['Emergency', 'Dialysis', 'Maternity'],
  '{"monday":"08:00-17:00","tuesday":"08:00-17:00","wednesday":"08:00-17:00","thursday":"08:00-17:00","friday":"08:00-17:00","saturday":"09:00-13:00","sunday":"Closed"}');
 
-
 -- Health Tips Table
 CREATE TABLE health_tips (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 ALTER TABLE health_tips 
@@ -160,6 +161,7 @@ CREATE TABLE symptoms_checker (
   severity VARCHAR(20) CHECK (severity IN ('low', 'medium', 'high')),
   notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- Health Alerts/ Warnings Table
@@ -173,6 +175,7 @@ CREATE TABLE health_alerts (
   icon VARCHAR(50),
   is_active BOOLEAN DEFAULT true,
   published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- Insert Sample Health Alerts
@@ -193,24 +196,25 @@ CREATE TYPE appointment_status AS ENUM ('booked','confirmed','cancelled','comple
 
 -- appointments table
 CREATE TABLE appointments (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,             
-    clinic_id INTEGER NOT NULL,           
-    appointment_at TIMESTAMP WITH TIME ZONE NOT NULL, 
-    duration_mins INTEGER DEFAULT 30,     
-    purpose TEXT,                         
-    notes TEXT,                           
-    status appointment_status DEFAULT 'booked',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,             
+  clinic_id INTEGER NOT NULL,           
+  appointment_at TIMESTAMP WITH TIME ZONE NOT NULL, 
+  duration_mins INTEGER DEFAULT 30,     
+  purpose TEXT,                         
+  notes TEXT,                           
+  status appointment_status DEFAULT 'booked',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- foreign keys
 ALTER TABLE appointments
-    ADD CONSTRAINT fk_appointments_user
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_appointments_clinic
-        FOREIGN KEY (clinic_id) REFERENCES clinics(id) ON DELETE CASCADE;
+  ADD CONSTRAINT fk_appointments_user
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_appointments_clinic
+    FOREIGN KEY (clinic_id) REFERENCES clinics(id) ON DELETE CASCADE;
 
 -- auto-update 
 CREATE OR REPLACE FUNCTION trg_set_updated_at()
@@ -236,6 +240,7 @@ CREATE TABLE medications (
   notes TEXT DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 -- Create Indexes
@@ -268,22 +273,5 @@ CREATE INDEX idx_appointments_clinic ON appointments(clinic_id);
 CREATE INDEX idx_appointments_status ON appointments(status);
 CREATE INDEX idx_appointments_time ON appointments(appointment_at);
 
--- Indexes for medications table
+-- Index for medications table
 CREATE INDEX idx_medications_user_id ON medications(user_id);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

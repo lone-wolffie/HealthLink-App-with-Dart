@@ -6,7 +6,7 @@ class HealthAlerts {
   final String title;
   final String message;
   final String severity;
-  final String? location;  // have value or be null
+  final String? location;  
   final String? alertType;
   final String? icon;
   final bool isActive;

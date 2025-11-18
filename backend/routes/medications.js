@@ -5,11 +5,11 @@ const router = express.Router();
 
 // create a medication route
 router.post("/", createMedication);
-// get all medications for a specific user
+// get all medications for a specific user route
 router.get("/:user_id", getUserMedication);
-// get a specific medication
+// get a specific medication route
 router.get("/med/:id", getMedication);
-// delete a specific medication
+// delete a specific medication route
 router.delete("/:id", deleteMedication);
 
 export default router;

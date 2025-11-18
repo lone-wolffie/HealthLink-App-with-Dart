@@ -96,7 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _HomeDashboard extends StatefulWidget {
   final int userId;
-  const _HomeDashboard({required this.userId});
+  
+  const _HomeDashboard({
+    required this.userId
+  });
 
   @override
   State<_HomeDashboard> createState() => _HomeDashboardState();

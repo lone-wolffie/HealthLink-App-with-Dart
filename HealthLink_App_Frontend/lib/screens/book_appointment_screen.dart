@@ -169,9 +169,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   Future<void> submitAppointment() async {
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please select both date and time'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -213,9 +217,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       if (!mounted) return; 
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Appointment booked successfully'),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       Navigator.pop(context, true);
@@ -224,9 +232,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     if (response.containsKey('error')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Failed to book appointment. Please try again.'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }

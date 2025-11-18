@@ -24,11 +24,17 @@ class Clinics {
     this.dateRecorded,
   });
 
-    factory Clinics.fromJson(Map<String, dynamic> json) {
+  factory Clinics.fromJson(Map<String, dynamic> json) {
     // latitude & longitude parsing
     double? toDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is num) return value.toDouble();
+      if (value == null) {
+        return null;
+      }
+
+      if (value is num) {
+        return value.toDouble();
+      }
+      
       if (value is String) {
         return double.tryParse(value);
       }

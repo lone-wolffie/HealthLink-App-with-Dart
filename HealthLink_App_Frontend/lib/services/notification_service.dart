@@ -1,10 +1,9 @@
-//import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -31,10 +30,10 @@ class NotificationService {
       debugPrint('Warning: Unable to set timezone: $error');
     }
 
-    // Android init
+    // Android initialization
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS init
+    // iOS initialization
     final iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -55,7 +54,7 @@ class NotificationService {
       },
     );
 
-    // Create android channels
+    // creating android channels
     if (!kIsWeb && Platform.isAndroid) {
       final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
@@ -81,7 +80,7 @@ class NotificationService {
     }
   }
 
-  // appointments reminder 24 hours before
+  // appointment reminder 24 hours before
   static Future<void> scheduleAppointmentReminder({
     required int appointmentId,
     required DateTime appointmentDateTime,
@@ -113,11 +112,9 @@ class NotificationService {
         'You have an appointment at $clinicName in 24 hours.',
         reminderTime,
         details,
-        androidAllowWhileIdle: true,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
-
-      debugPrint('Scheduled appointment reminder at: $reminderTime');
     } catch (error) {
       debugPrint('Appointment schedule error: $error');
     }
@@ -132,7 +129,6 @@ class NotificationService {
       debugPrint('Error cancelling appointment reminder: $error');
     }
   }
-
 
   // medication reminder on scheduled time
   static Future<void> scheduleDailyMedicationReminder({
@@ -186,7 +182,7 @@ class NotificationService {
         'Time to take $medicationName ($dose)',
         scheduleTime,
         details,
-        androidAllowWhileIdle: true,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time, 
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );

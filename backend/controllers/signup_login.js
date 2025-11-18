@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { db } from "../config/db.js";
 
-
 const saltRounds = 10;
 
 // signup function
@@ -17,11 +16,12 @@ export const signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         await db.query(
-            "INSERT INTO users (fullname, email, phonenumber, username, password) VALUES ($1, $2, $3, $4, $5)",
+            `INSERT INTO users (fullname, email, phonenumber, username, password) 
+            VALUES ($1, $2, $3, $4, $5)`,
             [fullname, email, phonenumber, username, hashedPassword]
         );
 
-        return res.status(201).json({ message: "Signup successful." });
+        return res.status(200).json({ message: "Signup successful." });
     } catch (error) {
         // If mail already exists
         if (error.code === "23505") {

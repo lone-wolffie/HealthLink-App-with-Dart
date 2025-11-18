@@ -41,6 +41,10 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
         SnackBar(
           content: Text('Symptom removed successfully'),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     } catch (error) {
@@ -49,6 +53,10 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
         SnackBar(
           content: Text('Delete failed: $error'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -493,8 +501,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                                     Icon(
                                                       Icons.note_outlined,
                                                       size: 18,
-                                                      color: theme.colorScheme
-                                                          .onSurfaceVariant,
+                                                      color: theme.colorScheme.onSurfaceVariant,
                                                     ),
                                                     const SizedBox(width: 8),
                                                     Expanded(
@@ -563,8 +570,8 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: selected
-                    ? Colors.white.withOpacity(0.3)
-                    : color.withOpacity(0.15),
+                  ? Colors.white.withOpacity(0.3)
+                  : color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -626,7 +633,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
             const SizedBox(height: 24),
             Text(
               'No ${_selectedFilter == 'all' ? '' : _selectedFilter} Symptoms',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),

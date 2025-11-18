@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; // material design package
+import 'package:flutter/material.dart'; 
 
 class ErrorMessage extends StatelessWidget {
   final String message;
@@ -9,7 +9,6 @@ class ErrorMessage extends StatelessWidget {
     super.key,
     required this.message,
     this.onClick,
-    
   });
 
   @override

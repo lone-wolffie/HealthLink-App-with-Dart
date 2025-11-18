@@ -44,6 +44,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         SnackBar(
           content:  Text('Failed to cancel appointment'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -57,6 +61,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         SnackBar(
           content: Text('Appointment cancelled successfully'),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       _refresh();
@@ -121,6 +129,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         SnackBar(
           content: Text('Failed to mark appointment as completed'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -135,6 +147,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         SnackBar(
           content: Text('Appointment marked as completed'),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -192,7 +208,9 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
                 child: CalendarDatePicker(
                   initialDate: tempDate,
                   firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 366)),
+                  lastDate: DateTime.now().add(
+                    const Duration(days: 366)
+                  ),
                   onDateChanged: (day) => tempDate = day,
                 ),
               ),
@@ -270,6 +288,10 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
       SnackBar(
         content: Text('Failed to reschedule the appointment'),
         backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
   }
@@ -281,6 +303,10 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
       SnackBar(
         content: Text('Appointment rescheduled successfully'),
         backgroundColor: Color.fromARGB(255, 12, 185, 9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
     _refresh();
@@ -401,7 +427,9 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               future: _appointmentsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: LoadingIndicator());
+                  return const Center(
+                    child: LoadingIndicator()
+                  );
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -490,7 +518,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
                               ),
                             ),
 
-                            // Appointment details
+                            // appointment details
                             Padding(
                               padding: const EdgeInsets.all(16),
                               child: Column(
@@ -595,7 +623,10 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
           Text(filter.toUpperCase()),
           const SizedBox(width: 6),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 6, 
+              vertical: 2
+            ),
             decoration: BoxDecoration(
               color: selected
                   ? Colors.white.withOpacity(0.3)
@@ -659,7 +690,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               ),
               Text(
                 value,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -678,7 +709,10 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
       children: [
         FilledButton.tonalIcon(
           onPressed: () => _rescheduleAppointment(appt),
-          icon: const Icon(Icons.edit_calendar, size: 18),
+          icon: const Icon(
+            Icons.edit_calendar, 
+            size: 18
+          ),
           label: const Text('Reschedule'),
           style: FilledButton.styleFrom(
             backgroundColor: Colors.orange.shade100,
@@ -729,7 +763,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
             const SizedBox(height: 24),
             Text(
               'No Appointments Yet',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -737,7 +771,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
             Text(
               'Book your first appointment with a clinic to get started',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: TextStyle(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
@@ -779,7 +813,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
             Text(
               'Try selecting a different filter',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: TextStyle(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),

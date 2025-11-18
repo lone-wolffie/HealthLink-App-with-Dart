@@ -54,7 +54,10 @@ class ApiService {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode({
+        'username': username, 
+        'password': password
+      }),
     );
 
     return jsonDecode(response.body);
@@ -140,14 +143,15 @@ class ApiService {
 
       return response.statusCode == 200;
     } catch (error) {
-      debugPrint('Upload error: $error');
       return false;
     }
   }
 
   // get all clinics
   static Future<List<Clinics>> getAllClinics() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/clinics'));
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/clinics')
+    );
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -187,9 +191,7 @@ class ApiService {
   }
 
   // book an appointment
-  static Future<Map<String, dynamic>> bookAppointment(
-    Appointment appointment,
-  ) async {
+  static Future<Map<String, dynamic>> bookAppointment(Appointment appointment) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/appointments'),
       headers: {'Content-Type': 'application/json'},
@@ -227,9 +229,7 @@ class ApiService {
   }
 
   // mark appointment as completed
-  static Future<Map<String, dynamic>> completeAppointment(
-    int appointmentId,
-  ) async {
+  static Future<Map<String, dynamic>> completeAppointment(int appointmentId) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/complete'),
@@ -247,10 +247,7 @@ class ApiService {
   }
 
   // reschedule an appointment
-  static Future<Map<String, dynamic>> rescheduleAppointment(
-    int appointmentId,
-    String newDateTime,
-  ) async {
+  static Future<Map<String, dynamic>> rescheduleAppointment(int appointmentId, String newDateTime) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/reschedule'),
@@ -337,7 +334,9 @@ class ApiService {
 
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/tips'));
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/tips')
+    );
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -355,7 +354,10 @@ class ApiService {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/tips'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'title': title, 'content': content}),
+      body: jsonEncode({
+        'title': title, 
+        'content': content
+      }),
     );
 
     return jsonDecode(response.body);
@@ -416,7 +418,9 @@ class ApiService {
 
   // get all active health alerts
   static Future<List<HealthAlerts>> getAllActiveAlerts() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/alerts'));
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/alerts')
+    );
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);

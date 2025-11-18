@@ -33,11 +33,11 @@ class Medication {
   }
 
   Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
-        'user_id': userId,
-        'name': name,
-        'dose': dose,
-        'times': times,
-        'notes': notes,
-      };
+    if (id != null) 'id': id,
+    'user_id': userId,
+    'name': name,
+    'dose': dose,
+    'times': times,
+    'notes': notes,
+  };
 }

@@ -107,22 +107,20 @@ class AlertCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(
-                            horizontal: 10, 
-                            vertical: 5
-                          ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10, 
+                        vertical: 5
+                      ),
                       decoration: BoxDecoration(
                         color: _severityColor(),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         severity.toUpperCase(),
-                        style:
-                            const TextStyle(
-                              color: Colors.white, 
-                              fontSize: 12
-                            ),
+                        style: const TextStyle(
+                          color: Colors.white, 
+                          fontSize: 12
+                        ),
                       ),
                     ),
 
