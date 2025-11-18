@@ -24,7 +24,7 @@ class Symptoms {
       symptom: json['symptom'], 
       severity: json['severity'], 
       notes: json['notes'] ?? '',
-      dateRecorded: DateTime.parse(json['created_at']),
+      dateRecorded: DateTime.parse(json['created_at']).toLocal(),
     );
   }
 

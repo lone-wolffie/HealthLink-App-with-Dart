@@ -19,6 +19,7 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _symptomController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  
   String _severity = 'low';
 
   bool _loading = false;
@@ -33,17 +34,13 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
         _symptomController.text.trim(),
         _severity,
         _notesController.text.trim(),
+        //dateRecorded: DateTime.now(),
       );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: [
-              const SizedBox(width: 12),
-              Text(response['message'] ?? 'Symptom added successfully'),
-            ],
-          ),
+          content: Text(response['message'] ?? 'Symptom added successfully'),
           backgroundColor: Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
