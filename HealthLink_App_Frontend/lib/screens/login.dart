@@ -98,7 +98,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Welcome back, ${user['username']}'),
+            content: Text('Welcome back ${user['username']}'),
             backgroundColor: Color.fromARGB(255, 12, 185, 9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(

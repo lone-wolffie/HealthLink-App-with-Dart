@@ -209,6 +209,14 @@ CREATE TABLE appointments (
 
 );
 
+ALTER TABLE appointments 
+ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE,
+ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE appointments 
+ALTER COLUMN updated_at TYPE TIMESTAMP WITH TIME ZONE,
+ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
 -- foreign keys
 ALTER TABLE appointments
   ADD CONSTRAINT fk_appointments_user

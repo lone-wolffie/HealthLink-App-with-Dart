@@ -392,7 +392,6 @@ class ApiService {
     String symptom,
     String severity,
     String notes,
-    //{DateTime? dateRecorded}
   ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/symptoms'),
@@ -402,7 +401,6 @@ class ApiService {
         'symptom': symptom,
         'severity': severity,
         'notes': notes,
-        //if (dateRecorded != null) 'created_at': dateRecorded.toLocal().toIso8601String(),
       }),
     );
 

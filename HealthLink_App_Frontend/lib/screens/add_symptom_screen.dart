@@ -34,7 +34,6 @@ class _AddSymptomScreenState extends State<AddSymptomScreen> {
         _symptomController.text.trim(),
         _severity,
         _notesController.text.trim(),
-        //dateRecorded: DateTime.now(),
       );
 
       if (!mounted) return;

@@ -111,7 +111,7 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
 
       if (!mounted) return;
 
-      if (response['success'] == true) {
+      if (response.containsKey('message')) {
         final userId = response['userId'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -122,7 +122,7 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Welcome to HealthLink, $username!'),
+            content: Text('Welcome to HealthLink App $username!'),
             backgroundColor: Color.fromARGB(255, 12, 185, 9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -131,6 +131,7 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
           ),
         );
 
+        if (!mounted) return;
         Navigator.pushReplacementNamed(
           context,
           '/home',

@@ -173,7 +173,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'HealthLink App',
+                        'HealthLink App 🏥',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

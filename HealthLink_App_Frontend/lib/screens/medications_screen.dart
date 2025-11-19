@@ -141,8 +141,16 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _onAdd,
         backgroundColor: Colors.green,
-        icon: const Icon(Icons.add),
-        label: const Text('Add Medication'),
+        icon: const Icon(
+          Icons.add,
+          color: Colors.white
+        ),
+        label: const Text(
+          'Add Medication',
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -279,22 +287,6 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[500],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          onPressed: _onAdd,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add Medication'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
                           ),
                         ),
                       ],

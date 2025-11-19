@@ -45,7 +45,7 @@ class HealthLinkApp extends StatelessWidget {
       ),
 
       // starting screen
-      initialRoute: savedUserId == null ? '/signup' : '/home',
+      initialRoute: savedUserId == null ? '/login' : '/home',
 
       onGenerateRoute: (settings) {
         switch (settings.name) {

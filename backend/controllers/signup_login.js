@@ -15,19 +15,26 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        await db.query(
+        const result = await db.query(
             `INSERT INTO users (fullname, email, phonenumber, username, password) 
-            VALUES ($1, $2, $3, $4, $5)`,
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id`,
             [fullname, email, phonenumber, username, hashedPassword]
         );
 
-        return res.status(200).json({ message: "Signup successful." });
+        const userId = result.rows[0].id;
+
+        return res.status(200).json({ 
+            success: true,
+            userId: userId,
+            message: "Signup successful." 
+        });
     } catch (error) {
-        // If mail already exists
+        // If email already exists
         if (error.code === "23505") {
             return res.status(400).json({
                 success: false,
-                message: "Email already registered. Please logging in."
+                message: "Email already registered. Please log in."
             });
         }
         console.error("Signup error:", error);
