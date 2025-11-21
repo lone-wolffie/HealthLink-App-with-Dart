@@ -366,33 +366,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildSectionHeader(ThemeData theme) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Personal Information', 
-          style: TextStyle(
-            fontWeight: FontWeight.bold
-          )
+        const Expanded(
+          child: Text(
+            'Personal Information',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
+
         _isEditing
-            ? Row(
+            ? Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   TextButton.icon(
-                    onPressed: _cancelEdits, 
-                    icon: const Icon(Icons.close), 
-                    label: const Text('Cancel')
+                    onPressed: _cancelEdits,
+                    icon: const Icon(Icons.close),
+                    label: const Text('Cancel'),
                   ),
+
                   FilledButton.icon(
                     onPressed: _saving ? null : _saveProfile,
                     icon: _saving
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: LoadingIndicator()
+                            child: LoadingIndicator(),
                           )
                         : const Icon(Icons.check),
                     label: Text(_saving ? 'Saving...' : 'Save'),
-                  )
+                  ),
                 ],
               )
             : FilledButton.tonalIcon(
@@ -403,6 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+
 
   Widget _buildInfoCard(
     ThemeData theme,

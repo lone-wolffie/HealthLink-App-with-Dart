@@ -3,12 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // appointment reminders
   static const String _appointmentChannelId = 'appointment_channel';
@@ -35,7 +33,7 @@ class NotificationService {
     }
 
     // Android initialization
-    const androidInit = AndroidInitializationSettings('@drawable/notification_icon');
+    const androidInit = AndroidInitializationSettings('@drawable/notification_icon.png');
 
     // iOS initialization
     final iosInit = DarwinInitializationSettings(
@@ -58,12 +56,15 @@ class NotificationService {
       },
     );
 
+    if (Platform.isAndroid) {
+      final androidImpl = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+      await androidImpl?.requestNotificationsPermission();
+    }
+
     // creating android channels
     if (!kIsWeb && Platform.isAndroid) {
-      final androidPlugin = _notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
+      final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
       // appointment channel
       await androidPlugin?.createNotificationChannel(
@@ -122,8 +123,7 @@ class NotificationService {
         reminderTime,
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
     } catch (error) {
       debugPrint('Appointment schedule error: $error');
@@ -193,8 +193,7 @@ class NotificationService {
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       );
 
       debugPrint('Medication reminder scheduled at $scheduleTime');
@@ -217,4 +216,6 @@ class NotificationService {
       debugPrint('Error cancelling reminder: $error');
     }
   }
+
 }
+

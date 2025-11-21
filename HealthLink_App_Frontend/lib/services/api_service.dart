@@ -15,11 +15,11 @@ class ApiService {
     if (kIsWeb) {
       return 'http://localhost:3000/api'; // web
     } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000/api'; // android emulator
+      return 'http://192.168.0.11:3000/api'; // physical device
     } else if (Platform.isIOS) {
       return 'http://localhost:3000/api'; // iOS Simulator
     } else {
-      return 'http://192.168.0.12:3000/api'; // physical device
+      return 'http://10.0.2.2:3000/api '; // android emulator
     }
   }
 
@@ -54,10 +54,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username, 
-        'password': password
-      }),
+      body: jsonEncode({'username': username, 'password': password}),
     );
 
     return jsonDecode(response.body);
@@ -77,14 +74,11 @@ class ApiService {
       } else {
         return {
           'success': false,
-          'message': 'Failed to send reset link: ${response.body}'
+          'message': 'Failed to send reset link: ${response.body}',
         };
       }
     } catch (error) {
-      return {
-        'success': false,
-        'message': 'Error sending reset link: $error'
-      };
+      return {'success': false, 'message': 'Error sending reset link: $error'};
     }
   }
 
@@ -149,9 +143,7 @@ class ApiService {
 
   // get all clinics
   static Future<List<Clinics>> getAllClinics() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/clinics')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/clinics'));
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -191,7 +183,9 @@ class ApiService {
   }
 
   // book an appointment
-  static Future<Map<String, dynamic>> bookAppointment(Appointment appointment) async {
+  static Future<Map<String, dynamic>> bookAppointment(
+    Appointment appointment,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/appointments'),
       headers: {'Content-Type': 'application/json'},
@@ -229,7 +223,9 @@ class ApiService {
   }
 
   // mark appointment as completed
-  static Future<Map<String, dynamic>> completeAppointment(int appointmentId) async {
+  static Future<Map<String, dynamic>> completeAppointment(
+    int appointmentId,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/complete'),
@@ -247,7 +243,10 @@ class ApiService {
   }
 
   // reschedule an appointment
-  static Future<Map<String, dynamic>> rescheduleAppointment(int appointmentId, String newDateTime) async {
+  static Future<Map<String, dynamic>> rescheduleAppointment(
+    int appointmentId,
+    String newDateTime,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/appointments/$appointmentId/reschedule'),
@@ -334,9 +333,7 @@ class ApiService {
 
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/tips')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/tips'));
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -354,10 +351,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('${ApiService.baseUrl}/tips'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'title': title, 
-        'content': content
-      }),
+      body: jsonEncode({'title': title, 'content': content}),
     );
 
     return jsonDecode(response.body);
@@ -418,9 +412,7 @@ class ApiService {
 
   // get all active health alerts
   static Future<List<HealthAlerts>> getAllActiveAlerts() async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/alerts')
-    );
+    final response = await http.get(Uri.parse('${ApiService.baseUrl}/alerts'));
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
