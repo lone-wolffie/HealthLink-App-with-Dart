@@ -153,7 +153,7 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:  Text('Error: $error'),
+          content:  Text('Error: Signup failed. Please try again.'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(

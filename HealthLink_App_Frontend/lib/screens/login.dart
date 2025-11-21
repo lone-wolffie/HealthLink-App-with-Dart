@@ -130,7 +130,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $error'),
+          content: Text('Error: Login failed. Please try again'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -193,7 +193,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $error'),
+          content: Text('Error: Failed to send reset link'),
           backgroundColor: Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
