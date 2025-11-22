@@ -2,13 +2,6 @@
 
 A comprehensive mobile health management application that helps users track symptoms, manage medications, book appointments and stay informed about health alerts and health tips.
 
-<!-- ## Project Scope
-The HealthLink App is an app designed to empower users to:
-  - Track their symptoms and wellness habits.
-  - Access verified health information.
-  - Connect with local clinics, support groups or volunteers.
-  - Receive alerts and tips based on location or health status. -->
-
 ## SDG Alignment
 
 - **SDG 3:** Good Health & Well-being ->
@@ -18,9 +11,12 @@ The HealthLink App is an app designed to empower users to:
   - Connection to nearby clinics and support centers.
   - Community awareness through alerts and tips.
 
-<!-- - **SDG 10:** Reduced Inequalities -> Reaches people in the rural areas. -->
 
 - **SDG 11:** Sustainable Cities and Communities -> helps users locate clinics from anywhere.
+
+## Deployment
+
+**Pitch Deck Link** - https://www.canva.com/design/DAG1qHjYa6E/1lOxKj3Sq4Ckxm7l0M9a-A/edit?utm_content=DAG1qHjYa6E&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 ## Features
 
