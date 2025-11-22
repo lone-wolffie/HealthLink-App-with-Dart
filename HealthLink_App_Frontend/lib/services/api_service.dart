@@ -1,7 +1,10 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
 import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint; // web, android emulator, iOS Simulator or physical device
+import 'package:flutter/foundation.dart'
+    show
+        kIsWeb,
+        debugPrint; // web, android emulator, iOS Simulator or physical device
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
@@ -249,7 +252,9 @@ class ApiService {
   ) async {
     try {
       final response = await http.put(
-        Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/reschedule'),
+        Uri.parse(
+          '${ApiService.baseUrl}/appointments/$appointmentId/reschedule',
+        ),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'appointment_at': newDateTime}),
       );
