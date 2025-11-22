@@ -228,7 +228,7 @@ class ApiService {
   ) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/appointments/$appointmentId/complete'),
+        Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/complete'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -249,7 +249,7 @@ class ApiService {
   ) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/appointments/$appointmentId/reschedule'),
+        Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/reschedule'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'appointment_at': newDateTime}),
       );
