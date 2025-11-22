@@ -19,7 +19,7 @@ class ApiService {
     } else if (Platform.isIOS) {
       return 'http://localhost:3000/api'; // iOS Simulator
     } else {
-      return 'http://10.0.2.2:3000/api '; // android emulator
+      return 'http://10.0.2.2:3000/api'; // android emulator
     }
   }
 
