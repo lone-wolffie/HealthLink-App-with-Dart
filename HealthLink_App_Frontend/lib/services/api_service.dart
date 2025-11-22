@@ -13,7 +13,7 @@ import 'package:healthlink_app/models/medication.dart';
 class ApiService {
   static String get baseUrl {
     if (kIsWeb) {
-      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
+      return 'https://healthlink-app-with-dart-1.onrender.com'; // web
     } else if (Platform.isAndroid) {
       return 'http://192.168.0.11:3000/api'; // physical device
     } else if (Platform.isIOS) {
