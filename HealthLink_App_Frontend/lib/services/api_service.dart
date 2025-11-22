@@ -13,7 +13,7 @@ import 'package:healthlink_app/models/medication.dart';
 class ApiService {
   static String get baseUrl {
     if (kIsWeb) {
-      return 'https://healthlink-app-with-dart-1.onrender.com'; // web
+      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
     } else if (Platform.isAndroid) {
       return 'http://192.168.0.11:3000/api'; // physical device
     } else if (Platform.isIOS) {
@@ -61,26 +61,26 @@ class ApiService {
   }
 
   // reset password if forgotten
-  static Future<Map<String, dynamic>> resetPassword(String email) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}/auth/reset-password'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email}),
-      );
+  // static Future<Map<String, dynamic>> resetPassword(String email) async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('${ApiService.baseUrl}/auth/reset-password'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({'email': email}),
+  //     );
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to send reset link: ${response.body}',
-        };
-      }
-    } catch (error) {
-      return {'success': false, 'message': 'Error sending reset link: $error'};
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       return jsonDecode(response.body);
+  //     } else {
+  //       return {
+  //         'success': false,
+  //         'message': 'Failed to send reset link: ${response.body}',
+  //       };
+  //     }
+  //   } catch (error) {
+  //     return {'success': false, 'message': 'Error sending reset link: $error'};
+  //   }
+  // }
 
   // get user profile
   static Future<Map<String, dynamic>> getUserProfile(int userId) async {
