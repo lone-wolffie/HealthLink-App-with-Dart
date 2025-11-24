@@ -482,7 +482,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 100)
                     ],
                   ),
                 ),

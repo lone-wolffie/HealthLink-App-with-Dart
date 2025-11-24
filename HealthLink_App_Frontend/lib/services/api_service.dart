@@ -77,11 +77,11 @@ class ApiService {
       } else {
         return {
           'success': false,
-          'message': 'Failed to send reset link: ${response.body}',
+          'message': 'Failed to send reset link',
         };
       }
     } catch (error) {
-      return {'success': false, 'message': 'Error sending reset link: $error'};
+      return {'success': false, 'message': 'Error sending reset link'};
     }
   }
 

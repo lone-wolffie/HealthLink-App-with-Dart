@@ -6,7 +6,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   // appointment reminders
   static const String _appointmentChannelId = 'appointment_channel';
@@ -23,9 +24,9 @@ class NotificationService {
     try {
       tz.initializeTimeZones();
       final deviceTimeZone = await FlutterTimezone.getLocalTimezone();
-      final timezoneName = deviceTimeZone.toString(); 
+      final String timezoneName = deviceTimeZone.identifier;
       tz.setLocalLocation(tz.getLocation(timezoneName));
-
+      debugPrint('Timezone set to: $timezoneName');
     } catch (error) {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation('UTC'));
@@ -33,7 +34,7 @@ class NotificationService {
     }
 
     // Android initialization
-    const androidInit = AndroidInitializationSettings('@drawable/notification_icon.png');
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS initialization
     final iosInit = DarwinInitializationSettings(
@@ -50,6 +51,7 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (response) {
+        debugPrint('Notification tapped: ${response.payload}');
         if (onSelectNotification != null) {
           onSelectNotification(response.payload);
         }
@@ -57,14 +59,26 @@ class NotificationService {
     );
 
     if (Platform.isAndroid) {
-      final androidImpl = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final androidImpl = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
-      await androidImpl?.requestNotificationsPermission();
+      final bool? granted = await androidImpl?.requestNotificationsPermission();
+      debugPrint('Notification permission granted: $granted');
+
+      // Request exact alarm permission
+      final bool? exactAlarmGranted = await androidImpl
+          ?.requestExactAlarmsPermission();
+      debugPrint('Exact alarm permission granted: $exactAlarmGranted');
     }
 
     // creating android channels
     if (!kIsWeb && Platform.isAndroid) {
-      final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
       // appointment channel
       await androidPlugin?.createNotificationChannel(
@@ -73,6 +87,8 @@ class NotificationService {
           _appointmentChannelName,
           description: 'Reminds users 24 hours before appointments',
           importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
         ),
       );
 
@@ -83,8 +99,12 @@ class NotificationService {
           _medChannelName,
           description: 'Daily medication reminders',
           importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
         ),
       );
+
+      debugPrint('Notification channels created');
     }
   }
 
@@ -101,17 +121,29 @@ class NotificationService {
         tz.local,
       ).subtract(const Duration(hours: 24));
 
-      if (reminderTime.isBefore(tz.TZDateTime.now(tz.local))) return;
+      final now = tz.TZDateTime.now(tz.local);
+
+      debugPrint('Scheduling appointment reminder:');
+      debugPrint('Appointment: $localTime');
+      debugPrint('Reminder: $reminderTime');
+      debugPrint('Current: $now');
+      debugPrint('ID: $appointmentId');
+
+      if (reminderTime.isBefore(now)) {
+        debugPrint('Reminder time is in the past, skipping');
+        return;
+      }
 
       const details = NotificationDetails(
         android: AndroidNotificationDetails(
           _appointmentChannelId,
           _appointmentChannelName,
-          icon: '@drawable/notification_icon',
+          icon: '@mipmap/ic_launcher',
           channelDescription: 'Reminds users 24 hours before appointments',
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,
+          enableVibration: true,
         ),
         iOS: DarwinNotificationDetails(),
       );
@@ -123,8 +155,11 @@ class NotificationService {
         reminderTime,
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
       );
+
+      debugPrint('Appointment reminder scheduled');
     } catch (error) {
       debugPrint('Appointment schedule error: $error');
     }
@@ -134,9 +169,9 @@ class NotificationService {
   static Future<void> cancelAppointmentReminder(int appointmentId) async {
     try {
       await _notificationsPlugin.cancel(appointmentId);
-      debugPrint('Cancelled appointment reminder for ID: $appointmentId');
+      debugPrint('Cancelled appointment reminder (ID: $appointmentId)');
     } catch (error) {
-      debugPrint('Error cancelling appointment reminder: $error');
+      debugPrint('Error cancelling appointment: $error');
     }
   }
 
@@ -172,15 +207,23 @@ class NotificationService {
 
       final notificationId = medicationId * 100 + index;
 
+      debugPrint('Scheduling medication:');
+      debugPrint('Name: $medicationName ($dose)');
+      debugPrint('Time: $time');
+      debugPrint('Schedule: $scheduleTime');
+      debugPrint('Current: $now');
+      debugPrint('ID: $notificationId');
+
       const details = NotificationDetails(
         android: AndroidNotificationDetails(
           _medChannelId,
           _medChannelName,
-          icon: '@drawable/notification_icon',
+          icon: '@mipmap/ic_launcher',
           channelDescription: 'Daily medication reminders',
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,
+          enableVibration: true,
         ),
         iOS: DarwinNotificationDetails(),
       );
@@ -193,10 +236,11 @@ class NotificationService {
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
       );
 
-      debugPrint('Medication reminder scheduled at $scheduleTime');
+      debugPrint('Medication reminder scheduled');
     } catch (error) {
       debugPrint('Medication reminder error: $error');
     }
@@ -212,10 +256,20 @@ class NotificationService {
         final id = medicationId * 100 + i;
         await _notificationsPlugin.cancel(id);
       }
+      debugPrint('Cancelled medication reminders (ID: $medicationId)');
     } catch (error) {
-      debugPrint('Error cancelling reminder: $error');
+      debugPrint('Error cancelling medication: $error');
     }
   }
 
+  // List all pending notifications (for debugging)
+  static Future<void> listPendingNotifications() async {
+    final pending = await _notificationsPlugin.pendingNotificationRequests();
+    debugPrint('Pending notifications: ${pending.length}');
+    for (var notification in pending) {
+      debugPrint(
+        'ID: ${notification.id} | ${notification.title} | ${notification.body}',
+      );
+    }
+  }
 }
-
