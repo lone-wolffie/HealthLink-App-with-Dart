@@ -15,6 +15,25 @@ A comprehensive mobile health management application that helps users track symp
 - **SDG 11:** Sustainable Cities and Communities -> helps users locate clinics from anywhere.
 
 ## Deployment
+### APK Download 
+To download and use the app, simply click the button below:
+
+[![Download APK](https://img.shields.io/badge/Download-HealthLink%20APK-brightgreen?style=for-the-badge&logo=android)](https://github.com/lone-wolffie/HealthLink-App-with-Dart/releases/latest/download/app-release.apk) 
+
+
+### Installation Steps
+1. **Download** the APK file by clicking the button above.
+2. **Locate** the downloaded file in your Downloads folder.
+3. Send it to your phone for installation. Ensure you have enough storage space.
+4. **Tap** on the APK file to begin installation.
+5. If prompted, **enable** "Install from Unknown Sources":
+   - Go to **Settings -> Security -> Unknown Sources**
+
+   - Or **Settings -> Apps -> Special Access -> Install Unknown Apps**
+6. **Follow** the on-screen prompts to complete installation.
+7. **Open** HealthLink.
+
+**Note:** This app is not available on Google Play Store. It must be installed manually using the APK file.
 
 **Pitch Deck Link** - https://www.canva.com/design/DAG1qHjYa6E/1lOxKj3Sq4Ckxm7l0M9a-A/edit?utm_content=DAG1qHjYa6E&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
