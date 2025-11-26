@@ -35,6 +35,10 @@ app.use("/api/appointments", appointmentsRoutes);
 app.use("/api/medications", medicationsRoutes);
 
 //get route
+app.get("/api", (req, res) => {
+  res.json({ message: "HealthLink API is live 🚀" });
+});
+
 app.get("/", (req, res) => {
     res.send("HealthLink App backend running successfully.");
 });
