@@ -22,9 +22,8 @@ class ApiService {
   //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // android emulator
   //   }
   // }
-  static String get baseUrl {
-    return 'https://healthlink-app-with-dart-1.onrender.com/api';
-  }
+  static const String baseUrl = 'https://healthlink-app-with-dart-1.onrender.com/api';
+  
 
 
   // signup
