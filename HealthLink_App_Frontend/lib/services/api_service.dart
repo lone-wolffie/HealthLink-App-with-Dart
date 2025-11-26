@@ -1,10 +1,7 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
-import 'dart:io' show Platform; // platform type
+//import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-import 'package:flutter/foundation.dart'
-    show
-        kIsWeb,
-        debugPrint; // web, android emulator, iOS Simulator or physical device
+//import 'package:flutter/foundation.dart' show kIsWeb, debugPrint; // web, android emulator, iOS Simulator or physical device
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
@@ -14,17 +11,21 @@ import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/models/medication.dart';
 
 class ApiService {
+  // static String get baseUrl {
+  //   if (kIsWeb) {
+  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
+  //   } else if (Platform.isAndroid) {
+  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // physical device
+  //   } else if (Platform.isIOS) {
+  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // iOS Simulator
+  //   } else {
+  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // android emulator
+  //   }
+  // }
   static String get baseUrl {
-    if (kIsWeb) {
-      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
-    } else if (Platform.isAndroid) {
-      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // physical device
-    } else if (Platform.isIOS) {
-      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // iOS Simulator
-    } else {
-      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // android emulator
-    }
+    return 'https://healthlink-app-with-dart-1.onrender.com/api';
   }
+
 
   // signup
   static Future<Map<String, dynamic>> signup(
@@ -132,8 +133,8 @@ class ApiService {
       );
 
       var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
-      debugPrint('Upload response: $responseBody');
+      //var responseBody = await response.stream.bytesToString();
+      //debugPrint('Upload response: $responseBody');
 
       return response.statusCode == 200;
     } catch (error) {
