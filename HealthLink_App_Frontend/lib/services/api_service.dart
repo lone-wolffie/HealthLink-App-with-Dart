@@ -11,21 +11,9 @@ import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/models/medication.dart';
 
 class ApiService {
-  // static String get baseUrl {
-  //   if (kIsWeb) {
-  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
-  //   } else if (Platform.isAndroid) {
-  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // physical device
-  //   } else if (Platform.isIOS) {
-  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // iOS Simulator
-  //   } else {
-  //     return 'https://healthlink-app-with-dart-1.onrender.com/api'; // android emulator
-  //   }
-  // }
+  
   static const String baseUrl = 'https://healthlink-app-with-dart-1.onrender.com/api';
   
-
-
   // signup
   static Future<Map<String, dynamic>> signup(
     String fullname,
