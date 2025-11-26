@@ -18,11 +18,11 @@ class ApiService {
     if (kIsWeb) {
       return 'https://healthlink-app-with-dart-1.onrender.com/api'; // web
     } else if (Platform.isAndroid) {
-      return 'http://192.168.0.11:3000/api'; // physical device
+      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // physical device
     } else if (Platform.isIOS) {
-      return 'http://localhost:3000/api'; // iOS Simulator
+      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // iOS Simulator
     } else {
-      return 'http://10.0.2.2:3000/api'; // android emulator
+      return 'https://healthlink-app-with-dart-1.onrender.com/api'; // android emulator
     }
   }
 
@@ -75,10 +75,7 @@ class ApiService {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        return {
-          'success': false,
-          'message': 'Failed to send reset link',
-        };
+        return {'success': false, 'message': 'Failed to send reset link'};
       }
     } catch (error) {
       return {'success': false, 'message': 'Error sending reset link'};
