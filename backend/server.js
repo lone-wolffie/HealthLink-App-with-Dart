@@ -20,8 +20,11 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: "https://healthlink-frontend.onrender.com"
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 
 // routes usage
 app.use("/uploads/profile", express.static("uploads/profile"));
