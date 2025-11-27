@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Use Render's DATABASE_URL
 export const db = new pg.Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
