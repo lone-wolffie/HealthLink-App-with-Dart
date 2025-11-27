@@ -36,13 +36,13 @@ app.use("/api/medications", medicationsRoutes);
 
 //get route
 app.get("/api", (req, res) => {
-  res.json({ message: "HealthLink API is live 🚀" });
+  res.send("HealthLink API is live.");
 });
 
 app.get("/", (req, res) => {
-    res.send("HealthLink App backend running successfully.");
+  res.send("HealthLink App backend running successfully.");
 });
 
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
