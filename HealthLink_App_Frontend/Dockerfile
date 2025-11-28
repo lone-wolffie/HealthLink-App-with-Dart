@@ -1,13 +1,8 @@
-# Use a Flutter image that already has SDK installed
-FROM cirrusci/flutter:latest
+FROM ghcr.io/cirruslabs/flutter:3.22.2  
 
-# Set working directory inside the container
 WORKDIR /app
-
-# Copy all project files into the container
 COPY . .
 
-# Build Flutter web release
 RUN flutter build web --release
 
 # Render expects static files in /public
