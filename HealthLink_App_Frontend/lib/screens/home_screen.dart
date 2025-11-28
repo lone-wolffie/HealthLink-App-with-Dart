@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:healthlink_app/screens/tips_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:healthlink_app/screens/tips_screen.dart';
 import 'package:healthlink_app/screens/my_appointments_screen.dart';
 import 'package:healthlink_app/screens/symptom_history_screen.dart';
 import 'package:healthlink_app/screens/add_symptom_screen.dart';
@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.green
               ),
               label: 'Add',
+              tooltip: 'Add a symptom',
             ),
             NavigationDestination(
               icon: Icon(Icons.local_hospital_outlined),
@@ -163,7 +164,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '\u{1F3E5} HealthLink App',
+                          'HealthLink App \u{1F3E5}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

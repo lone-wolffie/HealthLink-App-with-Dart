@@ -275,7 +275,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                 controller: _doseCtrl,
                                 decoration: InputDecoration(
                                   labelText: 'Dose',
-                                  hintText: 'e.g., 500mg, 1 tablet',
+                                  hintText: 'e.g., 500mg, 1 tablet, 20ml',
                                   prefixIcon: const Icon(
                                     Icons.medication_liquid
                                   ),
@@ -483,38 +483,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       ),
 
                       const SizedBox(height: 100),
-                      ElevatedButton(
-                        onPressed: () async {
-                          print('🧪 Starting notification tests...');
-                          
-                          // Test 1: Show immediate notification
-                          await NotificationService.showTestNotification();
-                          
-                          // Test 2: Check permissions
-                          final canSchedule = await NotificationService.canScheduleExactAlarms();
-                          if (!canSchedule) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('⚠️ Exact alarms not allowed. Notifications may not work.'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                            return; // Don't schedule if permission not granted
-                          }
-                          
-                          // Test 3: Schedule using AlarmManager (more reliable on TECNO)
-                          await NotificationService.scheduleTestWithAlarm();
-                          
-                          // Show message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Alarm scheduled! Lock your phone and wait 30 seconds.'),
-                              duration: Duration(seconds: 5),
-                            ),
-                          );
-                        },
-                        child: Text('Test Alarm Notifications'),
-                      )
+    
                     ],
                   ),
                 ),

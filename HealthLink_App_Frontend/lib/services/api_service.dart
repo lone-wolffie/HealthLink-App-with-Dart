@@ -1,7 +1,5 @@
 import 'dart:convert'; // to convert data between JSON and dart objects.
-//import 'dart:io' show Platform; // platform type
 import 'package:path/path.dart';
-//import 'package:flutter/foundation.dart' show kIsWeb, debugPrint; // web, android emulator, iOS Simulator or physical device
 import 'package:http/http.dart' as http; // to make REST API calls to backend
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
@@ -11,7 +9,7 @@ import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/models/medication.dart';
 
 class ApiService {
-  
+  // backend deployed url
   static const String baseUrl = 'https://healthlink-app-with-dart-1.onrender.com/api';
   
   // signup
@@ -120,8 +118,6 @@ class ApiService {
       );
 
       var response = await request.send();
-      //var responseBody = await response.stream.bytesToString();
-      //debugPrint('Upload response: $responseBody');
 
       return response.statusCode == 200;
     } catch (error) {
