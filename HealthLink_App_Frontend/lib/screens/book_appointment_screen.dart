@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/models/appointment.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
-  final int userId;
   final int clinicId;
   final String clinicName;
 
   const BookAppointmentScreen({
     super.key,
-    required this.userId,
     required this.clinicId,
     required this.clinicName,
   });
@@ -89,7 +87,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Color(0xFFBB86FC),
+                foregroundColor: const Color(0xFFBB86FC),
               ),
             ),
           ),
@@ -165,13 +163,24 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     if (time != null) setState(() => selectedTime = time);
   }
-
+  
   Future<void> submitAppointment() async {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in first'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please select both date and time'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Please select both date and time'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -193,48 +202,51 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final appointmentDate = localDateTime.toUtc().toIso8601String();
 
     Appointment appointment = Appointment(
-      userId: widget.userId,
+      userUuid: user.id,
       clinicId: widget.clinicId,
       appointmentAt: appointmentDate,
       notes: notesController.text,
     );
 
-    final response = await ApiService.bookAppointment(appointment);
-    
+    late Map<String, dynamic> response;
+
+    try {
+      response = await ApiService.bookAppointment(appointment);
+    } catch (error) {
+      return;
+    }    
+
     if (!mounted) return;
 
     setState(() => isLoading = false);
 
-    if (response.containsKey('appointment')) {
-      final appointmentId = response['appointment']['id'];
-      
-      await NotificationService.scheduleAppointmentReminder(
-        appointmentId: appointmentId,
-        appointmentDateTime: localDateTime,
-        clinicName: widget.clinicName,
-      );
-
-      if (!mounted) return; 
+    if (response['success'] == true || response.containsKey('appointment')){
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Appointment booked successfully'),
-          backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          content: const Text('Appointment booked successfully'),
+          backgroundColor: const Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          duration: const Duration(seconds: 2),
         ),
       );
-      Navigator.pop(context, true);
+
+      if (!mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/my-appointments',
+        (route) => false,
+      );
       return;
     } 
 
     if (response.containsKey('error')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to book appointment. Please try again.'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Failed to book appointment. Please try again.'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -242,6 +254,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         ),
       );
     }
+    
   }
 
   @override
@@ -255,7 +268,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Book Appointment',
       ),
       body: SafeArea(
@@ -270,8 +283,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: const Color.fromARGB(255, 84, 166, 234),
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 84, 166, 234),
                         ),
                       ),
                       child: Padding(
@@ -304,7 +317,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     widget.clinicName,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -321,8 +334,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: const Color.fromARGB(255, 84, 166, 234),
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 84, 166, 234),
                         ),
                       ),
                       child: Padding(
@@ -345,7 +358,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
+
+                                const Text(
                                   'Appointment Details',
                                   style: TextStyle(
                                     fontSize: 18,
@@ -435,8 +449,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: const Color.fromARGB(255, 84, 166, 234),
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 84, 166, 234),
                         ),
                       ),
                       child: Padding(
@@ -463,7 +477,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Additional Notes',
                                         style: TextStyle(
                                           fontSize: 18,
@@ -562,26 +576,26 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       ),
                     ),
                     child: isLoading
-                        ? const SizedBox(
-                            child: LoadingIndicator(),
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline, 
-                                size: 22
+                      ? const SizedBox(
+                          child: LoadingIndicator(),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline, 
+                              size: 22
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Book Appointment',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Book Appointment',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
                   ),
                 ),
               ),

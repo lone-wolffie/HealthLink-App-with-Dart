@@ -27,21 +27,21 @@ class StyledReusableButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           gradient: useGradient
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xFF4B79A1),
-                    Color(0xFF283E51),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
+            ? const LinearGradient(
+                colors: [
+                  Color(0xFF4B79A1),
+                  Color(0xFF283E51),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
           color: useGradient ? null : (color ?? Colors.blue),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              color: const Color.fromARGB(255, 79, 76, 76),
+              color: Color.fromARGB(255, 79, 76, 76),
               blurRadius: 6,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),

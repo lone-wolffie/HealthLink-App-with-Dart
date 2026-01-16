@@ -1,38 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:healthlink_app/screens/login.dart';
 import 'package:healthlink_app/screens/signup.dart';
 import 'package:healthlink_app/screens/home_screen.dart';
-import 'package:healthlink_app/screens/clinics_screen.dart';
-import 'package:healthlink_app/services/notification_service.dart';
-import 'package:healthlink_app/screens/book_appointment_screen.dart';
-import 'package:healthlink_app/screens/tips_screen.dart';
 import 'package:healthlink_app/screens/symptom_history_screen.dart';
+import 'package:healthlink_app/screens/add_medication_screen.dart';
 import 'package:healthlink_app/screens/add_symptom_screen.dart';
-import 'package:healthlink_app/screens/alerts_screen.dart';
 import 'package:healthlink_app/screens/my_appointments_screen.dart';
+import 'package:healthlink_app/screens/tips_screen.dart';
+import 'package:healthlink_app/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.initialize(
-    onSelectNotification: (payload) {
-      debugPrint('Notification tapped with payload: $payload');
-    },
+
+  await dotenv.load(fileName: "assets/.env");
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    debug: false,
   );
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  int? savedUserId = prefs.getInt('userId');
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    await NotificationService.initialize(
+      onSelectNotification: (payload) {},
+    );
+  }
 
-  runApp(HealthLinkApp(savedUserId: savedUserId));
+  runApp(const HealthLinkApp());
 }
 
 class HealthLinkApp extends StatelessWidget {
-  final int? savedUserId;
-
-  const HealthLinkApp({
-    super.key, 
-    this.savedUserId
-  });
+  const HealthLinkApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,90 +46,36 @@ class HealthLinkApp extends StatelessWidget {
         primarySwatch: Colors.green,
         useMaterial3: true,
       ),
+      home: const AuthGate(),
+      routes: {
+        '/login': (_) => const Login(),
+        '/signup': (_) => const Signup(),
+        '/home': (_) => const HomeScreen(),
+        '/symptom-history': (_) => const SymptomHistoryScreen(),
+        '/add-symptom': (_) => const AddSymptomScreen(),
+        '/add-medication': (_) => const AddMedicationScreen(username: ''),
+        '/tips': (_) => const TipsScreen(),
+        '/alerts': (_) => const TipsScreen(),
+        '/my-appointments': (_) => const MyAppointmentsScreen(userUuid: ''),
+        
+      },
+    );
+  }
+}
 
-      // starting screen
-      initialRoute: savedUserId == null ? '/login' : '/home',
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
 
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/login':
-            return MaterialPageRoute(
-              builder: (_) => const Login()
-            );
-          
-          case '/signup':
-            return MaterialPageRoute(
-              builder: (_) => const Signup()
-            );
-          
-          case '/home':
-            int? userId;
-            
-            if (settings.arguments != null && settings.arguments is int) {
-              userId = settings.arguments as int;
-            } else {
-              userId = savedUserId;
-            }
-
-            if (userId != null) {
-              return MaterialPageRoute(
-                builder: (_) => HomeScreen(userId: userId!),
-              );
-            } else {
-              // If no userId, redirect to login
-              return MaterialPageRoute(
-                builder: (_) => const Login()
-              );
-            }
-          
-          case '/clinics':
-            return MaterialPageRoute(
-              builder: (_) => const ClinicsScreen()
-            );
-          
-          case '/tips':
-            return MaterialPageRoute(
-              builder: (_) => const TipsScreen()
-            );
-          
-          case '/symptomHistory':
-            final userId = settings.arguments as int;
-            return MaterialPageRoute(
-              builder: (_) => SymptomHistoryScreen(userId: userId),
-            );
-          
-          case '/addSymptom':
-            final userId = settings.arguments as int;
-            return MaterialPageRoute(
-              builder: (_) => AddSymptomScreen(userId: userId),
-            );
-          
-          case '/healthAlerts':
-            return MaterialPageRoute(
-              builder: (_) => const AlertsScreen()
-            );
-
-          case '/bookAppointment':
-            final args = settings.arguments as Map<String, dynamic>;
-            return MaterialPageRoute(
-              builder: (_) => BookAppointmentScreen(
-                userId: args['userId'],
-                clinicId: args['clinicId'],
-                clinicName: args['clinicName'],
-              ),
-            );
-
-          case '/myAppointments':
-            final userId = settings.arguments as int;
-            return MaterialPageRoute(
-              builder: (_) => MyAppointmentsScreen(userId: userId),
-            );
-          
-          default:
-            return MaterialPageRoute(
-              builder: (_) => const Login()
-            );
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AuthState>(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = snapshot.data?.session;
+        if (session == null) {
+          return const Login();
         }
+        return const HomeScreen();
       },
     );
   }

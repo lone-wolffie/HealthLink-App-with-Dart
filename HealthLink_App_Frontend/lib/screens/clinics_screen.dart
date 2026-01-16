@@ -113,12 +113,18 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 210, 207, 207),
+                        color: theme.colorScheme.errorContainer.withOpacity(0.3),
                         shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text(
+
+                    const Text(
                       'Failed to load clinics',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -153,8 +159,8 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 210, 207, 207),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 210, 207, 207),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -164,7 +170,7 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text(
+                    const Text(
                       'No clinics available',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -229,7 +235,7 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Find a Clinic',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -251,21 +257,21 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search by name, location or service...',
-                            hintStyle: TextStyle(
-                              color: const Color.fromARGB(255, 177, 174, 174),
+                            hintStyle: const TextStyle(
+                              color: Color.fromARGB(255, 177, 174, 174),
                             ),
                             prefixIcon: Icon(
                               Icons.search,
                               color: theme.colorScheme.primary,
                             ),
                             suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                    },
-                                  )
-                                : null,
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                  },
+                                )
+                              : null,
                             filled: true,
                             fillColor: theme.colorScheme.surfaceContainerHighest,
                             border: OutlineInputBorder(
@@ -290,7 +296,7 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
                   children: [
                     Text(
                       '${_filteredClinics.length} ${_filteredClinics.length == 1 ? 'Clinic' : 'Clinics'}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -309,33 +315,33 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
 
               Expanded(
                 child: _filteredClinics.isEmpty
-                    ? _buildEmptyState()
-                    : RefreshIndicator(
-                        onRefresh: _refreshClinics,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          itemCount: _filteredClinics.length,
-                          itemBuilder: (context, index) {
-                            final clinic = _filteredClinics[index];
+                  ? _buildEmptyState()
+                  : RefreshIndicator(
+                      onRefresh: _refreshClinics,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        itemCount: _filteredClinics.length,
+                        itemBuilder: (context, index) {
+                          final clinic = _filteredClinics[index];
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: ClinicCard(
-                                name: clinic.name,
-                                address: clinic.address,
-                                phoneNumber: clinic.phoneNumber,
-                                email: clinic.email,
-                                services: clinic.services,
-                                operatingHours: clinic.operatingHours.map(
-                                  (key, value) => MapEntry(key, value.toString()),
-                                ),
-                                clinic: clinic,
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: ClinicCard(
+                              name: clinic.name,
+                              address: clinic.address,
+                              phoneNumber: clinic.phoneNumber,
+                              email: clinic.email,
+                              services: clinic.services,
+                              operatingHours: clinic.operatingHours.map(
+                                (key, value) => MapEntry(key, value.toString()),
                               ),
-                            );
-                          },
-                        ),
+                              clinic: clinic,
+                            ),
+                          );
+                        },
                       ),
+                    ),
               ),
             ],
           );
@@ -343,17 +349,17 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
       ),
 
       floatingActionButton: !_isSearchVisible
-          ? FloatingActionButton.small(
-              onPressed: () {
-                _scrollController.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                );
-              },
-              child: const Icon(Icons.arrow_upward),
-            )
-          : null,
+        ? FloatingActionButton.small(
+            onPressed: () {
+              _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            },
+            child: const Icon(Icons.arrow_upward),
+          )
+        : null,
     );
   }
 
@@ -368,20 +374,20 @@ class _ClinicsScreenState extends State<ClinicsScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 210, 207, 207),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 210, 207, 207),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _searchController.text.isNotEmpty
-                    ? Icons.search_off
-                    : Icons.medical_services_outlined,
+                  ? Icons.search_off
+                  : Icons.medical_services_outlined,
                 size: 64,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'No clinics found',
               style: TextStyle(
                 fontSize: 12,

@@ -8,11 +8,11 @@ import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/screens/add_medication_screen.dart';
 
 class MedicationsScreen extends StatefulWidget {
-  final int userId;
+  final String username;
 
   const MedicationsScreen({
     super.key,
-    required this.userId,
+    required this.username,
   });
 
   @override
@@ -32,7 +32,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
 
   void _load() {
     setState(() {
-      _futureMeds = ApiService.getUserMedication(widget.userId);
+      _futureMeds = ApiService.getUserMedication();
     });
   }
 
@@ -40,7 +40,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
     final add = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => AddMedicationScreen(userId: widget.userId),
+        builder: (_) => AddMedicationScreen(username: widget.username),
       ),
     );
     if (add == true) _load();
@@ -53,8 +53,8 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16)
         ),
-        title: Row(
-          children: const [
+        title: const Row(
+          children: [
             Icon(
               Icons.warning_rounded, 
               color: Colors.orange, size: 28
@@ -94,8 +94,8 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Medication deleted successfully'),  
-          backgroundColor:  Color.fromARGB(255, 12, 185, 9),
+          content: const Text('Medication deleted successfully'),  
+          backgroundColor:  const Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
@@ -107,13 +107,13 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: const [
+          content: const Row(
+            children: [
               SizedBox(width: 12),
               Text('Failed to delete medication'),
             ],
           ),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
@@ -133,9 +133,11 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'My Medications',
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -156,7 +158,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
         children: [
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(),
+            decoration: const BoxDecoration(),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -182,30 +184,17 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                           _searchQuery = value;
                         });
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Search medications...',
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search, 
                           color: Colors.grey
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
                         ),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(
-                                  Icons.clear, 
-                                  color: Colors.grey
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _searchQuery = '';
-                                  });
-                                },
-                              )
-                            : null,
                       ),
                     ),
                   ),
@@ -220,7 +209,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: LoadingIndicator()
+                    child: LoadingIndicator(message: 'Loading medications...')
                   );
                 }
 
@@ -229,30 +218,38 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 16),
-                        Text(
-                          'Error loading medications',
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Failed to load your medications',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '${snap.error}',
+                          'Please check your connection and try again',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: _load,
+                        const SizedBox(height: 24),
+                        FilledButton.icon(
+                          onPressed: () => _load(),
                           icon: const Icon(Icons.refresh),
                           label: const Text('Retry'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                          ),
                         ),
                       ],
                     ),
@@ -314,7 +311,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Try searching with different keywords',
+                          'Try searching with different words',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[500],
@@ -332,7 +329,7 @@ class _MedicationsScreenState extends State<MedicationsScreen> {
                     itemCount: meds.length,
                     itemBuilder: (context, i) {
                       final med = meds[i];
-                      final created = med.createdAt != null ? DateFormat('MMM dd, yyyy').format(med.createdAt!) : '';
+                      final created = med.createdAt != null ? DateFormat('MMM dd, yyyy').format(med.createdAt!.toLocal()) : '';
 
                       return _MedicationCard(
                         medication: med,

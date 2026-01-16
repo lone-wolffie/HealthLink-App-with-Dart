@@ -25,7 +25,7 @@ class Clinics {
   });
 
   factory Clinics.fromJson(Map<String, dynamic> json) {
-    // latitude & longitude parsing
+    // latitude & longitude 
     double? toDouble(dynamic value) {
       if (value == null) {
         return null;

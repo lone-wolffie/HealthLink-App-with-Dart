@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/styled_reusable_button.dart';
 import 'package:healthlink_app/widgets/text_input_field.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Signup extends StatefulWidget {
   const Signup({
@@ -78,8 +77,8 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
     if ([fullname, email, phone, username, password].any((value) => value.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:  Text('Please fill in all required fields'), 
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Please fill in all required fields'), 
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -90,11 +89,13 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
     }
 
     // email validation
-    if (!email.contains('@') || !email.contains('.')) {
+    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+
+    if (!emailRegex.hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please enter a valid email address'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Please enter a valid email address'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -107,23 +108,25 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
     setState(() => _isLoading = true);
 
     try {
-      final response = await ApiService.signup(fullname, email, phone, username, password);
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'fullname': fullname,
+          'username': username,
+          'phonenumber': phone,
+        },
+      );
+
+      final user = res.user;
+      if (user == null) throw Exception('Signup failed');
 
       if (!mounted) return;
-
-      if (response.containsKey('message')) {
-        final userId = response['userId'];
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('userId', userId);
-        await prefs.setString('username', username);
-
-        if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Welcome to HealthLink App $username!'),
-            backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            backgroundColor: const Color.fromARGB(255, 12, 185, 9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -135,26 +138,13 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
         Navigator.pushReplacementNamed(
           context,
           '/home',
-          arguments: userId,
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response['message'] ?? 'Signup failed. Please try again.'),
-            backgroundColor: Color.fromARGB(255, 244, 29, 13),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:  Text('Error: Signup failed. Please try again.'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content:  const Text('Signup failed. Please try again.'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -355,10 +345,10 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.verified_user,
                                     size: 18,
-                                    color: const Color(0xFF4B79A1),
+                                    color: Color(0xFF4B79A1),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
@@ -377,13 +367,13 @@ class _SignupState extends State<Signup> with SingleTickerProviderStateMixin {
                             const SizedBox(height: 24),
 
                             _isLoading
-                                ? const Center(
-                                  child: LoadingIndicator()
-                                )
-                                : StyledReusableButton(
-                                    text: 'Create Account',
-                                    onClick: _signup,
-                                  ),
+                              ? const Center(
+                                child: LoadingIndicator(message: 'Signing up...')
+                              )
+                              : StyledReusableButton(
+                                  text: 'Create Account',
+                                  onClick: _signup,
+                                ),
 
                             const SizedBox(height: 20),
 

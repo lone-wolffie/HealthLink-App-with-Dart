@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:healthlink_app/screens/book_appointment_screen.dart';
 import 'package:healthlink_app/models/clinics.dart';
 
@@ -37,13 +37,15 @@ class ClinicCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedHours = operatingHours.map((key, value) {
-      final formattedKey =
-          key[0].toUpperCase() + key.substring(1).toLowerCase();
+      final formattedKey = key[0].toUpperCase() + key.substring(1).toLowerCase();
       return MapEntry(formattedKey, value);
     });
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      margin: const EdgeInsets.symmetric(
+        vertical: 8, 
+        horizontal: 12
+      ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -61,7 +63,10 @@ class ClinicCard extends StatelessWidget {
         children: [
           Text(
             name,
-            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              fontSize: 19, 
+              fontWeight: FontWeight.w700
+            ),
           ),
           const SizedBox(height: 10),
 
@@ -76,7 +81,10 @@ class ClinicCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   address,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  style: TextStyle(
+                    fontSize: 14, 
+                    color: Colors.grey.shade700
+                  ),
                 ),
               ),
             ],
@@ -85,11 +93,18 @@ class ClinicCard extends StatelessWidget {
 
           Row(
             children: [
-              const Icon(Icons.phone_outlined, size: 18, color: Colors.grey),
+              const Icon(
+                Icons.phone_outlined, 
+                size: 18, 
+                color: Colors.grey
+              ),
               const SizedBox(width: 6),
               Text(
                 phoneNumber,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                style: TextStyle(
+                  fontSize: 14, 
+                  color: Colors.grey.shade700
+                ),
               ),
             ],
           ),
@@ -97,12 +112,19 @@ class ClinicCard extends StatelessWidget {
 
           Row(
             children: [
-              const Icon(Icons.email_outlined, size: 18, color: Colors.grey),
+              const Icon(
+                Icons.email_outlined, 
+                size: 18, 
+                color: Colors.grey
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   email,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  style: TextStyle(
+                    fontSize: 14, 
+                    color: Colors.grey.shade700
+                  ),
                 ),
               ),
             ],
@@ -111,7 +133,10 @@ class ClinicCard extends StatelessWidget {
 
           const Text(
             'Services',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 15, 
+              fontWeight: FontWeight.w600
+            ),
           ),
           const SizedBox(height: 6),
 
@@ -133,20 +158,27 @@ class ClinicCard extends StatelessWidget {
 
           const Text(
             'Operating Hours',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 15, 
+              fontWeight: FontWeight.w600
+            ),
           ),
           const SizedBox(height: 6),
 
           Column(
             children: orderedDays.map((day) {
-              if (!normalizedHours.containsKey(day))
+              if (!normalizedHours.containsKey(day)) {
                 return const SizedBox.shrink();
+              }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(day, style: TextStyle(color: Colors.grey.shade800)),
+                    Text(
+                      day, 
+                      style: TextStyle(color: Colors.grey.shade800)
+                    ),
                     Text(
                       normalizedHours[day]!,
                       style: const TextStyle(fontWeight: FontWeight.w500),
@@ -166,7 +198,9 @@ class ClinicCard extends StatelessWidget {
                 icon: Icons.call,
                 label: 'Call',
                 color: Colors.green,
-                onTap: () => launchUrl(Uri(scheme: 'tel', path: phoneNumber)),
+                onTap: () => launchUrl(
+                  Uri(scheme: 'tel', path: phoneNumber)
+                ),
               ),
               _button(
                 icon: Icons.map_outlined,
@@ -184,10 +218,9 @@ class ClinicCard extends StatelessWidget {
                 label: 'Book Appointment',
                 color: Colors.purple,
                 onTap: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  final userId = prefs.getInt('userId');
+                  final user = Supabase.instance.client.auth.currentUser;
 
-                  if (userId == null) {
+                  if (user == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Please log in first.'),
@@ -201,7 +234,6 @@ class ClinicCard extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) => BookAppointmentScreen(
-                        userId: userId,
                         clinicId: clinic.id,
                         clinicName: clinic.name,
                       ),

@@ -1,6 +1,6 @@
 class Symptoms {
   final int id;
-  final int userId;
+  final String userUuid;
   final String symptom;
   final String severity;
   final String notes;
@@ -9,7 +9,7 @@ class Symptoms {
   // constructor - required fields
   Symptoms({
     required this.id,
-    required this.userId,
+    required this.userUuid,
     required this.symptom,
     required this.severity,
     required this.notes,
@@ -19,8 +19,8 @@ class Symptoms {
   // create symptoms object from JSON data
   factory Symptoms.fromJson(Map<String, dynamic> json) {
     return Symptoms(
-      id: json['id'], 
-      userId: json['user_id'], 
+      id: json['id'] as int, 
+      userUuid: json['user_uuid'] as String, 
       symptom: json['symptom'], 
       severity: json['severity'], 
       notes: json['notes'] ?? '',
@@ -32,7 +32,7 @@ class Symptoms {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'user_id': userId,
+      'user_uuid': userUuid,
       'symptom': symptom,
       'severity': severity,
       'notes': notes,

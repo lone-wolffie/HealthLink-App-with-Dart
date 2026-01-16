@@ -1,6 +1,6 @@
 class Medication {
   final int? id;
-  final int userId;
+  final String userUuid;
   final String name;
   final String dose;
   final List<String> times; 
@@ -10,7 +10,7 @@ class Medication {
 
   Medication({
     this.id,
-    required this.userId,
+    required this.userUuid,
     required this.name,
     required this.dose,
     required this.times,
@@ -22,7 +22,7 @@ class Medication {
   factory Medication.fromJson(Map<String, dynamic> json) {
     return Medication(
       id: json['id'] as int?,
-      userId: json['user_id'] as int,
+      userUuid: json['user_uuid']?.toString() ?? '',
       name: json['name'] as String,
       dose: json['dose'] as String,
       times: (json['times'] is List) ? List<String>.from(json['times']) : [],
@@ -34,7 +34,7 @@ class Medication {
 
   Map<String, dynamic> toJson() => {
     if (id != null) 'id': id,
-    'user_id': userId,
+    'user_uuid': userUuid,
     'name': name,
     'dose': dose,
     'times': times,

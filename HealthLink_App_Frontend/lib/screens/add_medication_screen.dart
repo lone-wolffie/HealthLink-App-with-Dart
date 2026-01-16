@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:healthlink_app/models/medication.dart';
 import 'package:healthlink_app/services/api_service.dart';
-import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class AddMedicationScreen extends StatefulWidget {
-  final int userId;
+  final String username;
   final Medication? medication;
 
   const AddMedicationScreen({
     super.key, 
-    required this.userId, 
+    required this.username, 
     this.medication
   });
 
@@ -73,7 +72,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('This time has already been added'),
-            backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            backgroundColor: const Color.fromARGB(255, 244, 29, 13),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -92,11 +91,12 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    
     if (selectedTimes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please add at least one daily time'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Please add at least one daily time'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -108,88 +108,55 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
     setState(() => isSaving = true);
 
-    final name = _nameCtrl.text.trim();
-    final dose = _doseCtrl.text.trim();
-    final notes = _notesCtrl.text.trim();
-
-    bool success = false;
-    if (widget.medication == null) {
-      success = await ApiService.createMedication(
-        userId: widget.userId,
-        name: name,
-        dose: dose,
+    try{
+      final success = await ApiService.createMedication(
+        
+        name: _nameCtrl.text.trim(),
+        dose: _doseCtrl.text.trim(),
         times: selectedTimes,
-        notes: notes.isEmpty ? null : notes,
+        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       );
-    }
-
-    if (!success) {
-      setState(() => isSaving = false);
 
       if (!mounted) return;
+
+      if (!success) {
+        throw Exception('Failed to add medication');
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add medication'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Medication added successfully'),
+          backgroundColor: const Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
-      return;
-    }
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Medication added successfully'),
-        backgroundColor: Color.fromARGB(255, 12, 185, 9),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+      await Future.delayed(const Duration(milliseconds: 300));
+      
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+
+    } catch(error) {
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Failed to add medication'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          duration: const Duration(seconds: 2),
         ),
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    final medication = await ApiService.getUserMedication(widget.userId);
-    Medication? created;
-
-    if (widget.medication == null) {
-      if (medication.isNotEmpty) {
-        created = medication.firstWhere(
-          (meds) => meds.name == name && meds.dose == dose,
-          orElse: () => medication.first,
-        );
-      } else {
-        created = null;
-      }
-    } else {
-      created = medication.firstWhere(
-        (meds) => meds.id == widget.medication!.id,
-        orElse: () => widget.medication!,
       );
+    } finally {
+      if (mounted) setState(() => isSaving = false);
     }
-
-    if (created!.id != null) {
-      await NotificationService.cancelMedicationReminders(created.id!);
-
-      for (int i = 0; i < selectedTimes.length; i++) {
-        await NotificationService.scheduleDailyMedicationReminder(
-          medicationId: created.id!,
-          index: i,
-          medicationName: created.name,
-          dose: created.dose,
-          time: selectedTimes[i],
-        );
-      }
-    }
-
-    setState(() => isSaving = false);
-    if (!mounted) return;
-    Navigator.of(context).pop(true);
   }
 
   void _removeTime(String time) {
@@ -202,7 +169,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Add Medication',
       ),
       body: SafeArea(
@@ -219,8 +186,8 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 84, 166, 234),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 84, 166, 234),
                           ),
                         ),
                         child: Padding(
@@ -243,7 +210,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  Text(
+                                  const Text(
                                     'Medication Details',
                                     style: TextStyle(
                                       fontSize: 18,
@@ -275,7 +242,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                 controller: _doseCtrl,
                                 decoration: InputDecoration(
                                   labelText: 'Dose',
-                                  hintText: 'e.g., 500mg, 1 tablet, 20ml',
+                                  hintText: 'e.g: 500mg, 1 tablet, 20ml',
                                   prefixIcon: const Icon(
                                     Icons.medication_liquid
                                   ),
@@ -297,8 +264,8 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 84, 166, 234),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 84, 166, 234),
                           ),
                         ),
                         child: Padding(
@@ -321,7 +288,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  Expanded(
+                                  const Expanded(
                                     child: Text(
                                       'Daily Schedule',
                                       style: TextStyle(
@@ -368,11 +335,11 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                         size: 20,
                                       ),
                                       const SizedBox(width: 12),
-                                      Expanded(
+                                      const Expanded(
                                         child: Text(
                                           'No times added yet. Tap "Add" to schedule.',
                                           style: TextStyle(
-                                            color: const Color.fromARGB(255, 95, 95, 95),
+                                            color: Color.fromARGB(255, 95, 95, 95),
                                           ),
                                         ),
                                       ),
@@ -403,7 +370,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                       ),
                                       label: Text(
                                         displayTime,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -430,8 +397,8 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 84, 166, 234),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 84, 166, 234),
                           ),
                         ),
                         child: Padding(
@@ -454,7 +421,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  Text(
+                                  const Text(
                                     'Additional Notes',
                                     style: TextStyle(
                                       fontSize: 18,
@@ -483,7 +450,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       ),
 
                       const SizedBox(height: 100),
-    
                     ],
                   ),
                 ),
@@ -494,11 +460,11 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.white,
                     blurRadius: 6,
-                    offset: const Offset(0, -2),
+                    offset: Offset(0, -2),
                   ),
                 ],
               ),
@@ -515,26 +481,26 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       ),
                     ),
                     child: isSaving
-                        ? const SizedBox(
-                            child: LoadingIndicator(),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                isEdit ? Icons.save : Icons.add_circle_outline,
-                                size: 22,
+                      ? const SizedBox(
+                          child: LoadingIndicator(),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              isEdit ? Icons.save : Icons.add_circle_outline,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              isEdit ? 'Save Changes' : 'Add Medication',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                isEdit ? 'Save Changes' : 'Add Medication',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
                   ),
                 ),
               ),

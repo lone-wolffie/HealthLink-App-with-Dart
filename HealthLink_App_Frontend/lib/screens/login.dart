@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/styled_reusable_button.dart';
 import 'package:healthlink_app/widgets/text_input_field.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'signup.dart';
 
 class Login extends StatefulWidget {
@@ -73,7 +73,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please enter your username and password'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -86,20 +86,26 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     setState(() => _isLoading = true);
 
     try {
-      final response = await ApiService.login(username, password);
-      if (response['user'] != null) {
-        final user = response['user'];
-        final int userId = user['id'];
+      final result = await Supabase.instance.client
+        .from('users')
+        .select('email')
+        .eq('username', username)
+        .maybeSingle();
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('userId', userId);
-        await prefs.setString('username', user['username']);
+        if (result == null) {
+          throw Exception('Username not found');
+        }
+
+        await Supabase.instance.client.auth.signInWithPassword(
+          email: result['email'],
+          password: password,
+        );
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Welcome back ${user['username']}'),
-            backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            content: Text('Welcome back $username'),
+            backgroundColor: const Color.fromARGB(255, 12, 185, 9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -111,27 +117,13 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           context, 
           '/home', 
           (route) => false, 
-          arguments: userId
         );
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response['message'] ?? 'Login failed'),
-            backgroundColor: Color.fromARGB(255, 244, 29, 13),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: Login failed. Please try again'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Login failed. Please try again'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -149,7 +141,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please enter your email'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -166,8 +158,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Password reset link sent! Check your email.'),
-            backgroundColor: Color.fromARGB(255, 12, 185, 9),
+            content: const Text('Password reset link sent! Check your email.'),
+            backgroundColor: const Color.fromARGB(255, 12, 185, 9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -181,7 +173,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response['message'] ?? 'Failed to send reset link'),
-            backgroundColor: Color.fromARGB(255, 244, 29, 13),
+            backgroundColor: const Color.fromARGB(255, 244, 29, 13),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -193,8 +185,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: Failed to send reset link'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Error: Failed to send reset link'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -381,7 +373,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               const SizedBox(height: 8),
                               _isLoading
                                 ? const Center(
-                                  child: LoadingIndicator()
+                                  child: LoadingIndicator(message: 'Logging in...')
                                 )
                                 : StyledReusableButton(
                                   text: 'Login', 

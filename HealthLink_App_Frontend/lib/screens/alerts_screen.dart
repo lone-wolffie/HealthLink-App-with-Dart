@@ -5,7 +5,6 @@ import 'package:healthlink_app/models/health_alerts.dart';
 import 'package:healthlink_app/widgets/alert_card.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
-import 'package:healthlink_app/widgets/error_message.dart';
 
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({
@@ -112,8 +111,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
   int _getSeverityCount(String severity) {
     if (severity == 'All') return _allAlerts.length;
-    return _allAlerts
-      .where((alert) => alert.severity.toLowerCase() == severity.toLowerCase()).length;
+    return _allAlerts.where((alert) => alert.severity.toLowerCase() == severity.toLowerCase()).length;
   }
 
   @override
@@ -133,13 +131,52 @@ class _AlertsScreenState extends State<AlertsScreen> {
           }
 
           if (snapshot.hasError) {
-            return ErrorMessage(
-              message: snapshot.error.toString(),
-              onClick: () {
-                setState(() {
-                  alertsFuture = ApiService.getAllActiveAlerts();
-                });
-              },
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Failed to load alerts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please check your connection and try again',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          alertsFuture = ApiService.getAllActiveAlerts();
+                        });
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
 
@@ -153,11 +190,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 185, 185, 185),
+                      color: Color.fromARGB(255, 185, 185, 185),
                       blurRadius: 6,
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
@@ -166,7 +203,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Search alerts...',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                         ),
                         prefixIcon: Icon(
@@ -174,25 +211,25 @@ class _AlertsScreenState extends State<AlertsScreen> {
                           color: theme.colorScheme.primary,
                         ),
                         suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  setState(() {
-                                    _searchQuery = '';
-                                  });
-                                  _applyFilters();
-                                },
-                              )
-                            : IconButton(
-                                icon: Icon(
-                                  _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _showFilters = !_showFilters;
-                                  });
-                                },
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                                _applyFilters();
+                              },
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
                               ),
+                              onPressed: () {
+                                setState(() {
+                                  _showFilters = !_showFilters;
+                                });
+                              },
+                            ),
                         filled: true,
                         fillColor: theme.colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
@@ -292,7 +329,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   children: [
                     Text(
                       '${_filteredAlerts.length} ${_filteredAlerts.length == 1 ? 'Alert' : 'Alerts'}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -322,27 +359,27 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
               Expanded(
                 child: _filteredAlerts.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        itemCount: _filteredAlerts.length,
-                        itemBuilder: (context, index) {
-                          final alert = _filteredAlerts[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: AlertCard(
-                              title: alert.title,
-                              message: alert.message,
-                              severity: alert.severity,
-                              location: alert.location ?? 'Unknown',
-                              alertType: alert.alertType ?? 'general',
-                              icon: _getIcon(alert.icon ?? ''),
-                              isActive: alert.isActive,
-                              date: _formatDate(alert.dateRecorded),
-                            ),
-                          );
-                        },
-                      ),
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      itemCount: _filteredAlerts.length,
+                      itemBuilder: (context, index) {
+                        final alert = _filteredAlerts[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: AlertCard(
+                            title: alert.title,
+                            message: alert.message,
+                            severity: alert.severity,
+                            location: alert.location ?? 'Unknown',
+                            alertType: alert.alertType ?? 'general',
+                            icon: _getIcon(alert.icon ?? ''),
+                            isActive: alert.isActive,
+                            date: _formatDate(alert.dateRecorded),
+                          ),
+                        );
+                      },
+                    ),
               ),
             ],
           );
@@ -356,8 +393,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
     final isSelected = _selectedSeverity == label;
     final count = _getSeverityCount(label);
     final color = label == 'All'
-        ? theme.colorScheme.primary
-        : _getSeverityColor(label);
+      ? theme.colorScheme.primary
+      : _getSeverityColor(label);
 
     return FilterChip(
       label: Row(
@@ -473,7 +510,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           const SizedBox(height: 24),
           Text(
             _searchQuery.isNotEmpty ? 'No alerts found' : 'No alerts available',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),

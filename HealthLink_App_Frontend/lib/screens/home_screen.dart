@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:healthlink_app/screens/tips_screen.dart';
 import 'package:healthlink_app/screens/my_appointments_screen.dart';
 import 'package:healthlink_app/screens/symptom_history_screen.dart';
@@ -10,12 +10,7 @@ import 'package:healthlink_app/screens/clinics_screen.dart';
 import 'package:healthlink_app/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int userId;
-
-  const HomeScreen({
-    super.key, 
-    required this.userId
-  });
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -24,16 +19,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  final user = Supabase.instance.client.auth.currentUser;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     final List<Widget> screens = [
-      _HomeDashboard(userId: widget.userId),
-      AddSymptomScreen(userId: widget.userId),
+      _HomeDashboard(username: user?.email ?? 'User'),
+      const AddSymptomScreen(),
       const ClinicsScreen(),
       const AlertsScreen(),
-      ProfileScreen(userId: widget.userId),
+      const ProfileScreen(),
     ];
 
     return Scaffold(
@@ -97,32 +94,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _HomeDashboard extends StatefulWidget {
-  final int userId;
+class _HomeDashboard extends StatelessWidget {
+  final String username;
 
-  const _HomeDashboard({
-    required this.userId
-  });
-
-  @override
-  State<_HomeDashboard> createState() => _HomeDashboardState();
-}
-
-class _HomeDashboardState extends State<_HomeDashboard> {
-  String username = "";
-
-  @override
-  void initState() {
-    super.initState();
-    loadUsername();
-  }
-
-  Future<void> loadUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString("username") ?? "";
-    });
-  }
+  const _HomeDashboard({required this.username});
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -156,15 +131,14 @@ class _HomeDashboardState extends State<_HomeDashboard> {
               padding: const EdgeInsets.fromLTRB(2, 24, 20, 32),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [      
+                children: [
                   const SizedBox(width: 6),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'HealthLink App \u{1F3E5}',
+                          'HealthLink App 🏥',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -184,7 +158,6 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                       ],
                     ),
                   ),
-
                   const SizedBox(width: 12),
 
                   Column(
@@ -192,17 +165,14 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     children: [
                       Text(
                         _getGreeting(),
-                        style: TextStyle(
+                         style: TextStyle(
                           fontSize: 15, 
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       Text(
-                        username.isNotEmpty
-                            ? username
-                            : 'Welcome!', 
-                        style: TextStyle(
-                          fontSize: 14, 
+                        username.isNotEmpty ? username : 'Welcome!',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
                         ),
@@ -216,7 +186,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height:16),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -287,7 +257,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SymptomHistoryScreen(userId: widget.userId),
+                        builder: (_) => const SymptomHistoryScreen(),
                       ),
                     ),
                   ),
@@ -302,7 +272,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => MedicationsScreen(userId: widget.userId),
+                        builder: (_) => const MedicationsScreen(username: ''),
                       ),
                     ),
                   ),
@@ -317,7 +287,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => MyAppointmentsScreen(userId: widget.userId),
+                        builder: (_) => const MyAppointmentsScreen(userUuid: ''),
                       ),
                     ),
                   ),
@@ -331,7 +301,7 @@ class _HomeDashboardState extends State<_HomeDashboard> {
                     ),
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => TipsScreen()),
+                      MaterialPageRoute(builder: (_) => const TipsScreen()),
                     ),
                   ),
                 ];
@@ -344,8 +314,8 @@ class _HomeDashboardState extends State<_HomeDashboard> {
 
           const SizedBox(height: 28),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               'Features',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -415,11 +385,11 @@ class _ActionCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: gradient,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: const Color.fromARGB(255, 210, 207, 207),
+                color: Color.fromARGB(255, 210, 207, 207),
                 blurRadius: 6,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
           ),
@@ -441,9 +411,7 @@ class _ActionCard extends StatelessWidget {
                   ),
                   child: Icon(
                     icon,
-                    size: isSmallScreen
-                        ? 24
-                        : 32, 
+                    size: isSmallScreen ? 24 : 32, 
                     color: Colors.white,
                   ),
                 ),
@@ -522,7 +490,9 @@ class _FeatureListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
+                Text(
+                  title, 
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,

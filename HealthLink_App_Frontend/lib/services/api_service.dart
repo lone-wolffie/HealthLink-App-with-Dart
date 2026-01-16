@@ -1,6 +1,7 @@
-import 'dart:convert'; // to convert data between JSON and dart objects.
+import 'dart:convert'; 
 import 'package:path/path.dart';
-import 'package:http/http.dart' as http; // to make REST API calls to backend
+import 'package:http/http.dart' as http; 
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/models/symptoms.dart';
 import 'package:healthlink_app/models/health_alerts.dart';
@@ -54,60 +55,65 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('${ApiService.baseUrl}/auth/reset-password'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json'}, 
         body: jsonEncode({'email': email}),
       );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        return {'success': false, 'message': 'Failed to send reset link'};
+        return {
+          'success': false, 
+          'message': 'Failed to send reset link'
+        };
       }
     } catch (error) {
-      return {'success': false, 'message': 'Error sending reset link'};
+      return {
+        'success': false, 
+        'message': 'Error sending reset link'
+      };
     }
   }
 
   // get user profile
-  static Future<Map<String, dynamic>> getUserProfile(int userId) async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/users/$userId'),
-    );
+  static Future<Map<String, dynamic>> getUserProfile(String userId) async {
+    final response = await Supabase.instance.client
+      .from('users')
+      .select()
+      .eq('id', userId)
+      .single();
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load profile');
-    }
+    return response;
   }
 
   // update user profile
-  static Future<Map<String, dynamic>> updateUserProfile(
-    int userId,
-    String fullname,
-    String email,
-    String phoneNumber,
-    String username,
-  ) async {
-    final response = await http.put(
-      Uri.parse('${ApiService.baseUrl}/users/$userId'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+  static Future<void> updateUserProfile(
+    String userId, {
+    required String fullname,
+    required String email,
+    required String phone,
+    required String username,
+  }) async {
+    await Supabase.instance.client
+      .from('users')
+      .update({
         'fullname': fullname,
         'email': email,
-        'phonenumber': phoneNumber,
+        'phonenumber': phone,
         'username': username,
-      }),
-    );
-
-    return jsonDecode(response.body);
+      })
+      .eq('id', userId);
   }
 
   // upload user profile image
-  static Future<bool> uploadProfileImage(int userId, String imagePath) async {
+  static Future<bool> uploadProfileImage(
+    String username,
+    String imagePath,
+  ) async {
     try {
-      var uri = Uri.parse('${ApiService.baseUrl}/users/upload-profile/$userId');
-      var request = http.MultipartRequest('POST', uri);
+      final uri = Uri.parse('${ApiService.baseUrl}/users/upload-profile/username/$username');
+
+      final request = http.MultipartRequest('POST', uri);
 
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -117,8 +123,7 @@ class ApiService {
         ),
       );
 
-      var response = await request.send();
-
+      final response = await request.send();
       return response.statusCode == 200;
     } catch (error) {
       return false;
@@ -127,13 +132,17 @@ class ApiService {
 
   // get all clinics
   static Future<List<Clinics>> getAllClinics() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/clinics'));
+    final supabase = Supabase.instance.client;
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((clinic) => Clinics.fromJson(clinic)).toList();
-    } else {
-      throw Exception('Failed to load all the clinics');
+    try {
+      final response = await supabase
+        .from('clinics')
+        .select()
+        .order('name');
+
+      return (response as List).map((json) => Clinics.fromJson(json)).toList();
+    } catch (error) {
+      rethrow;
     }
   }
 
@@ -170,60 +179,68 @@ class ApiService {
   static Future<Map<String, dynamic>> bookAppointment(
     Appointment appointment,
   ) async {
-    final response = await http.post(
-      Uri.parse('${ApiService.baseUrl}/appointments'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(appointment.toJson()),
-    );
+    final supabase = Supabase.instance.client;
 
-    return jsonDecode(response.body);
+    await supabase.from('appointments').insert({
+      'user_uuid': appointment.userUuid,
+      'clinic_id': appointment.clinicId,
+      'appointment_at': appointment.appointmentAt,
+      'notes': appointment.notes,
+    });
+
+    return {
+      'success': true,
+      'message': 'Appointment booked successfully',
+    };
   }
 
   // get all appointments for a specific user
-  static Future<List<Map<String, dynamic>>> getUserAppointments(
-    int userId,
-  ) async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/appointments/$userId'),
-    );
+  static Future<List<Map<String, dynamic>>> getUserAppointments(String userUuid) async {
+    final supabase = Supabase.instance.client;
 
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load user appointments');
-    }
+    final response = await supabase
+      .from('appointments')
+      .select('''
+        id,
+        appointment_at,
+        status,
+        notes,
+        clinic_id,
+        clinics (name)
+      ''')
+      .eq('user_uuid', userUuid)
+      .order('appointment_at', ascending: false);
+
+    return List<Map<String, dynamic>>.from(response);
   }
 
   // cancel an appointment
   static Future<Map<String, dynamic>> cancelAppointment(
     int appointmentId,
   ) async {
-    final response = await http.patch(
-      Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/cancel'),
-      headers: {'Content-Type': 'application/json'},
-    );
+    final supabase = Supabase.instance.client;
+    
+    await supabase
+      .from('appointments')
+      .update({'status': 'cancelled'})
+      .eq('id', appointmentId);
 
-    return jsonDecode(response.body);
+    return {'message': 'Appointment cancelled'};
   }
 
   // mark appointment as completed
   static Future<Map<String, dynamic>> completeAppointment(
     int appointmentId,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('${ApiService.baseUrl}/appointments/$appointmentId/complete'),
-        headers: {'Content-Type': 'application/json'},
-      );
+    final supabase = Supabase.instance.client;
 
-      if (response.statusCode == 200) {
-        return {'message': 'Appointment marked as completed successfully'};
-      } else {
-        return {'error': 'Failed to complete appointment: ${response.body}'};
-      }
-    } catch (error) {
-      return {'error': 'Error completing appointment: $error'};
-    }
+    await supabase
+      .from('appointments')
+      .update({'status': 'completed'})
+      .eq('id', appointmentId);
+
+    return {'message': 'Appointment completed'};
+    
   }
 
   // reschedule an appointment
@@ -231,64 +248,59 @@ class ApiService {
     int appointmentId,
     String newDateTime,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse(
-          '${ApiService.baseUrl}/appointments/$appointmentId/reschedule',
-        ),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'appointment_at': newDateTime}),
-      );
+    final supabase = Supabase.instance.client;
 
-      if (response.statusCode == 200) {
-        return {'message': 'Appointment rescheduled successfully!'};
-      } else {
-        return {'error': 'Failed to reschedule appointment: ${response.body}'};
-      }
-    } catch (error) {
-      return {'error': 'Error rescheduling appointment: $error'};
-    }
+    await supabase
+      .from('appointments')
+      .update({'appointment_at': newDateTime})
+      .eq('id', appointmentId);
+
+    return {'message': 'Appointment rescheduled'};
   }
 
   // create a new medication
   static Future<bool> createMedication({
-    required int userId,
     required String name,
     required String dose,
     required List<String> times,
     String? notes,
   }) async {
-    final response = await http.post(
-      Uri.parse('${ApiService.baseUrl}/medications'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': userId,
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+
+    try{
+      await supabase.from('medications').insert({
+        'user_uuid': user.id,
         'name': name,
         'dose': dose,
         'times': times,
         'notes': notes,
-      }),
-    );
+      });
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
-    } else {
+    }catch (error) {
       return false;
     }
   }
 
   // get all medications for a specific user
-  static Future<List<Medication>> getUserMedication(int userId) async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/medications/$userId'),
-    );
+  static Future<List<Medication>> getUserMedication() async {
+    final supabase = Supabase.instance.client;
+    final user = Supabase.instance.client.auth.currentUser!.id; 
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((error) => Medication.fromJson(error)).toList();
-    } else {
-      throw Exception('Failed to get all the medications');
-    }
+    final response = await supabase
+      .from('medications')
+      .select()
+      .eq('user_uuid', user)
+      .order('created_at', ascending: false);
+
+    return response
+      .map<Medication>((json) => Medication.fromJson(json))
+      .toList();
   }
 
   // get a single medication
@@ -298,7 +310,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return Medication.fromJson(jsonDecode(response.body));
+      return Medication.fromJson(
+        jsonDecode(response.body)
+      );
     } else {
       throw Exception('Failed to get the specified medication');
     }
@@ -306,27 +320,26 @@ class ApiService {
 
   // delete medication
   static Future<bool> deleteMedication(int id) async {
-    final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/medications/$id'),
-    );
+  await Supabase.instance.client
+    .from('medications')
+    .delete()
+    .eq('id', id);
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+  return true;
   }
 
   // get all health tips
   static Future<List<HealthTips>> getAllHealthTips() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/tips'));
+    final supabase = Supabase.instance.client;
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((tip) => HealthTips.fromJson(tip)).toList();
-    } else {
-      throw Exception('Failed to load all health tips');
-    }
+    final response = await supabase
+      .from('health_tips')
+      .select()
+      .order('created_at', ascending: false);
+
+    return response
+      .map<HealthTips>((json) => HealthTips.fromJson(json))
+      .toList();
   }
 
   // add a new health tip
@@ -353,59 +366,69 @@ class ApiService {
   }
 
   // get symptom history for specific user
-  static Future<List<Symptoms>> getSymptomHistory(int userId) async {
-    final response = await http.get(
-      Uri.parse('${ApiService.baseUrl}/symptoms/$userId'),
-    );
+  static Future<List<Symptoms>> getSymptomHistory(
+    String userUuid,
+  ) async {
+    final response = await Supabase.instance.client
+      .from('symptoms_checker')
+      .select()
+      .eq('user_uuid', userUuid)
+      .order('created_at', ascending: false);
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((item) => Symptoms.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load symptom history');
-    }
+    return response
+      .map<Symptoms>((json) => Symptoms.fromJson(json))
+      .toList();
   }
 
   // add a new symptom
   static Future<Map<String, dynamic>> addSymptom(
-    int userId,
+    String userUuid,
     String symptom,
     String severity,
     String notes,
   ) async {
-    final response = await http.post(
-      Uri.parse('${ApiService.baseUrl}/symptoms'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_id': userId,
+    final supabase = Supabase.instance.client;
+
+    final response = await supabase
+      .from('symptoms_checker')
+      .insert({
+        'user_uuid': userUuid,
         'symptom': symptom,
         'severity': severity,
         'notes': notes,
-      }),
-    );
+      })
+      .select()
+      .single();
 
-    return jsonDecode(response.body);
+    return {
+      'success': true,
+      'data': response,
+      'message': 'Symptom added successfully',
+    };
+
   }
 
   // delete a symptom
-  static Future<Map<String, dynamic>> deleteSymptom(int id) async {
-    final response = await http.delete(
-      Uri.parse('${ApiService.baseUrl}/symptoms/$id'),
-    );
-
-    return jsonDecode(response.body);
+  static Future<void> deleteSymptom(int id) async {
+  await Supabase.instance.client
+    .from('symptoms_checker')
+    .delete()
+    .eq('id', id);
   }
 
   // get all active health alerts
   static Future<List<HealthAlerts>> getAllActiveAlerts() async {
-    final response = await http.get(Uri.parse('${ApiService.baseUrl}/alerts'));
+    final supabase = Supabase.instance.client;
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((error) => HealthAlerts.fromJson(error)).toList();
-    } else {
-      throw Exception('Failed to load all health alerts');
-    }
+    final response = await supabase
+      .from('health_alerts')
+      .select()
+      .eq('is_active', true)
+      .order('published_date', ascending: false);
+
+    return response
+      .map<HealthAlerts>((json) => HealthAlerts.fromJson(json))
+      .toList();
   }
 
   // add a new health alert

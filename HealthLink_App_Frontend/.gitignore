@@ -73,6 +73,7 @@ ios/Runner/GeneratedPluginRegistrant.*
 .env
 .env.local
 .env.*.local
+/assets/.env/
 
 # Firebase
 google-services.json

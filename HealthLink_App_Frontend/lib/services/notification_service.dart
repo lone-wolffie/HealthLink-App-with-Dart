@@ -8,7 +8,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
-
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -17,11 +16,10 @@ class NotificationService {
   static const String _medChannelId = 'medication_channel';
   static const String _medChannelName = 'Medication Reminders';
 
-  // port for isolate communication
   static const String _isolateName = 'notification_isolate';
   static ReceivePort? _receivePort;
 
-  // Initialize both notification systems
+  // Initialize both notifications
   static Future<void> initialize({
     Function(String? payload)? onSelectNotification,
   }) async {
@@ -36,14 +34,13 @@ class NotificationService {
     } catch (error) {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation('UTC'));
-      debugPrint('Warning: Unable to set timezone: $error');
+      debugPrint('Unable to set timezone: $error');
     }
 
-    // Initialize AlarmManager
+    // Initialize alarm manager
     await AndroidAlarmManager.initialize();
-    debugPrint('AlarmManager initialized');
+    debugPrint('Alarm manager initialized');
 
-    // Setup isolate communication
     _removeIsolateCallback();
     _receivePort = ReceivePort();
     IsolateNameServer.registerPortWithName(
@@ -53,13 +50,13 @@ class NotificationService {
 
     // Android notification initialization
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final iosInit = DarwinInitializationSettings(
+    const iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    final initSettings = InitializationSettings(
+    const initSettings = InitializationSettings(
       android: androidInit,
       iOS: iosInit,
     );
@@ -67,7 +64,7 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (response) {
-        debugPrint('Notification tapped: ${response.payload}');
+        debugPrint('Notification: ${response.payload}');
         if (onSelectNotification != null) {
           onSelectNotification(response.payload);
         }
@@ -75,12 +72,12 @@ class NotificationService {
     );
 
     if (Platform.isAndroid) {
-      final androidImpl = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final android = _notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-      final bool? granted = await androidImpl?.requestNotificationsPermission();
+      final bool? granted = await android?.requestNotificationsPermission();
       debugPrint('Notification permission granted: $granted');
 
-      final bool? exactAlarmGranted = await androidImpl?.requestExactAlarmsPermission();
+      final bool? exactAlarmGranted = await android?.requestExactAlarmsPermission();
       debugPrint('Exact alarm permission granted: $exactAlarmGranted');
     }
 
@@ -120,7 +117,6 @@ class NotificationService {
 
   @pragma('vm:entry-point')
   static Future<void> _alarmCallback() async {
-    debugPrint('Alarm triggered!');
     await _showNotificationFromAlarm();
   }
 
@@ -147,23 +143,20 @@ class NotificationService {
     );
   }
 
-  // Schedule appointment reminder using AlarmManager
+  // Schedule appointment reminder using alarm manager
   static Future<void> scheduleAppointmentReminderWithAlarm({
     required int appointmentId,
     required DateTime appointmentDateTime,
     required String clinicName,
   }) async {
     try {
-      final reminderTime = appointmentDateTime.subtract(const Duration(hours: 24));
+      final reminderTime = appointmentDateTime.subtract(
+        const Duration(hours: 24)
+      );
       
       if (reminderTime.isBefore(DateTime.now())) {
         return;
       }
-
-      debugPrint('Scheduling appointment alarm:');
-      debugPrint('Appointment: $appointmentDateTime');
-      debugPrint('Reminder: $reminderTime');
-      debugPrint('ID: $appointmentId');
 
       final success = await AndroidAlarmManager.oneShotAt(
         reminderTime,
@@ -276,12 +269,6 @@ class NotificationService {
       }
 
       final notificationId = medicationId * 100 + index;
-
-      debugPrint('Scheduling medication:');
-      debugPrint('Name: $medicationName ($dose)');
-      debugPrint('Time: $time');
-      debugPrint('Schedule: $scheduleTime');
-      debugPrint('ID: $notificationId');
 
       const details = NotificationDetails(
         android: AndroidNotificationDetails(

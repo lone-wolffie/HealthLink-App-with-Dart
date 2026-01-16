@@ -5,7 +5,6 @@ import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/models/health_tips.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
-import 'package:healthlink_app/widgets/error_message.dart';
 
 class TipsScreen extends StatefulWidget {
   const TipsScreen({
@@ -97,6 +96,8 @@ class _TipsScreenState extends State<TipsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Health Tips', 
@@ -107,11 +108,57 @@ class _TipsScreenState extends State<TipsScreen> {
         future: _tipsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingIndicator();
+            return const LoadingIndicator(message: 'Loading health tips...');
           }
 
           if (snapshot.hasError) {
-            return ErrorMessage(message: snapshot.error.toString());
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Failed to load health tips',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please check your connection and try again',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _loadTips();
+                        });
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
           return Column(
@@ -184,11 +231,11 @@ class _TipsScreenState extends State<TipsScreen> {
                                 color: _categoryColors[tip.category]!,
                                 width: 1.5,
                               ),
-                              boxShadow: [
+                              boxShadow: const [
                                 BoxShadow(
                                   color: Colors.black,
                                   blurRadius: 6,
-                                  offset: const Offset(0, 3),
+                                  offset: Offset(0, 3),
                                 ),
                               ],
                             ),

@@ -4,14 +4,14 @@ import 'package:healthlink_app/services/notification_service.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MyAppointmentsScreen extends StatefulWidget {
-  final int userId;
+  final String userUuid;
 
   const MyAppointmentsScreen({
     super.key, 
-    required this.
-    userId
+    required this.userUuid
   });
 
   @override
@@ -25,12 +25,21 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   @override
   void initState() {
     super.initState();
-    _appointmentsFuture = ApiService.getUserAppointments(widget.userId);
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      _appointmentsFuture = Future.value([]);
+    } else {
+      _appointmentsFuture = ApiService.getUserAppointments(user.id);
+    }
   }
 
   Future<void> _refresh() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    
+    if (user == null) return;
     setState(() {
-      _appointmentsFuture = ApiService.getUserAppointments(widget.userId);
+      _appointmentsFuture = ApiService.getUserAppointments(user.id);
     });
   }
 
@@ -42,8 +51,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     if (response.containsKey('error')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:  Text('Failed to cancel appointment'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content:  const Text('Failed to cancel appointment'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -59,8 +68,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Appointment cancelled successfully'),
-          backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          content: const Text('Appointment cancelled successfully'),
+          backgroundColor: const Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -106,7 +115,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 244, 29, 13),
+              backgroundColor: const Color.fromARGB(255, 244, 29, 13),
             ),
             child: const Text('Yes, Cancel'),
           ),
@@ -127,8 +136,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     if (response.containsKey('error')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to mark appointment as completed'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+          content: const Text('Failed to mark appointment as completed'),
+          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -145,8 +154,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Appointment marked as completed'),
-          backgroundColor: Color.fromARGB(255, 12, 185, 9),
+          content: const Text('Appointment marked as completed'),
+          backgroundColor: const Color.fromARGB(255, 12, 185, 9),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -182,7 +191,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
           ),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-              foregroundColor: Color(0xFFBB86FC)
+              foregroundColor: const Color(0xFFBB86FC)
             ),
           ),
         ),
@@ -286,8 +295,8 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Failed to reschedule the appointment'),
-        backgroundColor: Color.fromARGB(255, 244, 29, 13),
+        content: const Text('Failed to reschedule the appointment'),
+        backgroundColor: const Color.fromARGB(255, 244, 29, 13),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -301,8 +310,8 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Appointment rescheduled successfully'),
-        backgroundColor: Color.fromARGB(255, 12, 185, 9),
+        content: const Text('Appointment rescheduled successfully'),
+        backgroundColor: const Color.fromARGB(255, 12, 185, 9),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -382,7 +391,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
+                        const Text(
                           'Filter Appointments',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -428,7 +437,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: LoadingIndicator()
+                    child: LoadingIndicator(message: 'Loading appointments...')
                   );
                 }
 
@@ -461,8 +470,8 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
                         margin: const EdgeInsets.only(bottom: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(
-                            color: const Color.fromARGB(255, 84, 166, 234),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 84, 166, 234),
                           ),
                         ),
                         child: Column(
@@ -499,8 +508,8 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          appt['clinic_name'] ?? 'Clinic #${appt['clinic_id']}',
-                                          style: TextStyle(
+                                          appt['clinics']?['name'] ?? 'Clinic #${appt['clinic_id']}',
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -690,7 +699,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               ),
               Text(
                 value,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -761,7 +770,8 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+
+            const Text(
               'No Appointments Yet',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -805,7 +815,7 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
             const SizedBox(height: 24),
             Text(
               'No $_selectedFilter Appointments',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -818,15 +828,6 @@ Future<void> _rescheduleAppointment(Map<String, dynamic> appt) async {
               ),
             ),
             const SizedBox(height: 24),
-            TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  _selectedFilter = 'all';
-                });
-              },
-              icon: const Icon(Icons.clear_all),
-              label: const Text('Show All'),
-            ),
           ],
         ),
       ),

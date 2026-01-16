@@ -1,65 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:healthlink_app/models/symptoms.dart';
 import 'package:healthlink_app/services/api_service.dart';
 import 'package:healthlink_app/widgets/custom_app_bar.dart';
 import 'package:healthlink_app/widgets/loading_indicator.dart';
 
 class SymptomHistoryScreen extends StatefulWidget {
-  final int userId;
-
-  const SymptomHistoryScreen({
-    super.key,
-    required this.userId,
-  });
+  const SymptomHistoryScreen({super.key}); 
 
   @override
   State<SymptomHistoryScreen> createState() => _SymptomHistoryScreenState();
 }
 
 class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
-  late Future<List<Symptoms>> _symptomsFuture;
+  Future<List<Symptoms>>? _symptomsFuture;
   String _selectedFilter = 'all';
+  String? _userUuid;
 
   @override
   void initState() {
     super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user == null) {
+      _showSnack('Session expired. Please login again.');
+      return;
+    }
+
+    _userUuid = user.id;
     _loadSymptoms();
   }
 
+
   void _loadSymptoms() {
-    _symptomsFuture = ApiService.getSymptomHistory(widget.userId);
+    if (_userUuid == null) return;
+    setState(() {
+      _symptomsFuture = ApiService.getSymptomHistory(_userUuid!);
+    });
   }
 
   Future<void> _deleteSymptom(int id) async {
     try {
       await ApiService.deleteSymptom(id);
-      setState(() => _loadSymptoms());
+      _loadSymptoms();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Symptom removed successfully'),
-          backgroundColor: Color.fromARGB(255, 12, 185, 9),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+      _showSnack('Symptom removed successfully');
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Delete failed: $error'),
-          backgroundColor: Color.fromARGB(255, 244, 29, 13),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+      _showSnack('Failed to delte symptom');
     }
+  }
+
+  void _showSnack(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError
+          ? const Color.fromARGB(255, 244, 29, 13)
+          : const Color.fromARGB(255, 12, 185, 9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 
   Color _severityColor(String severity) {
@@ -90,47 +100,43 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
 
   String _dateGroup(DateTime date) {
     final now = DateTime.now();
-    final today = DateTime(
-      now.year, 
-      now.month, 
-      now.day
-    );
+    final today = DateTime(now.year, now.month, now.day);
+    final theDate = DateTime(date.year, date.month, date.day);
 
-    final theDate = DateTime(
-      date.year, 
-      date.month, 
-      date.day
-    );
+    if (theDate == today) return 'Today';
+    if (theDate == today.subtract(const Duration(days: 1))) return 'Yesterday';
 
-    if (theDate == today) {
-      return 'Today';
-    }
-    if (theDate == today.subtract(
-      const Duration(days: 1)
-    )) {
-      return 'Yesterday';
-    }
     return DateFormat('EEEE, MMM d, yyyy').format(date);
   }
 
   int _getSeverityCount(List<Symptoms> symptoms, String severity) {
     if (severity == 'all') return symptoms.length;
-    return symptoms.where((symptom) => symptom.severity.toLowerCase() == severity).length;
+    return symptoms
+      .where((symptom) => symptom.severity.toLowerCase() == severity)
+      .length;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    if (_userUuid == null) {
+      return const Scaffold(
+        body: Center(child: LoadingIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Symptom History',
         actions: [],
       ),
-      body: FutureBuilder<List<Symptoms>>(
-        future: _symptomsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: _symptomsFuture == null
+        ? const Center(child: LoadingIndicator())
+        : FutureBuilder<List<Symptoms>>(
+          future: _symptomsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -147,11 +153,12 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
               ),
             );
           }
-
+        
           if (snapshot.hasError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
+                
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -168,24 +175,26 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text(
-                      'Something went wrong',
+                    const Text(
+                      'Failed to load your symptom history',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Unable to load your symptom history',
+                      'Please check your connection and try again',
                       style: TextStyle(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: () => setState(_loadSymptoms),
+                      onPressed: () {
+                        _loadSymptoms();
+                      },
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Try Again'),
+                      label: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -215,7 +224,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text(
+                    const Text(
                       'No Symptoms Logged',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -238,9 +247,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
           // Filter symptoms
           final filteredSymptoms = _selectedFilter == 'all'
             ? allSymptoms
-            : allSymptoms
-              .where((symptom) => symptom.severity.toLowerCase() == _selectedFilter)
-                .toList();
+            : allSymptoms.where((symptom) => symptom.severity.toLowerCase() == _selectedFilter).toList();
 
           // group by date recorded
           final grouped = <String, List<Symptoms>>{};
@@ -283,7 +290,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
+                        const Text(
                           'Filter by Severity',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -327,7 +334,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                     ? _buildEmptyFilterState()
                     : RefreshIndicator(
                         onRefresh: () async {
-                          setState(_loadSymptoms);
+                        _loadSymptoms();
                         },
                         child: ListView(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -397,7 +404,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                                 children: [
                                                   Text(
                                                     symptom.symptom,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
@@ -412,7 +419,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                               ),
                                             ),
                                             IconButton(
-                                              icon: Icon(
+                                              icon: const Icon(
                                                 Icons.delete_outline,
                                                 color: Color.fromARGB(255, 244, 29, 13),
                                               ),
@@ -423,7 +430,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius: BorderRadius.circular(20),
                                                     ),
-                                                    icon: Icon(
+                                                    icon: const Icon(
                                                       Icons.delete_outline,
                                                       color: Color.fromARGB(255, 244, 29, 13),
                                                       size: 48,
@@ -435,7 +442,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                                       ),
                                                     ),
                                                     content: const Text(
-                                                      'This action cannot be undone. Are you sure you want to delete this symptom entry?',
+                                                      'This action cannot be undone. Are you sure you want to delete this symptom?',
                                                     ),
                                                     actions: [
                                                       TextButton(
@@ -450,7 +457,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
                                                       FilledButton(
                                                         onPressed: () => Navigator.pop(context, true),
                                                         style: FilledButton.styleFrom(
-                                                          backgroundColor: Color.fromARGB(255, 244, 29, 13),
+                                                          backgroundColor: const Color.fromARGB(255, 244, 29, 13),
                                                         ),
                                                         child:const Text('Yes, Delete'),
                                                       ),
@@ -632,8 +639,8 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'No ${_selectedFilter == 'all' ? '' : _selectedFilter} Symptoms',
-              style: TextStyle(
+              'No ${_selectedFilter == 'all' ? '' : _selectedFilter} symptoms',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -646,15 +653,7 @@ class _SymptomHistoryScreenState extends State<SymptomHistoryScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  _selectedFilter = 'all';
-                });
-              },
-              icon: const Icon(Icons.clear_all),
-              label: const Text('Show All'),
-            ),
+    
           ],
         ),
       ),
